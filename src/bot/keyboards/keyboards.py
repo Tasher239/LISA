@@ -35,3 +35,8 @@ period_keyboard = InlineKeyboardMarkup(
                      [six_month_button],
                      [year_button]]
 )
+
+def get_installation_button():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Нужна инструкция по установке", callback_data="installation_instructions")]
+    ])
