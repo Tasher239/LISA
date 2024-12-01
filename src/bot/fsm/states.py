@@ -1,5 +1,5 @@
-# app/states.py
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.fsm.state import default_state, State, StatesGroup
+
 
 class MainMenu(StatesGroup):
     waiting_for_action = State()
