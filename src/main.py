@@ -13,10 +13,11 @@ session = db_processor.Session()
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
 from aiogram import F
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
+from aiogram import types
 
 from outline_vpn.outline_vpn import OutlineVPN
 
@@ -141,12 +142,12 @@ async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
 async def successful_payment(message: Message, state: FSMContext):
     try:
         logger.info(json.dumps(message.dict(), indent=4, default=str))
-        key = outline_processor.create_new_key(
-            key_id=str(str(message.from_user.id) + str(datetime.now())),
-            name=f"user {message.from_user.id} Key {datetime.now()} ",
-            data_limit_gb=200,
+        keys_lst = outline_processor.get_keys()
+        max_key_id = max([int(key.key_id) for key in keys_lst])
+        key = outline_processor.create_new_key(key_id=max_key_id + 1, name=f'VPN Key{max_key_id + 1}', data_limit_gb=1)
 
-        )
+        await message.answer(f'Ваш ключ от VPN:\naccess_url: {key.access_url}\npassword: {key.password}')
+
         logger.info(f'Key created: {key} for user {message.from_user.id}')
         await state.update_data(key_access_url=key.access_url)
         await message.answer(
@@ -157,6 +158,36 @@ async def successful_payment(message: Message, state: FSMContext):
             parse_mode="Markdown",
             reply_markup=get_installation_button()
         )
+
+        # Обновление базы данных
+        try:
+            # Проверка, существует ли пользователь
+            user = session.query(DbProcessor.User).filter_by(user_telegram_id=message.from_user.id).first()
+            if not user:
+                # Если пользователя нет, создаем нового
+                user = DbProcessor.User(
+                    user_telegram_id=message.from_user.id,
+                    subscription_status='active',
+                    use_trial_period=False  # Предположительно, пробный период уже использован
+                )
+                session.add(user)
+
+            # Добавление нового ключа для пользователя
+            new_key = DbProcessor.Key(
+                key_id=str(max_key_id + 1),
+                user_telegram_id=message.from_user.id
+            )
+            session.add(new_key)
+
+            # Сохранение изменений
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            print(f"Ошибка обновления базы данных: {e}")
+            await message.answer("Произошла ошибка при сохранении данных в базу. Пожалуйста, свяжитесь с поддержкой.")
+        finally:
+            session.close()
+
     except Exception as e:
         logger.error(f"Error processing successful payment: {e}")
         await message.answer(
@@ -186,45 +217,7 @@ async def send_installation_instructions(callback: CallbackQuery, state: FSMCont
     await callback.answer()
     await state.clear()
 
-async def successful_payment(message: types.Message, state: FSMContext):
-    print(json.dumps(message.dict(), indent=4, default=str))
-    successful_payment = message.successful_payment
-    await message.answer(
-        f"Спасибо за покупку! Оплата на сумму {successful_payment.total_amount / 100} {successful_payment.currency} успешно прошла.")
 
-    keys_lst = outline_processor.get_keys()
-    max_key_id = max([int(key.key_id) for key in keys_lst])
-    key = outline_processor.create_new_key(key_id=max_key_id + 1, name=f'VPN Key{max_key_id+1}', data_limit_gb=1)
-    print(f'Key: {key}')
-    await message.answer(f'Ваш ключ от VPN:\naccess_url: {key.access_url}\npassword: {key.password}')
-    # Обновление базы данных
-    try:
-        # Проверка, существует ли пользователь
-        user = session.query(DbProcessor.User).filter_by(user_telegram_id=message.from_user.id).first()
-        if not user:
-            # Если пользователя нет, создаем нового
-            user = DbProcessor.User(
-                user_telegram_id=message.from_user.id,
-                subscription_status='active',
-                use_trial_period=False  # Предположительно, пробный период уже использован
-            )
-            session.add(user)
-
-        # Добавление нового ключа для пользователя
-        new_key = DbProcessor.Key(
-            key_id=str(max_key_id + 1),
-            user_telegram_id=message.from_user.id
-        )
-        session.add(new_key)
-
-        # Сохранение изменений
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        print(f"Ошибка обновления базы данных: {e}")
-        await message.answer("Произошла ошибка при сохранении данных в базу. Пожалуйста, свяжитесь с поддержкой.")
-    finally:
-        session.close()
 
 
 
