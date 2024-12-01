@@ -5,10 +5,15 @@ from aiogram import F, types
 from aiogram.types import CallbackQuery
 from aiogram.fsm.state import default_state, State, StatesGroup
 from outline_vpn.outline_vpn import OutlineVPN
+from bot.keyboards.keyboards import *
 from bot.utils.outline_processor import OutlineProcessor
 import uuid
 import json
+import logging
+import asyncio
+import sys
 
+dp = Dispatcher()
 api_url = 'https://5.35.38.7:8811/p78Ho3alpF3e8Sv37eLV1Q'
 cert_sha256 = 'CA9E91B93E16E1F160D94D17E2F7C0D0D308858A60F120F6C8C1EDE310E35F64'
 
@@ -17,43 +22,10 @@ client = OutlineVPN(api_url=api_url, cert_sha256=cert_sha256)
 outline_processor = OutlineProcessor(client)
 
 BOT_TOKEN = "7444575424:AAGm9XiB3KPYWsI_30ivVO7QAELnIoatcCw"
-
-# Создаем объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
 
 # 'stop_time' - ISO 8601
 user_db = [{'user_id': 234, 'stop_time': '01-02-2024', 'use_trial_period': True}]
-
-# Создаем объекты инлайн-кнопок
-get_key = InlineKeyboardButton(
-    text='•	Получить Ключ',
-    callback_data='get_keys_pressed'
-)
-
-ket_management = InlineKeyboardButton(
-    text='•	Управление ключами',
-    callback_data='key_management_pressed'
-)
-
-main_menu_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[[get_key],
-                     [ket_management]]
-)
-
-# Кнопки для выбора периода
-month_button = InlineKeyboardButton(text='• Месяц (1$)', callback_data='1_month')
-three_month_button = InlineKeyboardButton(text='• 3 Месяца (10$)', callback_data='3_months')
-six_month_button = InlineKeyboardButton(text='• 6 Месяцев (100$)', callback_data='6_months')
-year_button = InlineKeyboardButton(text='• 12 Месяцев (1000$)', callback_data='12_months')
-
-period_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[[month_button],
-                     [three_month_button],
-                     [six_month_button],
-                     [year_button]]
-)
-
 
 @dp.message(CommandStart())
 async def process_start_command(message: Message):
@@ -118,6 +90,9 @@ async def process_key_management(callback: CallbackQuery):
         'Вы выбрали "Управление ключами".'
     )
 
+async def main() -> None:
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    dp.run_polling(bot)
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
