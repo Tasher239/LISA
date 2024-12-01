@@ -14,6 +14,10 @@ import json
 import logging
 import asyncio
 import sys
+from src.database.user_db import DbProcessor
+
+db_processor = DbProcessor()
+session = db_processor.Session()
 
 dp = Dispatcher()
 from bot.fsm.states import GetKey
@@ -142,6 +146,35 @@ async def successful_payment(message: types.Message, state: FSMContext):
     key = outline_processor.create_new_key(key_id=max_key_id + 1, name=f'VPN Key{max_key_id+1}', data_limit_gb=1)
     print(f'Key: {key}')
     await message.answer(f'Ваш ключ от VPN:\naccess_url: {key.access_url}\npassword: {key.password}')
+
+    # Обновление базы данных
+    try:
+        # Проверка, существует ли пользователь
+        user = session.query(DbProcessor.User).filter_by(user_telegram_id=message.from_user.id).first()
+        if not user:
+            # Если пользователя нет, создаем нового
+            user = DbProcessor.User(
+                user_telegram_id=message.from_user.id,
+                subscription_status='active',
+                use_trial_period=False  # Предположительно, пробный период уже использован
+            )
+            session.add(user)
+
+        # Добавление нового ключа для пользователя
+        new_key = DbProcessor.Key(
+            key_id=str(max_key_id + 1),
+            user_telegram_id=message.from_user.id
+        )
+        session.add(new_key)
+
+        # Сохранение изменений
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        print(f"Ошибка обновления базы данных: {e}")
+        await message.answer("Произошла ошибка при сохранении данных в базу. Пожалуйста, свяжитесь с поддержкой.")
+    finally:
+        session.close()
 
 
 
