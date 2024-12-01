@@ -15,7 +15,7 @@ keys_lst = client.get_keys()
 print(len(keys_lst))
 status = create_new_key()
 print(status)
-print(status.name)
+print(type(status.key_id))
 
 keys_lst = client.get_keys()
 print(len(keys_lst))
