@@ -5,12 +5,17 @@ from aiogram import F, types
 from aiogram.types import CallbackQuery
 from aiogram.fsm.state import default_state, State, StatesGroup
 from outline_vpn.outline_vpn import OutlineVPN
+from bot.keyboards.keyboards import *
 from bot.utils.outline_processor import OutlineProcessor
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 import uuid
 import json
+import logging
+import asyncio
+import sys
 
+dp = Dispatcher()
 from bot.fsm.states import GetKey
 
 api_url = 'https://5.35.38.7:8811/p78Ho3alpF3e8Sv37eLV1Q'
@@ -21,7 +26,7 @@ client = OutlineVPN(api_url=api_url, cert_sha256=cert_sha256)
 outline_processor = OutlineProcessor(client)
 
 BOT_TOKEN = "7444575424:AAGm9XiB3KPYWsI_30ivVO7QAELnIoatcCw"
-
+bot = Bot(token=BOT_TOKEN)
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
 storage = MemoryStorage()
 
@@ -146,6 +151,9 @@ async def process_key_management(callback: CallbackQuery):
         'Вы выбрали "Управление ключами".'
     )
 
+async def main() -> None:
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    dp.run_polling(bot)
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
