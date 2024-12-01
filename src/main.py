@@ -3,7 +3,12 @@ import json
 import uuid
 import logging
 import asyncio
+
 import os
+from src.database.user_db import DbProcessor
+
+db_processor = DbProcessor()
+session = db_processor.Session()
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, StateFilter
@@ -42,6 +47,41 @@ storage = MemoryStorage()
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(storage=storage)
 
+
+# 'stop_time' - ISO 8601
+user_db = [{'user_id': 234, 'stop_time': '01-02-2024', 'use_trial_period': True}]
+
+# Создаем объекты инлайн-кнопок
+get_key = InlineKeyboardButton(
+    text='•	Получить Ключ',
+    callback_data='get_keys_pressed'
+)
+
+ket_management = InlineKeyboardButton(
+    text='•	Управление ключами',
+    callback_data='key_management_pressed'
+)
+
+main_menu_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[[get_key],
+                     [ket_management]]
+)
+
+# Кнопки для выбора периода
+month_button = InlineKeyboardButton(text='• Месяц (1$)', callback_data='1_month')
+three_month_button = InlineKeyboardButton(text='• 3 Месяца (10$)', callback_data='3_months')
+six_month_button = InlineKeyboardButton(text='• 6 Месяцев (100$)', callback_data='6_months')
+year_button = InlineKeyboardButton(text='• 12 Месяцев (1000$)', callback_data='12_months')
+
+period_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[[month_button],
+                     [three_month_button],
+                     [six_month_button],
+                     [year_button]]
+)
+
+
+
 @dp.message(CommandStart())
 async def process_start_command(message: Message, state: FSMContext):
     await state.clear()
@@ -52,16 +92,18 @@ async def process_start_command(message: Message, state: FSMContext):
         reply_markup=main_menu_keyboard
     )
 
+
 @dp.callback_query(F.data == 'get_keys_pressed')
-async def get_key_handler(callback: CallbackQuery):
+async def get_key_handler(callback: CallbackQuery, state: FSMContext):
     # После того как пользователь выбрал "Получить Ключ", покажем кнопки выбора периода
     await callback.message.answer(
         text='Выберите период действия ключа:',
         reply_markup=period_keyboard
     )
+    await state.set_state(GetKey.choosing_period)
 
 
-@dp.callback_query(F.data.in_(['1_month', '3_months', '6_months', '12_months']))
+@dp.callback_query(StateFilter(GetKey.choosing_period))
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace('_', ' ').title()
     prices = [LabeledPrice(label="Ключ от VPN", amount=10000)]
@@ -87,6 +129,7 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
 Если вы хотите отклонить платеж, вы можете установить ok=False и добавить описание причины отклонения через параметр error_message.
 '''
 
+
 @dp.pre_checkout_query()
 async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
     # Проверяем данные платежа
@@ -94,6 +137,7 @@ async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
 
 #Обработчик успешного платежа
 @dp.message(StateFilter(GetKey.waiting_for_payment), lambda message: message.successful_payment)
+
 async def successful_payment(message: Message, state: FSMContext):
     try:
         logger.info(json.dumps(message.dict(), indent=4, default=str))
@@ -142,6 +186,48 @@ async def send_installation_instructions(callback: CallbackQuery, state: FSMCont
     await callback.answer()
     await state.clear()
 
+async def successful_payment(message: types.Message, state: FSMContext):
+    print(json.dumps(message.dict(), indent=4, default=str))
+    successful_payment = message.successful_payment
+    await message.answer(
+        f"Спасибо за покупку! Оплата на сумму {successful_payment.total_amount / 100} {successful_payment.currency} успешно прошла.")
+
+    keys_lst = outline_processor.get_keys()
+    max_key_id = max([int(key.key_id) for key in keys_lst])
+    key = outline_processor.create_new_key(key_id=max_key_id + 1, name=f'VPN Key{max_key_id+1}', data_limit_gb=1)
+    print(f'Key: {key}')
+    await message.answer(f'Ваш ключ от VPN:\naccess_url: {key.access_url}\npassword: {key.password}')
+    # Обновление базы данных
+    try:
+        # Проверка, существует ли пользователь
+        user = session.query(DbProcessor.User).filter_by(user_telegram_id=message.from_user.id).first()
+        if not user:
+            # Если пользователя нет, создаем нового
+            user = DbProcessor.User(
+                user_telegram_id=message.from_user.id,
+                subscription_status='active',
+                use_trial_period=False  # Предположительно, пробный период уже использован
+            )
+            session.add(user)
+
+        # Добавление нового ключа для пользователя
+        new_key = DbProcessor.Key(
+            key_id=str(max_key_id + 1),
+            user_telegram_id=message.from_user.id
+        )
+        session.add(new_key)
+
+        # Сохранение изменений
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        print(f"Ошибка обновления базы данных: {e}")
+        await message.answer("Произошла ошибка при сохранении данных в базу. Пожалуйста, свяжитесь с поддержкой.")
+    finally:
+        session.close()
+
+
+
 @dp.callback_query(F.data == 'key_management_pressed')
 async def process_key_management(callback: CallbackQuery):
     await callback.message.answer(
@@ -153,3 +239,5 @@ async def main() -> None:
 
 if __name__ == '__main__':
     asyncio.run(main())
+
+
