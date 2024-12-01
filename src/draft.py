@@ -11,11 +11,12 @@ client = OutlineVPN(api_url=api_url, cert_sha256=cert_sha256)
 def create_new_key(key_id: str = '100', name: str = 'new_key', data_limit_gb: float = 0):
  return client.create_key(key_id=key_id, name=name, data_limit=data_limit_gb)
 
-keys_lst = client.get_keys()
-print(len(keys_lst))
-status = create_new_key()
-print(status)
-print(status.name)
+#
+# keys_lst = client.get_keys()
+# print(len(keys_lst))
+# status = create_new_key()
+# print(status)
+# print(type(status.key_id))
 
 keys_lst = client.get_keys()
-print(len(keys_lst))
+print(keys_lst)
