@@ -2,7 +2,7 @@ import json
 import uuid
 
 import os
-from src.database.user_db import DbProcessor
+from database.user_db import DbProcessor
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, StateFilter
@@ -151,37 +151,26 @@ async def send_key_to_user(message: Message, key):
     )
 
 
+def get_session():
+    return db_processor.Session()
+
 async def update_database_with_key(user_id: int, key):
-    """Обновляет базу данных, добавляя информацию о пользователе и ключе."""
     try:
-        # Проверка существования пользователя
-        user = (
-            session.query(DbProcessor.User).filter_by(user_telegram_id=user_id).first()
-        )
-        if not user:
-            # Создание нового пользователя
-            user = DbProcessor.User(
-                user_telegram_id=user_id,
-                subscription_status="active",
-                use_trial_period=False,
-            )
-            session.add(user)
-
-        # Добавление нового ключа
-        new_key = DbProcessor.Key(
-            key_id=key.key_id, user_telegram_id=user_id  # Генерация ID нового ключа
-        )
-        session.add(new_key)
-
-        # Сохранение изменений
-        session.commit()
+        with get_session() as session:
+            user = session.query(DbProcessor.User).filter_by(user_telegram_id=user_id).first()
+            if not user:
+                user = DbProcessor.User(
+                    user_telegram_id=user_id,
+                    subscription_status="active",
+                    use_trial_period=False,
+                )
+                session.add(user)
+            new_key = DbProcessor.Key(key_id=key.key_id, user_telegram_id=user_id)
+            session.add(new_key)
+            session.commit()
     except Exception as e:
-        session.rollback()
         logger.error(f"Ошибка обновления базы данных: {e}")
         raise
-    finally:
-        session.close()
-
 
 @router.callback_query(F.data == "installation_instructions")
 async def send_installation_instructions(callback: CallbackQuery, state: FSMContext):
