@@ -14,5 +14,5 @@ def get_instruction_string(key_access_url: str) -> str:
     return instructions
 
 
-def get_your_key_string(key) -> str:
-    return f"Ваш ключ от VPN:\n\n" f"```\n" f"{key.access_url}\n" f"```"
+def get_your_key_string(key, text="Ваш ключ от VPN") -> str:
+    return f"{text}\n```\n" f"{key.access_url}\n```"
