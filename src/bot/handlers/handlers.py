@@ -231,7 +231,7 @@ async def send_key_to_user(message: Message, key, text="Ваш ключ от VPN
     await message.answer(
         get_your_key_string(key, text),
         parse_mode="Markdown",
-        reply_markup=get_installation_button(),
+        reply_markup=(),
     )
 
 
@@ -408,7 +408,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
 
         period_months = 0.5
         start_date = datetime.now()
-        expiration_date = start_date + timedelta(days=30 * period_months)
+        expiration_date = start_date + timedelta(days=4 * period_months)
         new_key = DbProcessor.Key(
             key_id=key.key_id,
             user_telegram_id=user_id_str,
@@ -418,8 +418,8 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         session.add(new_key)
         session.commit()
 
-        text = "Ваш пробный ключ готов к использованию. Срок действия - 15 дней."
-        await send_key_to_user(callback.message, key, text)
+        text = "Ваш пробный ключ готов к использованию. Срок действия - 2 дня."
+        await send_key_to_user(callback.message, key, text, reply_markup=back_button())
     else:
         await callback.message.answer(
             "Вы уже использовали пробный период. "

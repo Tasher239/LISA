@@ -63,7 +63,10 @@ def get_installation_button():
                 InlineKeyboardButton(
                     text="Нужна инструкция по установке",
                     callback_data="installation_instructions",
-                )
+                ),
+                InlineKeyboardButton(
+                    text="В главное меню", callback_data="to_main_menu",
+                ),
             ]
         ]
     )
