@@ -6,6 +6,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 import os
 from dotenv import load_dotenv
+from database.user_db import DbProcessor
 
 load_dotenv()
 BOT_TOKEN = os.getenv("TOKEN")
@@ -22,9 +23,11 @@ logger.info("Инициализация диспетчера...")
 dp = Dispatcher(storage=storage)
 logger.info("Регистрация обработчиков...")
 dp.include_router(handlers.router)
+db_processor = DbProcessor()
 
 async def main() -> None:
     logger.info("Запуск polling...")
+    db_processor.init_db()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":

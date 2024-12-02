@@ -15,3 +15,4 @@ class ManageKeys(StatesGroup):
     choosing_key = State()
     choosing_action = State()
     rename_key = State()
+    choose_trial_key = State()
