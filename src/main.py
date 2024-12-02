@@ -1,155 +1,30 @@
-import sys
-import json
-import uuid
-import logging
-import asyncio
-import os
-
-from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart, StateFilter
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
-from aiogram import F
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.fsm.context import FSMContext
-
-from outline_vpn.outline_vpn import OutlineVPN
-
-from bot.keyboards.keyboards import main_menu_keyboard, period_keyboard, get_installation_button
-from bot.fsm.states import GetKey
-from bot.utils.outline_processor import OutlineProcessor
+from bot.handlers import handlers
+from aiogram import Dispatcher
+from bot.logger.logging_config import setup_logger
+import asyncio
+from aiogram import Bot, Dispatcher
+import os
 from dotenv import load_dotenv
-from datetime import datetime
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("bot.log"),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
-logger = logging.getLogger(__name__)
 
 load_dotenv()
-api_url = os.getenv('API_URL')
-cert_sha256 = os.getenv('CERT_SHA')
-client = OutlineVPN(api_url=api_url, cert_sha256=cert_sha256)
-outline_processor = OutlineProcessor(client)
-BOT_TOKEN = os.getenv('TOKEN')
-provider_token = os.getenv('PROVIDER_SBER_TOKEN')
-storage = MemoryStorage()
+BOT_TOKEN = os.getenv("TOKEN")
+
 bot = Bot(token=BOT_TOKEN)
+
+logger = setup_logger()
+logger.info("Приложение запущено.")
+
+storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-@dp.message(CommandStart())
-async def process_start_command(message: Message, state: FSMContext):
-    await state.clear()
-    await message.answer(
-        text='Привет! Добро пожаловать в систему неограниченного '
-             'безопасного доступа в Интернет «LISA». Выберите, '
-             'что вы хотите сделать',
-        reply_markup=main_menu_keyboard
-    )
+# Регистрируем роутеры в диспетчере
+dp.include_router(handlers.router)
 
-@dp.callback_query(F.data == 'get_keys_pressed')
-async def get_key_handler(callback: CallbackQuery):
-    # После того как пользователь выбрал "Получить Ключ", покажем кнопки выбора периода
-    await callback.message.answer(
-        text='Выберите период действия ключа:',
-        reply_markup=period_keyboard
-    )
-
-
-@dp.callback_query(F.data.in_(['1_month', '3_months', '6_months', '12_months']))
-async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
-    selected_period = callback.data.replace('_', ' ').title()
-    prices = [LabeledPrice(label="Ключ от VPN", amount=10000)]
-    description = f'Ключ от VPN Outline на {selected_period}'
-    # переходим в состояние ожидания оплаты
-    await state.set_state(GetKey.waiting_for_payment)
-
-    await bot.send_invoice(chat_id=callback.message.chat.id,
-                           title='Покупка ключа',
-                           description=description,
-                           payload=str(uuid.uuid4()),
-                           provider_token=provider_token,
-                           start_parameter=str(uuid.uuid4()),
-                           currency='rub',
-                           prices=prices)
-
-
-# Обработчик предпросмотра платежа (пока не понятно зачем нам)
-'''
-Метод answer_pre_checkout_query() отвечает на запрос Telegram о предварительной проверке платежа.
-В pre_checkout_q.id передается уникальный идентификатор запроса, полученный из объекта PreCheckoutQuery.
-Параметр ok=True указывает, что запрос на предварительную проверку платежа был принят и все в порядке (платеж можно продолжать).
-Если вы хотите отклонить платеж, вы можете установить ok=False и добавить описание причины отклонения через параметр error_message.
-'''
-
-@dp.pre_checkout_query()
-async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
-    # Проверяем данные платежа
-    await bot.answer_pre_checkout_query(pre_checkout_q.id, ok=True)
-
-#Обработчик успешного платежа
-@dp.message(StateFilter(GetKey.waiting_for_payment), lambda message: message.successful_payment)
-async def successful_payment(message: Message, state: FSMContext):
-    try:
-        logger.info(json.dumps(message.dict(), indent=4, default=str))
-        key = outline_processor.create_new_key(
-            key_id=str(str(message.from_user.id) + str(datetime.now())),
-            name=f"user {message.from_user.id} Key {datetime.now()} ",
-            data_limit_gb=200,
-
-        )
-        logger.info(f'Key created: {key} for user {message.from_user.id}')
-        await state.update_data(key_access_url=key.access_url)
-        await message.answer(
-            f"Ваш ключ от VPN:\n\n"
-            f"```\n"
-            f"{key.access_url}\n"
-            f"```",
-            parse_mode="Markdown",
-            reply_markup=get_installation_button()
-        )
-    except Exception as e:
-        logger.error(f"Error processing successful payment: {e}")
-        await message.answer(
-            "Произошла ошибка при обработке вашего заказа. Пожалуйста, свяжитесь с поддержкой: `@mickpear`",
-            parse_mode="Markdown"
-        )
-        await state.clear()
-
-@dp.callback_query(F.data == "installation_instructions")
-async def send_installation_instructions(callback: CallbackQuery, state: FSMContext):
-    # Пример инструкции
-    data = await state.get_data()
-    key_access_url = data.get("key_access_url", "URL не найден")
-    instructions = (
-        "📖 Инструкция по установке VPN:\n\n"
-        "1. Скачайте приложение OutLine:\n"
-        "   - Для Android: [Ссылка на Google Play](https://play.google.com/store/apps/details?id=org.outline.android.client&hl=ru)\n"
-        "   - Для iOS: [Ссылка на App Store](https://apps.apple.com/ru/app/outline-app/id1356177741)\n"
-        "   - Для Windows/Mac: [Ссылка на сайт](https://example.com)\n\n"
-        "2. Откройте приложение и введите следующие данные:\n"
-        f"```\n"
-        f"{key_access_url}\n"
-        f"```"
-        "3. Подключитесь и наслаждайтесь безопасным интернетом! 🎉"
-    )
-    await callback.message.answer(instructions, parse_mode="Markdown", disable_web_page_preview=True)
-    await callback.answer()
-    await state.clear()
-
-@dp.callback_query(F.data == 'key_management_pressed')
-async def process_key_management(callback: CallbackQuery):
-    await callback.message.answer(
-        'Вы выбрали "Управление ключами".'
-    )
 
 async def main() -> None:
     await dp.start_polling(bot)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())
