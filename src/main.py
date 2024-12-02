@@ -7,6 +7,7 @@ from aiogram import Bot, Dispatcher
 import os
 from dotenv import load_dotenv
 from database.user_db import DbProcessor
+from bot.utils.set_menu import set_main_menu
 
 load_dotenv()
 BOT_TOKEN = os.getenv("TOKEN")
@@ -17,6 +18,7 @@ if not BOT_TOKEN:
 
 logger.info("Инициализация бота...")
 bot = Bot(token=BOT_TOKEN)
+
 logger.info("Инициализация хранилища состояний (MemoryStorage)...")
 storage = MemoryStorage()
 logger.info("Инициализация диспетчера...")
@@ -25,12 +27,17 @@ logger.info("Регистрация обработчиков...")
 dp.include_router(handlers.router)
 db_processor = DbProcessor()
 
+
 async def main() -> None:
     logger.info("Запуск polling...")
     db_processor.init_db()
+
+    await set_main_menu(bot)
     await dp.start_polling(bot)
 
+
 if __name__ == "__main__":
+
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):

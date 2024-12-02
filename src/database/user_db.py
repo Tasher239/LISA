@@ -1,4 +1,14 @@
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, DateTime, create_engine, Table, MetaData
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    Boolean,
+    ForeignKey,
+    DateTime,
+    create_engine,
+    Table,
+    MetaData,
+)
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 
 # Создаем базовый класс для моделей
@@ -27,11 +37,12 @@ class DbProcessor:
     # Определение таблицы Keys
     class Key(Base):
         __tablename__ = "keys"
-        key_id = Column(String, primary_key=True)  # Сам ключ для VPN
+        key_id = Column(String, primary_key=True)  # id ключа в outline и бд
         user_telegram_id = Column(
             String, ForeignKey("users.user_telegram_id")
         )  # ID пользователя (ссылка на пользователя)
         # Обратное отношение к таблице Users
+        expiration_date = Column(DateTime)  # Дата окончания подписки
+        start_date = Column(DateTime)  # Дата начала подписки
+
         user = relationship("User", back_populates="keys")
-        expiration_date = Column(DateTime)
-        start_date = Column(DateTime)
