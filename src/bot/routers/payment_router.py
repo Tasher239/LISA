@@ -9,6 +9,7 @@ from aiogram.fsm.context import FSMContext
 from bot.fsm.states import GetKey
 from bot.initialization.outline_client_init import outline_processor
 from bot.initialization.bot_init import bot
+from bot.initialization.db_processor_init import db_processor
 from database.user_db import DbProcessor
 from bot.utils.send_message import send_key_to_user
 from bot.utils.dicts import prices_dict_prodl
