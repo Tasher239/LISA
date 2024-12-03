@@ -231,7 +231,7 @@ async def send_key_to_user(message: Message, key, text="Ваш ключ от VPN
     await message.answer(
         get_your_key_string(key, text),
         parse_mode="Markdown",
-        reply_markup=(),
+        reply_markup=get_installation_button(),
     )
 
 
