@@ -18,7 +18,10 @@ from bot.fsm.states import GetKey
 import asyncio
 from aiogram.fsm.context import FSMContext
 from bot.lexicon.lexicon import Notification
-from bot.utils.send_message import send_message_subscription_expired, send_message_subscription_ends
+from bot.utils.send_message import (
+    send_message_subscription_expired,
+    send_message_subscription_ends,
+)
 
 logger = setup_logger()
 
@@ -84,7 +87,9 @@ class DbProcessor:
                 users = session.query(DbProcessor.User).all()
                 for user in users:
                     for key in user.keys:
-                        if (key.remembering == False) and (key.expiration_date - datetime.now() < timedelta(days=3)):
+                        if (key.remembering == False) and (
+                            key.expiration_date - datetime.now() < timedelta(days=3)
+                        ):
                             key.remembering = True
                             session.commit()
                             await send_message_subscription_ends()
@@ -117,4 +122,6 @@ class DbProcessor:
         expiration_date = Column(DateTime)  # Дата окончания подписки
         start_date = Column(DateTime)  # Дата начала подписки
         user = relationship("User", back_populates="keys")
-        remembering_before_exp = Column(Boolean, default=False)  # напомнить о продлении 1 раз
+        remembering_before_exp = Column(
+            Boolean, default=False
+        )  # напомнить о продлении 1 раз

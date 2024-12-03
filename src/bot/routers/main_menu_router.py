@@ -7,7 +7,9 @@ from aiogram.fsm.state import default_state
 from logger.logging_config import setup_logger
 
 from bot.keyboards.keyboards import get_period_keyboard
-from bot.keyboards.keyboards import (get_main_menu_keyboard, )
+from bot.keyboards.keyboards import (
+    get_main_menu_keyboard,
+)
 from bot.fsm.states import MainMenu, GetKey, ManageKeys
 from bot.utils.send_message import send_message_and_save
 from bot.routers.key_management_router import choosing_key_handler
@@ -16,8 +18,9 @@ router = Router()
 
 logger = setup_logger()
 
+
 async def show_main_menu(
-        message_or_callback: Message | CallbackQuery, state: FSMContext
+    message_or_callback: Message | CallbackQuery, state: FSMContext
 ):
     await state.clear()
     target = (
@@ -28,8 +31,8 @@ async def show_main_menu(
     await send_message_and_save(
         target,
         text="Привет! Добро пожаловать в систему неограниченного "
-             "безопасного доступа в Интернет «LISA». Выберите, "
-             "что вы хотите сделать",
+        "безопасного доступа в Интернет «LISA». Выберите, "
+        "что вы хотите сделать",
         state=state,
         reply_markup=get_main_menu_keyboard(),
     )
@@ -50,12 +53,15 @@ async def main_menu_handler(callback: CallbackQuery, state: FSMContext):
         await state.set_state(GetKey.choosing_period)
     elif action == "key_management_pressed":
         await state.set_state(ManageKeys.choosing_key)
-        await choosing_key_handler(callback, state) # тут идет связь с роутером менеджера ключей
+        await choosing_key_handler(
+            callback, state
+        )  # тут идет связь с роутером менеджера ключей
     else:
         await send_message_and_save(
             callback.message, "Неизвестное действие.", state=state
         )
     await callback.answer()
+
 
 @router.message(CommandStart() or StateFilter(default_state))
 async def process_start_command(message: Message, state: FSMContext):

@@ -17,7 +17,7 @@ from bot.keyboards.keyboards import (
     get_period_keyboard,
     get_installation_button,
     get_buttons_for_trial_period,
-    get_back_button
+    get_back_button,
 )
 
 from bot.utils.send_message import send_key_to_user
@@ -95,8 +95,6 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-
-
 def expiration_date_for_user(user: DbProcessor.User):
     """Возвращает дату окончания ключей для пользователя."""
     expiration_dates = {}
@@ -106,9 +104,7 @@ def expiration_date_for_user(user: DbProcessor.User):
     return expiration_dates
 
 
-@router.callback_query(
-    F.data == "installation_instructions"
-)
+@router.callback_query(F.data == "installation_instructions")
 async def send_installation_instructions(callback: CallbackQuery, state: FSMContext):
     # Пример инструкции
     data = await state.get_data()
@@ -240,7 +236,6 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
             user_telegram_id=user_id_str,
             expiration_date=expiration_date,
             start_date=start_date,
-
         )
         session.add(new_key)
         session.commit()
@@ -251,5 +246,5 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(
             "Вы уже использовали пробный период. "
             "Вы можете купить ключ или вернуться в главное меню",
-            reply_markup=get_back_button()
+            reply_markup=get_back_button(),
         )
