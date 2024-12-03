@@ -1,5 +1,5 @@
 import json
-from src.logger.logging_config import setup_logger
+from logger.logging_config import setup_logger
 from aiogram.types import Message
 
 logger = setup_logger()

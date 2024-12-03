@@ -26,8 +26,8 @@ from bot.fsm.states import MainMenu, GetKey, ManageKeys
 
 from bot.utils.string_makers import get_instruction_string, get_your_key_string
 
-from src.bot.keyboards.keyboards import get_back_button
-from src.logger.logging_config import setup_logger
+from bot.keyboards.keyboards import get_back_button
+from logger.logging_config import setup_logger
 
 from bot.utils.dicts import prices_dict
 from bot.initialization.bot_init import bot
@@ -95,6 +95,8 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
+
+
 def expiration_date_for_user(user: DbProcessor.User):
     """Возвращает дату окончания ключей для пользователя."""
     expiration_dates = {}
@@ -105,7 +107,7 @@ def expiration_date_for_user(user: DbProcessor.User):
 
 
 @router.callback_query(
-    F.data == "installation_instructions", StateFilter(GetKey.sending_key)
+    F.data == "installation_instructions"
 )
 async def send_installation_instructions(callback: CallbackQuery, state: FSMContext):
     # Пример инструкции
@@ -230,21 +232,21 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         user.use_trial_period = True
         session.commit()
         key = outline_processor.create_vpn_key()
-
-        period_months = 0.5
         start_date = datetime.now()
-        expiration_date = start_date + timedelta(days=4 * period_months)
+        await state.update_data(key_access_url=key.access_url)
+        expiration_date = start_date + timedelta(days=2)
         new_key = DbProcessor.Key(
             key_id=key.key_id,
             user_telegram_id=user_id_str,
             expiration_date=expiration_date,
             start_date=start_date,
+
         )
         session.add(new_key)
         session.commit()
 
         text = "Ваш пробный ключ готов к использованию. Срок действия - 2 дня."
-        await send_key_to_user(callback.message, key, text, reply_markup=get_back_button())
+        await send_key_to_user(callback.message, key, text)
     else:
         await callback.message.answer(
             "Вы уже использовали пробный период. "
