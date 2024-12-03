@@ -4,7 +4,7 @@ class OutlineProcessor:
 
     @staticmethod
     def gb_to_bytes(gb: float) -> int:
-        bytes_in_gb = 1024 ** 3  # 1 ГБ = 1024^3 байт
+        bytes_in_gb = 1024**3  # 1 ГБ = 1024^3 байт
         return int(gb * bytes_in_gb)
 
     def get_keys(self):
@@ -14,7 +14,7 @@ class OutlineProcessor:
         return self.client.get_key(key_id)
 
     def _create_new_key(
-            self, key_id: str = None, name: str = None, data_limit_gb: float = None
+        self, key_id: str = None, name: str = None, data_limit_gb: float = None
     ) -> str:
         """Создает новый ключ и возвращает строку инфы о нем"""
         return self.client.create_key(

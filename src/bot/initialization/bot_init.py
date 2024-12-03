@@ -12,4 +12,3 @@ if not BOT_TOKEN:
     exit("Отсутствует BOT_TOKEN")
 logger.info("Инициализация бота...")
 bot = Bot(token=BOT_TOKEN)
-

@@ -69,6 +69,7 @@ async def successful_payment(message: Message, state: FSMContext):
         )
         await state.clear()
 
+
 @router.callback_query(StateFilter(GetKey.prodlenie), F.data != "trial_period")
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     # await delete_previous_message(callback.message.chat.id, state)
