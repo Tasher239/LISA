@@ -1,11 +1,9 @@
-# keyboards.py
 from aiogram.types import (
     ReplyKeyboardMarkup,
     KeyboardButton,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
-from numpy.random.mtrand import set_state
 
 
 def get_main_menu_keyboard():
@@ -86,14 +84,6 @@ def get_buttons_for_trial_period():
     )
 
 
-# def get_instruction_keyboard():
-#     # Создаем объекты инлайн-кнопок
-#     to_main_menu_button = InlineKeyboardButton(
-#         text="В главное меню", callback_data="to_main_menu"
-#     )
-#     return InlineKeyboardMarkup(inline_keyboard=[[to_main_menu_button]])
-
-
 def get_back_button():
     # Создаем объекты инлайн-кнопок
     to_main_menu_button = InlineKeyboardButton(
@@ -118,6 +108,7 @@ def get_prodlit_keyboard():
             [back_to_main_menu_button],  # Кнопка "В главное меню"
         ]
     )
+
 
 def get_prodlenie_keyboard():
     # Кнопки для выбора периода
