@@ -3906,3 +3906,3338 @@ WHERE users.user_telegram_id = ?
 2024-12-03 01:35:04,683 - aiogram.dispatcher - INFO - Polling stopped
 2024-12-03 01:35:05,110 - asyncio - ERROR - Unclosed client session
 client_session: <aiohttp.client.ClientSession object at 0x105f17170>
+2024-12-03 11:25:59,936 - root - INFO - Инициализация бота...
+2024-12-03 11:25:59,956 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:25:59,956 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:25:59,958 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:25:59,960 - root - INFO - Запуск polling...
+2024-12-03 11:25:59,961 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:25:59,961 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:25:59,961 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:25:59,963 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:25:59,963 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:25:59,963 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:26:00,347 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 11:26:00,422 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:26:01,138 - aiogram.event - INFO - Update id=659305748 is handled. Duration 500 ms by bot id=7444575424
+2024-12-03 11:26:01,140 - aiogram.event - INFO - Update id=659305750 is handled. Duration 484 ms by bot id=7444575424
+2024-12-03 11:26:01,945 - aiogram.event - INFO - Update id=659305749 is handled. Duration 1297 ms by bot id=7444575424
+2024-12-03 11:26:04,302 - aiogram.event - INFO - Update id=659305751 is handled. Duration 141 ms by bot id=7444575424
+2024-12-03 11:26:07,075 - aiogram.event - INFO - Update id=659305752 is handled. Duration 359 ms by bot id=7444575424
+2024-12-03 11:26:09,262 - aiogram.event - INFO - Update id=659305753 is handled. Duration 140 ms by bot id=7444575424
+2024-12-03 11:26:10,761 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:26:10,772 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:26:10,773 - sqlalchemy.engine.Engine - INFO - [generated in 0.00139s] ('528155210', 1, 0)
+2024-12-03 11:26:10,859 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 11:26:11,010 - aiogram.event - INFO - Update id=659305754 is handled. Duration 359 ms by bot id=7444575424
+2024-12-03 11:26:11,975 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:26:11,977 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:26:11,978 - sqlalchemy.engine.Engine - INFO - [cached since 1.206s ago] ('432629636', 1, 0)
+2024-12-03 11:26:11,996 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 11:26:11,998 - sqlalchemy.engine.Engine - INFO - [generated in 0.00240s] ('432629636',)
+2024-12-03 11:26:12,104 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 11:26:12,242 - aiogram.event - INFO - Update id=659305755 is handled. Duration 390 ms by bot id=7444575424
+2024-12-03 11:26:14,122 - aiogram.event - INFO - Update id=659305756 is not handled. Duration 16 ms by bot id=7444575424
+2024-12-03 11:26:17,878 - aiogram.event - INFO - Update id=659305757 is handled. Duration 266 ms by bot id=7444575424
+2024-12-03 11:26:19,306 - aiogram.event - INFO - Update id=659305758 is handled. Duration 172 ms by bot id=7444575424
+2024-12-03 11:26:19,505 - aiogram.event - INFO - Update id=659305759 is handled. Duration 297 ms by bot id=7444575424
+2024-12-03 11:26:21,029 - aiogram.event - INFO - Update id=659305760 is handled. Duration 500 ms by bot id=7444575424
+2024-12-03 11:26:21,754 - aiogram.event - INFO - Update id=659305761 is handled. Duration 187 ms by bot id=7444575424
+2024-12-03 11:26:22,313 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:26:22,315 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:26:22,316 - sqlalchemy.engine.Engine - INFO - [cached since 11.55s ago] ('528155210', 1, 0)
+2024-12-03 11:26:22,323 - sqlalchemy.engine.Engine - INFO - INSERT INTO users (user_telegram_id, subscription_status, use_trial_period) VALUES (?, ?, ?)
+2024-12-03 11:26:22,324 - sqlalchemy.engine.Engine - INFO - [generated in 0.00101s] ('528155210', 'active', 0)
+2024-12-03 11:26:22,331 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:26:22,344 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:26:22,349 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-03 11:26:22,350 - sqlalchemy.engine.Engine - INFO - [generated in 0.00144s] ('528155210',)
+2024-12-03 11:26:22,359 - sqlalchemy.engine.Engine - INFO - UPDATE users SET use_trial_period=? WHERE users.user_telegram_id = ?
+2024-12-03 11:26:22,360 - sqlalchemy.engine.Engine - INFO - [generated in 0.00145s] (1, '528155210')
+2024-12-03 11:26:22,365 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:26:23,666 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:26:23,670 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 11:26:23,671 - sqlalchemy.engine.Engine - INFO - [generated in 0.00134s] ('83', '528155210', '2024-12-05 11:26:23.665137', '2024-12-03 11:26:23.665137')
+2024-12-03 11:26:23,680 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:26:23,691 - aiogram.event - INFO - Update id=659305762 is not handled. Duration 1390 ms by bot id=7444575424
+2024-12-03 11:26:23,692 - aiogram.event - ERROR - Cause exception while process update id=659305762 by bot id=7444575424
+TypeError: send_key_to_user() got an unexpected keyword argument 'reply_markup'
+Traceback (most recent call last):
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 25, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 49, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\fsm\middleware.py", line 42, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 137, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 170, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 137, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\Documents\coding\LISA\src\bot\handlers\handlers.py", line 422, in handle_trial_key_choice
+    await send_key_to_user(callback.message, key, text, reply_markup=back_button())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: send_key_to_user() got an unexpected keyword argument 'reply_markup'
+2024-12-03 11:26:23,924 - aiogram.event - INFO - Update id=659305763 is handled. Duration 203 ms by bot id=7444575424
+2024-12-03 11:26:27,570 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 11:26:27,834 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:26:27,835 - root - INFO - Бот остановлен вручную.
+2024-12-03 11:26:40,918 - root - INFO - Инициализация бота...
+2024-12-03 11:26:40,937 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:26:40,937 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:26:40,938 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:26:40,940 - root - INFO - Запуск polling...
+2024-12-03 11:26:40,942 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:26:40,943 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:26:40,943 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:26:40,944 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:26:40,944 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:26:40,945 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:26:41,320 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 11:26:41,393 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:26:41,674 - aiogram.event - INFO - Update id=659305764 is not handled. Duration 16 ms by bot id=7444575424
+2024-12-03 11:26:42,143 - aiogram.event - INFO - Update id=659305765 is handled. Duration 484 ms by bot id=7444575424
+2024-12-03 11:26:43,800 - aiogram.event - INFO - Update id=659305766 is handled. Duration 172 ms by bot id=7444575424
+2024-12-03 11:26:45,408 - aiogram.event - INFO - Update id=659305767 is handled. Duration 687 ms by bot id=7444575424
+2024-12-03 11:27:02,531 - aiogram.event - INFO - Update id=659305768 is handled. Duration 312 ms by bot id=7444575424
+2024-12-03 11:27:11,958 - root - INFO - {
+    "message_id": 1404,
+    "date": 1733214433,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "a1fb47e1-6de4-400b-9f67-5e536077cce3",
+        "telegram_payment_charge_id": "7444575424_528155210_326251",
+        "provider_payment_charge_id": "7444575424_528155210_326251",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 11:27:13,244 - root - INFO - Key created: OutlineKey(key_id='84', name='VPN Key71', password='Y9IxyDG00KhMoeegWkIl2c', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpZOUl4eURHMDBLaE1vZWVnV2tJbDJj@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 11:27:13,246 - root - ERROR - Произошла ошибка: 4 validation errors for SendMessage
+reply_markup.InlineKeyboardMarkup
+  Input should be a valid dictionary or instance of InlineKeyboardMarkup [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+reply_markup.ReplyKeyboardMarkup
+  Input should be a valid dictionary or instance of ReplyKeyboardMarkup [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+reply_markup.ReplyKeyboardRemove
+  Input should be a valid dictionary or instance of ReplyKeyboardRemove [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+reply_markup.ForceReply
+  Input should be a valid dictionary or instance of ForceReply [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+2024-12-03 11:27:13,542 - aiogram.event - INFO - Update id=659305769 is handled. Duration 1594 ms by bot id=7444575424
+2024-12-03 11:28:13,821 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 11:28:14,082 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:28:14,095 - root - INFO - Бот остановлен вручную.
+2024-12-03 11:28:42,305 - root - INFO - Инициализация бота...
+2024-12-03 11:28:42,327 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:28:42,328 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:28:42,329 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:28:42,331 - root - INFO - Запуск polling...
+2024-12-03 11:28:42,333 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:28:42,334 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:28:42,335 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:28:42,336 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:28:42,337 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:28:42,338 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:28:42,909 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 11:28:43,089 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:28:43,922 - aiogram.event - INFO - Update id=659305770 is handled. Duration 688 ms by bot id=7444575424
+2024-12-03 11:28:47,211 - aiogram.event - INFO - Update id=659305771 is handled. Duration 155 ms by bot id=7444575424
+2024-12-03 11:28:50,562 - aiogram.event - INFO - Update id=659305772 is handled. Duration 407 ms by bot id=7444575424
+2024-12-03 11:29:17,457 - aiogram.event - INFO - Update id=659305773 is handled. Duration 297 ms by bot id=7444575424
+2024-12-03 11:29:25,511 - root - INFO - {
+    "message_id": 1410,
+    "date": 1733214566,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 5000,
+        "invoice_payload": "18d8d23a-dda4-4b52-81ad-0372c541d893",
+        "telegram_payment_charge_id": "7444575424_528155210_326271",
+        "provider_payment_charge_id": "7444575424_528155210_326271",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 11:29:26,687 - root - INFO - Key created: OutlineKey(key_id='85', name='VPN Key72', password='Zq6b6lIJlGqq3ic5JOnEF6', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpacTZiNmxJSmxHcXEzaWM1Sk9uRUY2@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 11:29:26,689 - root - ERROR - Произошла ошибка: 4 validation errors for SendMessage
+reply_markup.InlineKeyboardMarkup
+  Input should be a valid dictionary or instance of InlineKeyboardMarkup [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+reply_markup.ReplyKeyboardMarkup
+  Input should be a valid dictionary or instance of ReplyKeyboardMarkup [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+reply_markup.ReplyKeyboardRemove
+  Input should be a valid dictionary or instance of ReplyKeyboardRemove [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+reply_markup.ForceReply
+  Input should be a valid dictionary or instance of ForceReply [type=model_type, input_value=(), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.4/v/model_type
+2024-12-03 11:29:27,010 - aiogram.event - INFO - Update id=659305774 is handled. Duration 1515 ms by bot id=7444575424
+2024-12-03 11:29:27,501 - aiogram.event - INFO - Update id=659305775 is not handled. Duration 0 ms by bot id=7444575424
+2024-12-03 11:29:31,151 - aiogram.event - INFO - Update id=659305776 is not handled. Duration 15 ms by bot id=7444575424
+2024-12-03 11:29:34,360 - aiogram.event - INFO - Update id=659305777 is not handled. Duration 0 ms by bot id=7444575424
+2024-12-03 11:31:26,466 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 11:31:26,722 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:31:26,728 - root - INFO - Бот остановлен вручную.
+2024-12-03 11:37:19,430 - root - INFO - Инициализация бота...
+2024-12-03 11:37:19,450 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:37:19,450 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:37:19,451 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:37:19,454 - root - INFO - Запуск polling...
+2024-12-03 11:37:19,455 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:37:19,456 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:37:19,456 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:37:19,457 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:37:19,457 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:37:19,458 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:37:19,758 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 11:37:19,822 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:37:23,574 - aiogram.event - INFO - Update id=659305778 is handled. Duration 577 ms by bot id=7444575424
+2024-12-03 11:37:26,134 - aiogram.event - INFO - Update id=659305779 is handled. Duration 234 ms by bot id=7444575424
+2024-12-03 11:37:27,535 - aiogram.event - INFO - Update id=659305780 is handled. Duration 422 ms by bot id=7444575424
+2024-12-03 11:37:40,969 - aiogram.event - INFO - Update id=659305781 is handled. Duration 155 ms by bot id=7444575424
+2024-12-03 11:37:49,666 - root - INFO - {
+    "message_id": 1418,
+    "date": 1733215070,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "c8d2ad8a-3015-406b-b7f0-a1ef05933e3c",
+        "telegram_payment_charge_id": "7444575424_528155210_326297",
+        "provider_payment_charge_id": "7444575424_528155210_326297",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 11:37:50,959 - root - INFO - Key created: OutlineKey(key_id='86', name='VPN Key73', password='J3UhrTdKU51dteowRWCZRL', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpKM1VoclRkS1U1MWR0ZW93UldDWlJM@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 11:37:51,269 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:37:51,278 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:37:51,279 - sqlalchemy.engine.Engine - INFO - [generated in 0.00107s] ('528155210', 1, 0)
+2024-12-03 11:37:51,288 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 11:37:51,289 - sqlalchemy.engine.Engine - INFO - [generated in 0.00142s] ('86', '528155210', '2025-11-28 11:37:51.282307', '2024-12-03 11:37:51.282307')
+2024-12-03 11:37:51,295 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:37:51,306 - aiogram.event - INFO - Update id=659305782 is handled. Duration 1657 ms by bot id=7444575424
+2024-12-03 11:37:54,529 - aiogram.event - INFO - Update id=659305783 is handled. Duration 217 ms by bot id=7444575424
+2024-12-03 11:38:24,444 - aiogram.event - INFO - Update id=659305784 is handled. Duration 344 ms by bot id=7444575424
+2024-12-03 11:38:36,265 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:38:36,266 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:38:36,267 - sqlalchemy.engine.Engine - INFO - [cached since 44.99s ago] ('528155210', 1, 0)
+2024-12-03 11:38:36,276 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 11:38:36,276 - sqlalchemy.engine.Engine - INFO - [generated in 0.00100s] ('528155210',)
+2024-12-03 11:38:36,369 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 11:38:36,496 - aiogram.event - INFO - Update id=659305785 is handled. Duration 375 ms by bot id=7444575424
+2024-12-03 11:39:15,772 - aiogram.event - INFO - Update id=659305786 is handled. Duration 500 ms by bot id=7444575424
+2024-12-03 11:39:24,174 - aiogram.event - INFO - Update id=659305787 is handled. Duration 172 ms by bot id=7444575424
+2024-12-03 11:39:25,561 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:39:25,562 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:39:25,562 - sqlalchemy.engine.Engine - INFO - [cached since 94.28s ago] ('528155210', 1, 0)
+2024-12-03 11:39:25,836 - aiogram.event - INFO - Update id=659305788 is handled. Duration 280 ms by bot id=7444575424
+2024-12-03 11:39:41,915 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 11:39:42,179 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:39:42,183 - root - INFO - Бот остановлен вручную.
+2024-12-03 11:48:24,724 - root - INFO - Инициализация бота...
+2024-12-03 11:48:24,741 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:48:24,741 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:48:24,742 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:48:24,744 - root - INFO - Запуск polling...
+2024-12-03 11:48:24,745 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:48:24,745 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:48:24,745 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:48:24,746 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:48:24,747 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:48:24,748 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:48:25,034 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 11:48:25,095 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:48:31,729 - aiogram.event - INFO - Update id=659305789 is handled. Duration 375 ms by bot id=7444575424
+2024-12-03 11:48:33,150 - aiogram.event - INFO - Update id=659305790 is handled. Duration 265 ms by bot id=7444575424
+2024-12-03 11:48:34,261 - aiogram.event - INFO - Update id=659305791 is handled. Duration 172 ms by bot id=7444575424
+2024-12-03 11:48:35,092 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:48:35,095 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:48:35,096 - sqlalchemy.engine.Engine - INFO - [generated in 0.00038s] ('528155210', 1, 0)
+2024-12-03 11:48:35,098 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 11:48:35,099 - sqlalchemy.engine.Engine - INFO - [generated in 0.00030s] ('528155210',)
+2024-12-03 11:48:35,184 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 11:48:35,322 - aiogram.event - INFO - Update id=659305792 is handled. Duration 327 ms by bot id=7444575424
+2024-12-03 11:48:36,642 - aiogram.event - INFO - Update id=659305793 is handled. Duration 202 ms by bot id=7444575424
+2024-12-03 11:48:41,425 - aiogram.event - INFO - Update id=659305794 is handled. Duration 156 ms by bot id=7444575424
+2024-12-03 11:48:43,303 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:48:43,304 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 11:48:43,304 - sqlalchemy.engine.Engine - INFO - [cached since 8.209s ago] ('528155210', 1, 0)
+2024-12-03 11:48:43,393 - aiogram.event - INFO - Update id=659305795 is handled. Duration 93 ms by bot id=7444575424
+2024-12-03 11:48:44,734 - aiogram.event - INFO - Update id=659305796 is handled. Duration 186 ms by bot id=7444575424
+2024-12-03 11:48:57,349 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 11:48:57,610 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:48:57,611 - root - INFO - Бот остановлен вручную.
+2024-12-03 11:50:25,560 - root - INFO - Инициализация бота...
+2024-12-03 11:50:25,589 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:51:22,583 - root - INFO - Инициализация бота...
+2024-12-03 11:51:22,599 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:51:22,599 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:51:22,600 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:51:22,600 - root - ERROR - Произошла ошибка при запуске бота: name 'asyncio' is not defined
+2024-12-03 11:52:12,250 - root - INFO - Инициализация бота...
+2024-12-03 11:52:12,266 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:52:12,267 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:52:12,267 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:52:12,269 - root - INFO - Запуск polling...
+2024-12-03 11:52:12,270 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:52:12,271 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:52:12,271 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:52:12,272 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:52:12,272 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:52:12,273 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:52:12,274 - root - ERROR - Произошла ошибка при запуске бота: name 'set_main_menu' is not defined
+2024-12-03 11:52:28,101 - root - INFO - Инициализация бота...
+2024-12-03 11:52:28,118 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 11:52:28,118 - root - INFO - Инициализация диспетчера...
+2024-12-03 11:52:28,119 - root - INFO - Регистрация обработчиков...
+2024-12-03 11:52:28,121 - root - INFO - Запуск polling...
+2024-12-03 11:52:28,122 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 11:52:28,122 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 11:52:28,123 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:52:28,124 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 11:52:28,124 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 11:52:28,124 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 11:52:28,125 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 11:52:28,356 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:52:39,868 - aiogram.event - INFO - Update id=659305797 is handled. Duration 342 ms by bot id=7444575424
+2024-12-03 11:52:41,238 - aiogram.event - INFO - Update id=659305798 is handled. Duration 140 ms by bot id=7444575424
+2024-12-03 11:52:43,421 - aiogram.event - INFO - Update id=659305799 is handled. Duration 359 ms by bot id=7444575424
+2024-12-03 11:52:50,701 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 11:52:50,960 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 11:52:50,962 - root - INFO - Бот остановлен вручную.
+2024-12-03 11:59:41,357 - root - INFO - Инициализация бота...
+2024-12-03 12:00:11,064 - root - INFO - Инициализация бота...
+2024-12-03 12:00:54,629 - root - INFO - Инициализация бота...
+2024-12-03 12:00:54,807 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:00:54,807 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:00:54,808 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:00:54,811 - root - INFO - Запуск polling...
+2024-12-03 12:00:54,812 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:00:54,813 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:00:54,813 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:00:54,814 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:00:54,814 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:00:54,815 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:00:54,815 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:00:55,157 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:00:59,181 - aiogram.event - INFO - Update id=659305800 is handled. Duration 390 ms by bot id=7444575424
+2024-12-03 12:01:00,447 - aiogram.event - INFO - Update id=659305801 is handled. Duration 359 ms by bot id=7444575424
+2024-12-03 12:01:02,437 - aiogram.event - INFO - Update id=659305802 is handled. Duration 344 ms by bot id=7444575424
+2024-12-03 12:01:04,598 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:07:59,781 - root - INFO - Инициализация бота...
+2024-12-03 12:08:00,054 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:08:00,054 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:08:00,057 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:08:00,105 - root - INFO - Запуск polling...
+2024-12-03 12:08:00,108 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:08:00,109 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:08:00,109 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:08:00,112 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:08:00,113 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:08:00,115 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:08:00,116 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:08:00,419 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:08:04,942 - aiogram.event - INFO - Update id=659305803 is handled. Duration 437 ms by bot id=7444575424
+2024-12-03 12:08:05,975 - aiogram.event - INFO - Update id=659305804 is handled. Duration 171 ms by bot id=7444575424
+2024-12-03 12:08:07,897 - aiogram.event - INFO - Update id=659305805 is handled. Duration 265 ms by bot id=7444575424
+2024-12-03 12:08:09,134 - aiogram.event - INFO - Update id=659305806 is handled. Duration 407 ms by bot id=7444575424
+2024-12-03 12:08:09,861 - aiogram.event - INFO - Update id=659305807 is not handled. Duration 0 ms by bot id=7444575424
+2024-12-03 12:08:09,861 - aiogram.event - ERROR - Cause exception while process update id=659305807 by bot id=7444575424
+NameError: name 'provider_token' is not defined
+Traceback (most recent call last):
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 25, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 49, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\fsm\middleware.py", line 42, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 137, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 170, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 142, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 137, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 162, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Хороший человек\Documents\coding\LISA\src\bot\handlers\handlers.py", line 140, in handle_period_selection
+    provider_token=provider_token,
+                   ^^^^^^^^^^^^^^
+NameError: name 'provider_token' is not defined
+2024-12-03 12:08:14,978 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:08:15,253 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:08:15,258 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:09:02,112 - root - INFO - Инициализация бота...
+2024-12-03 12:09:39,088 - root - INFO - Инициализация бота...
+2024-12-03 12:09:39,279 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:09:39,280 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:09:39,281 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:09:39,313 - root - INFO - Запуск polling...
+2024-12-03 12:09:39,315 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:09:39,316 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:09:39,316 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:09:39,317 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:09:39,318 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:09:39,319 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:09:39,319 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:09:39,574 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:09:40,098 - aiogram.event - INFO - Update id=659305808 is handled. Duration 405 ms by bot id=7444575424
+2024-12-03 12:09:42,875 - aiogram.event - INFO - Update id=659305809 is handled. Duration 141 ms by bot id=7444575424
+2024-12-03 12:09:44,601 - aiogram.event - INFO - Update id=659305810 is handled. Duration 312 ms by bot id=7444575424
+2024-12-03 12:09:45,822 - aiogram.event - INFO - Update id=659305811 is handled. Duration 390 ms by bot id=7444575424
+2024-12-03 12:10:12,496 - aiogram.event - INFO - Update id=659305812 is handled. Duration 219 ms by bot id=7444575424
+2024-12-03 12:10:20,743 - root - INFO - {
+    "message_id": 1456,
+    "date": 1733217021,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "c7072d7d-2281-49c4-9c41-06560481a651",
+        "telegram_payment_charge_id": "7444575424_528155210_326335",
+        "provider_payment_charge_id": "7444575424_528155210_326335",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:10:21,882 - root - INFO - Key created: OutlineKey(key_id='87', name='VPN Key74', password='FlFLzxoUDUw802828iMWAl', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpGbEZMenhvVURVdzgwMjgyOGlNV0Fs@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:10:22,028 - root - ERROR - Ошибка обновления базы данных: type object 'DbProcessor' has no attribute 'session'
+2024-12-03 12:10:22,028 - root - ERROR - Произошла ошибка: cannot access local variable 'session' where it is not associated with a value
+2024-12-03 12:10:22,145 - aiogram.event - INFO - Update id=659305813 is handled. Duration 1407 ms by bot id=7444575424
+2024-12-03 12:10:49,110 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:10:49,365 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:10:49,366 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:12:53,831 - root - INFO - Инициализация бота...
+2024-12-03 12:12:54,079 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:12:54,079 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:12:54,082 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:12:54,085 - root - INFO - Запуск polling...
+2024-12-03 12:12:54,088 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:12:54,089 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:12:54,090 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:12:54,092 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:12:54,093 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:12:54,093 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:12:54,094 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:12:54,404 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:12:55,504 - aiogram.event - INFO - Update id=659305814 is handled. Duration 969 ms by bot id=7444575424
+2024-12-03 12:12:56,811 - aiogram.event - INFO - Update id=659305815 is handled. Duration 250 ms by bot id=7444575424
+2024-12-03 12:12:57,837 - aiogram.event - INFO - Update id=659305816 is handled. Duration 202 ms by bot id=7444575424
+2024-12-03 12:13:12,450 - aiogram.event - INFO - Update id=659305817 is handled. Duration 77 ms by bot id=7444575424
+2024-12-03 12:13:21,831 - root - INFO - {
+    "message_id": 1463,
+    "date": 1733217203,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "fde32a0c-f9eb-4640-b568-4b04cf3d02df",
+        "telegram_payment_charge_id": "7444575424_528155210_326342",
+        "provider_payment_charge_id": "7444575424_528155210_326342",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:13:23,150 - root - INFO - Key created: OutlineKey(key_id='88', name='VPN Key75', password='sdUg1GsCEyKqGAhtxtO6ru', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpzZFVnMUdzQ0V5S3FHQWh0eHRPNnJ1@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:13:23,309 - root - ERROR - Ошибка обновления базы данных: 'sessionmaker' object has no attribute 'query'
+2024-12-03 12:13:23,310 - root - ERROR - Произошла ошибка: 'sessionmaker' object has no attribute 'close'
+2024-12-03 12:13:23,473 - aiogram.event - INFO - Update id=659305818 is handled. Duration 1640 ms by bot id=7444575424
+2024-12-03 12:13:50,300 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:13:50,564 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:13:50,566 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:16:04,713 - root - INFO - Инициализация бота...
+2024-12-03 12:17:05,768 - root - INFO - Инициализация бота...
+2024-12-03 12:17:05,888 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:17:05,888 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:17:05,889 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:17:05,891 - root - INFO - Запуск polling...
+2024-12-03 12:17:05,892 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:17:05,892 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:17:05,892 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:17:05,894 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:17:05,894 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:17:05,894 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:17:05,895 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:17:06,172 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:17:10,306 - aiogram.event - INFO - Update id=659305819 is handled. Duration 375 ms by bot id=7444575424
+2024-12-03 12:17:11,360 - aiogram.event - INFO - Update id=659305820 is handled. Duration 140 ms by bot id=7444575424
+2024-12-03 12:17:12,434 - aiogram.event - INFO - Update id=659305821 is handled. Duration 204 ms by bot id=7444575424
+2024-12-03 12:17:22,991 - aiogram.event - INFO - Update id=659305822 is handled. Duration 61 ms by bot id=7444575424
+2024-12-03 12:17:31,412 - root - INFO - {
+    "message_id": 1470,
+    "date": 1733217452,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "9e916f59-27dc-42b2-8e7f-9020f1685199",
+        "telegram_payment_charge_id": "7444575424_528155210_326349",
+        "provider_payment_charge_id": "7444575424_528155210_326349",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:17:32,595 - root - INFO - Key created: OutlineKey(key_id='89', name='VPN Key76', password='5Eu79qcwMNHmRZX5BuzF0C', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo1RXU3OXFjd01OSG1SWlg1QnV6RjBD@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:17:32,823 - root - ERROR - Ошибка обновления базы данных: 'sessionmaker' object has no attribute 'query'
+2024-12-03 12:17:32,823 - root - ERROR - Произошла ошибка: 'sessionmaker' object has no attribute 'close'
+2024-12-03 12:17:32,932 - aiogram.event - INFO - Update id=659305823 is handled. Duration 1532 ms by bot id=7444575424
+2024-12-03 12:17:38,064 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:17:38,315 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:17:38,316 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:17:57,039 - root - INFO - Инициализация бота...
+2024-12-03 12:18:28,652 - root - INFO - Инициализация бота...
+2024-12-03 12:18:28,906 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:18:28,906 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:18:28,908 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:18:28,911 - root - INFO - Запуск polling...
+2024-12-03 12:18:28,914 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:18:28,914 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:18:28,914 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:18:28,916 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:18:28,917 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:18:28,918 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:18:28,918 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:18:29,153 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:18:33,776 - aiogram.event - INFO - Update id=659305824 is handled. Duration 405 ms by bot id=7444575424
+2024-12-03 12:18:35,080 - aiogram.event - INFO - Update id=659305825 is handled. Duration 250 ms by bot id=7444575424
+2024-12-03 12:18:35,992 - aiogram.event - INFO - Update id=659305826 is handled. Duration 155 ms by bot id=7444575424
+2024-12-03 12:18:45,165 - aiogram.event - INFO - Update id=659305827 is handled. Duration 109 ms by bot id=7444575424
+2024-12-03 12:18:53,621 - root - INFO - {
+    "message_id": 1477,
+    "date": 1733217534,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "1c1a61d8-c63e-4c87-b5a8-d4d2a514d573",
+        "telegram_payment_charge_id": "7444575424_528155210_326356",
+        "provider_payment_charge_id": "7444575424_528155210_326356",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:18:55,086 - root - INFO - Key created: OutlineKey(key_id='90', name='VPN Key77', password='tBR1ATMkRFB7yCSGPs8PFn', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp0QlIxQVRNa1JGQjd5Q1NHUHM4UEZu@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:18:55,292 - root - ERROR - Ошибка обновления базы данных: 'DbProcessor' object has no attribute 'session'
+2024-12-03 12:18:55,293 - root - ERROR - Произошла ошибка: cannot access local variable 'session' where it is not associated with a value
+2024-12-03 12:18:55,479 - aiogram.event - INFO - Update id=659305828 is handled. Duration 1858 ms by bot id=7444575424
+2024-12-03 12:18:57,647 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:18:57,941 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:18:57,946 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:19:57,462 - root - INFO - Инициализация бота...
+2024-12-03 12:19:57,598 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:19:57,598 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:19:57,599 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:19:57,601 - root - INFO - Запуск polling...
+2024-12-03 12:19:57,602 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:19:57,602 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:19:57,602 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:19:57,603 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:19:57,604 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:19:57,604 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:19:57,604 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:19:57,961 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:20:01,703 - aiogram.event - INFO - Update id=659305829 is handled. Duration 390 ms by bot id=7444575424
+2024-12-03 12:20:02,787 - aiogram.event - INFO - Update id=659305830 is handled. Duration 187 ms by bot id=7444575424
+2024-12-03 12:20:03,823 - aiogram.event - INFO - Update id=659305831 is handled. Duration 327 ms by bot id=7444575424
+2024-12-03 12:20:12,871 - aiogram.event - INFO - Update id=659305832 is handled. Duration 94 ms by bot id=7444575424
+2024-12-03 12:20:20,903 - root - INFO - {
+    "message_id": 1484,
+    "date": 1733217622,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "1c9dba39-4445-4300-a2ce-6bc94562254d",
+        "telegram_payment_charge_id": "7444575424_528155210_326363",
+        "provider_payment_charge_id": "7444575424_528155210_326363",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:20:22,154 - root - INFO - Key created: OutlineKey(key_id='91', name='VPN Key78', password='UZkb4cLB5B4zmzSqUTzwlW', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpVWmtiNGNMQjVCNHptelNxVVR6d2xX@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:20:22,338 - root - ERROR - Ошибка обновления базы данных: 'sessionmaker' object has no attribute 'query'
+2024-12-03 12:20:22,338 - root - ERROR - Произошла ошибка: 'sessionmaker' object has no attribute 'close'
+2024-12-03 12:20:22,480 - aiogram.event - INFO - Update id=659305833 is handled. Duration 1577 ms by bot id=7444575424
+2024-12-03 12:20:26,531 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:20:26,803 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:20:26,804 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:30:26,060 - root - INFO - Инициализация бота...
+2024-12-03 12:30:26,330 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:30:26,330 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:30:26,331 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:30:26,332 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:30:26,333 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:30:26,333 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:30:26,337 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:30:26,338 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:30:26,339 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:30:26,342 - root - INFO - Запуск polling...
+2024-12-03 12:30:26,343 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:30:26,344 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:30:26,344 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:30:26,345 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:30:26,345 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:30:26,346 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:30:26,347 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:30:26,698 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:30:27,220 - aiogram.event - INFO - Update id=659305834 is handled. Duration 405 ms by bot id=7444575424
+2024-12-03 12:30:29,769 - aiogram.event - INFO - Update id=659305835 is handled. Duration 125 ms by bot id=7444575424
+2024-12-03 12:30:31,336 - aiogram.event - INFO - Update id=659305836 is handled. Duration 202 ms by bot id=7444575424
+2024-12-03 12:30:32,590 - aiogram.event - INFO - Update id=659305837 is handled. Duration 343 ms by bot id=7444575424
+2024-12-03 12:30:53,995 - aiogram.event - INFO - Update id=659305838 is handled. Duration 250 ms by bot id=7444575424
+2024-12-03 12:31:02,055 - root - INFO - {
+    "message_id": 1493,
+    "date": 1733218263,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "9cbf10a7-be1e-40d9-8461-fcd69a92b422",
+        "telegram_payment_charge_id": "7444575424_528155210_326372",
+        "provider_payment_charge_id": "7444575424_528155210_326372",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:31:03,119 - root - INFO - Key created: OutlineKey(key_id='92', name='VPN Key79', password='a1Ek84i6jiu9N5CjfMpPiM', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTphMUVrODRpNmppdTlONUNqZk1wUGlN@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:31:03,230 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:31:03,233 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 12:31:03,233 - sqlalchemy.engine.Engine - INFO - [generated in 0.00031s] ('528155210', 1, 0)
+2024-12-03 12:31:03,236 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 12:31:03,237 - sqlalchemy.engine.Engine - INFO - [generated in 0.00039s] ('92', '528155210', '2025-11-28 12:31:03.234460', '2024-12-03 12:31:03.234460')
+2024-12-03 12:31:03,238 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:31:03,244 - aiogram.event - INFO - Update id=659305839 is handled. Duration 1202 ms by bot id=7444575424
+2024-12-03 12:31:07,272 - aiogram.event - INFO - Update id=659305840 is handled. Duration 234 ms by bot id=7444575424
+2024-12-03 12:31:08,984 - aiogram.event - INFO - Update id=659305841 is handled. Duration 202 ms by bot id=7444575424
+2024-12-03 12:31:12,782 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:31:12,782 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 12:31:12,782 - sqlalchemy.engine.Engine - INFO - [cached since 9.549s ago] ('528155210', 1, 0)
+2024-12-03 12:31:12,784 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 12:31:12,784 - sqlalchemy.engine.Engine - INFO - [generated in 0.00023s] ('528155210',)
+2024-12-03 12:31:12,870 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 12:31:13,010 - aiogram.event - INFO - Update id=659305842 is handled. Duration 390 ms by bot id=7444575424
+2024-12-03 12:31:15,172 - aiogram.event - INFO - Update id=659305843 is handled. Duration 281 ms by bot id=7444575424
+2024-12-03 12:31:18,606 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:31:18,878 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:31:18,880 - root - INFO - Бот остановлен вручную.
+2024-12-03 12:54:46,483 - root - INFO - Инициализация бота...
+2024-12-03 12:54:46,661 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:54:46,661 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:54:46,661 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:54:46,663 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:54:46,663 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:54:46,664 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:54:46,667 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:54:46,667 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:54:46,668 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:55:48,795 - root - INFO - Инициализация бота...
+2024-12-03 12:55:48,995 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:55:48,996 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:55:48,996 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:55:48,997 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:55:48,998 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:55:48,999 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:55:49,018 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:55:49,018 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:55:49,019 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:56:10,580 - root - INFO - Инициализация бота...
+2024-12-03 12:56:10,725 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 12:56:10,726 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 12:56:10,726 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:56:10,728 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 12:56:10,728 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 12:56:10,728 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 12:56:10,737 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 12:56:10,737 - root - INFO - Инициализация диспетчера...
+2024-12-03 12:56:10,738 - root - INFO - Регистрация обработчиков...
+2024-12-03 12:56:10,739 - root - INFO - Запуск polling...
+2024-12-03 12:56:10,739 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 12:56:11,085 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:56:17,802 - aiogram.event - INFO - Update id=659305844 is handled. Duration 359 ms by bot id=7444575424
+2024-12-03 12:56:19,220 - aiogram.event - INFO - Update id=659305845 is handled. Duration 140 ms by bot id=7444575424
+2024-12-03 12:56:20,171 - aiogram.event - INFO - Update id=659305846 is handled. Duration 141 ms by bot id=7444575424
+2024-12-03 12:56:35,720 - aiogram.event - INFO - Update id=659305847 is handled. Duration 234 ms by bot id=7444575424
+2024-12-03 12:56:43,587 - root - INFO - {
+    "message_id": 1504,
+    "date": 1733219804,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "18f7f0fe-86b5-46dc-bbe6-045c81c98b8b",
+        "telegram_payment_charge_id": "7444575424_528155210_326383",
+        "provider_payment_charge_id": "7444575424_528155210_326383",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 12:56:44,895 - root - INFO - Key created: OutlineKey(key_id='93', name='VPN Key80', password='axZspomebq8JWYl8xMxQNl', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpheFpzcG9tZWJxOEpXWWw4eE14UU5s@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:56:44,896 - root - INFO - Key created: OutlineKey(key_id='93', name='VPN Key80', password='axZspomebq8JWYl8xMxQNl', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpheFpzcG9tZWJxOEpXWWw4eE14UU5s@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 12:56:44,992 - root - ERROR - Произошла ошибка: 'OutlineProcessor' object has no attribute 'update_database_with_key'
+2024-12-03 12:56:45,084 - aiogram.event - INFO - Update id=659305848 is handled. Duration 1500 ms by bot id=7444575424
+2024-12-03 12:56:57,339 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 12:56:57,604 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 12:56:57,606 - root - INFO - Бот остановлен вручную.
+2024-12-03 13:00:55,600 - root - INFO - Инициализация бота...
+2024-12-03 13:00:55,714 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:00:55,714 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:00:55,714 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:00:55,715 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:00:55,715 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:00:55,716 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:00:55,723 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 13:00:55,724 - root - INFO - Инициализация диспетчера...
+2024-12-03 13:00:55,724 - root - INFO - Регистрация обработчиков...
+2024-12-03 13:00:55,725 - root - INFO - Запуск polling...
+2024-12-03 13:00:55,726 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 13:00:56,023 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:01:00,354 - aiogram.event - INFO - Update id=659305849 is handled. Duration 545 ms by bot id=7444575424
+2024-12-03 13:01:01,833 - aiogram.event - INFO - Update id=659305850 is handled. Duration 155 ms by bot id=7444575424
+2024-12-03 13:01:03,618 - aiogram.event - INFO - Update id=659305851 is handled. Duration 156 ms by bot id=7444575424
+2024-12-03 13:01:16,077 - aiogram.event - INFO - Update id=659305852 is handled. Duration 77 ms by bot id=7444575424
+2024-12-03 13:01:23,055 - root - INFO - {
+    "message_id": 1511,
+    "date": 1733220084,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 50000,
+        "invoice_payload": "dc848831-7f97-4b4d-85ae-a4ed1f9de9ba",
+        "telegram_payment_charge_id": "7444575424_528155210_326390",
+        "provider_payment_charge_id": "7444575424_528155210_326390",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 13:01:24,411 - root - INFO - Key created: OutlineKey(key_id='94', name='VPN Key81', password='YXIfANC2fwp6L4BQaSDjp6', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpZWElmQU5DMmZ3cDZMNEJRYVNEanA2@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:01:24,411 - root - INFO - Key created: OutlineKey(key_id='94', name='VPN Key81', password='YXIfANC2fwp6L4BQaSDjp6', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpZWElmQU5DMmZ3cDZMNEJRYVNEanA2@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:01:24,549 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:01:24,553 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:01:24,553 - sqlalchemy.engine.Engine - INFO - [generated in 0.00054s] ('528155210', 1, 0)
+2024-12-03 13:01:24,557 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 13:01:24,558 - sqlalchemy.engine.Engine - INFO - [generated in 0.00049s] ('94', '528155210', '2025-06-01 13:01:24.554889', '2024-12-03 13:01:24.554889')
+2024-12-03 13:01:24,562 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:01:24,567 - root - ERROR - Произошла ошибка: object NoneType can't be used in 'await' expression
+2024-12-03 13:01:24,647 - aiogram.event - INFO - Update id=659305853 is handled. Duration 1593 ms by bot id=7444575424
+2024-12-03 13:02:17,157 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 13:02:17,413 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:02:17,415 - root - INFO - Бот остановлен вручную.
+2024-12-03 13:02:51,053 - root - INFO - Инициализация бота...
+2024-12-03 13:02:51,194 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:02:51,194 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:02:51,195 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:02:51,196 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:02:51,196 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:02:51,197 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:02:51,207 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 13:02:51,207 - root - INFO - Инициализация диспетчера...
+2024-12-03 13:02:51,208 - root - INFO - Регистрация обработчиков...
+2024-12-03 13:02:51,209 - root - INFO - Запуск polling...
+2024-12-03 13:02:51,210 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 13:02:51,437 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:02:51,921 - aiogram.event - INFO - Update id=659305854 is handled. Duration 391 ms by bot id=7444575424
+2024-12-03 13:02:53,286 - aiogram.event - INFO - Update id=659305855 is handled. Duration 140 ms by bot id=7444575424
+2024-12-03 13:02:54,837 - aiogram.event - INFO - Update id=659305856 is handled. Duration 172 ms by bot id=7444575424
+2024-12-03 13:03:03,795 - aiogram.event - INFO - Update id=659305857 is handled. Duration 500 ms by bot id=7444575424
+2024-12-03 13:03:11,548 - root - INFO - {
+    "message_id": 1518,
+    "date": 1733220192,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 10000,
+        "invoice_payload": "8ccb896b-7cb5-4459-b898-32eda98e3e2a",
+        "telegram_payment_charge_id": "7444575424_528155210_326397",
+        "provider_payment_charge_id": "7444575424_528155210_326397",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 13:03:12,711 - root - INFO - Key created: OutlineKey(key_id='95', name='VPN Key82', password='YmO2WD5SuKhOF3z19n9sUS', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpZbU8yV0Q1U3VLaE9GM3oxOW45c1VT@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:03:12,719 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:03:12,721 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:03:12,721 - sqlalchemy.engine.Engine - INFO - [generated in 0.00028s] ('528155210', 1, 0)
+2024-12-03 13:03:12,723 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 13:03:12,723 - sqlalchemy.engine.Engine - INFO - [generated in 0.00060s] ('95', '528155210', '2025-03-03 13:03:12.722234', '2024-12-03 13:03:12.722234')
+2024-12-03 13:03:12,725 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:03:12,730 - root - ERROR - Произошла ошибка: object NoneType can't be used in 'await' expression
+2024-12-03 13:03:12,817 - aiogram.event - INFO - Update id=659305858 is handled. Duration 1265 ms by bot id=7444575424
+2024-12-03 13:03:22,148 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 13:03:22,407 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:03:22,409 - root - INFO - Бот остановлен вручную.
+2024-12-03 13:04:06,983 - root - INFO - Инициализация бота...
+2024-12-03 13:04:07,075 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:04:07,075 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:04:07,075 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:04:07,076 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:04:07,076 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:04:07,076 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:04:07,083 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 13:04:07,083 - root - INFO - Инициализация диспетчера...
+2024-12-03 13:04:07,084 - root - INFO - Регистрация обработчиков...
+2024-12-03 13:04:07,085 - root - INFO - Запуск polling...
+2024-12-03 13:04:07,085 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 13:04:07,312 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:04:11,930 - aiogram.event - INFO - Update id=659305859 is handled. Duration 328 ms by bot id=7444575424
+2024-12-03 13:04:12,944 - aiogram.event - INFO - Update id=659305860 is handled. Duration 157 ms by bot id=7444575424
+2024-12-03 13:04:14,641 - aiogram.event - INFO - Update id=659305861 is handled. Duration 202 ms by bot id=7444575424
+2024-12-03 13:04:23,375 - aiogram.event - INFO - Update id=659305862 is handled. Duration 94 ms by bot id=7444575424
+2024-12-03 13:04:30,964 - root - INFO - {
+    "message_id": 1524,
+    "date": 1733220272,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 50000,
+        "invoice_payload": "9f3c2636-e0db-482a-9316-9b93fd597008",
+        "telegram_payment_charge_id": "7444575424_528155210_326403",
+        "provider_payment_charge_id": "7444575424_528155210_326403",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 13:04:32,868 - root - INFO - Key created: OutlineKey(key_id='96', name='VPN Key83', password='g0byoyoL0y7wIRI35N7yp3', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpnMGJ5b3lvTDB5N3dJUkkzNU43eXAz@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:04:32,868 - root - INFO - Key created: OutlineKey(key_id='96', name='VPN Key83', password='g0byoyoL0y7wIRI35N7yp3', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpnMGJ5b3lvTDB5N3dJUkkzNU43eXAz@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:04:32,964 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:04:32,969 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:04:32,969 - sqlalchemy.engine.Engine - INFO - [generated in 0.00052s] ('528155210', 1, 0)
+2024-12-03 13:04:32,971 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 13:04:32,972 - sqlalchemy.engine.Engine - INFO - [generated in 0.00029s] ('96', '528155210', '2025-06-01 13:04:32.970662', '2024-12-03 13:04:32.970662')
+2024-12-03 13:04:32,975 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:04:32,980 - aiogram.event - INFO - Update id=659305863 is handled. Duration 2015 ms by bot id=7444575424
+2024-12-03 13:04:35,966 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 13:07:46,898 - root - INFO - Инициализация бота...
+2024-12-03 13:07:47,098 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:07:47,098 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:07:47,099 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:07:47,101 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:07:47,101 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:07:47,102 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:07:47,121 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 13:07:47,121 - root - INFO - Инициализация диспетчера...
+2024-12-03 13:07:47,122 - root - INFO - Регистрация обработчиков...
+2024-12-03 13:07:47,124 - root - INFO - Запуск polling...
+2024-12-03 13:07:47,124 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 13:07:48,434 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:07:55,105 - aiogram.event - INFO - Update id=659305864 is handled. Duration 500 ms by bot id=7444575424
+2024-12-03 13:07:56,012 - aiogram.event - INFO - Update id=659305865 is handled. Duration 157 ms by bot id=7444575424
+2024-12-03 13:07:57,211 - aiogram.event - INFO - Update id=659305866 is handled. Duration 155 ms by bot id=7444575424
+2024-12-03 13:07:58,036 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:07:58,042 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:07:58,042 - sqlalchemy.engine.Engine - INFO - [generated in 0.00069s] ('528155210', 1, 0)
+2024-12-03 13:07:58,048 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 13:07:58,048 - sqlalchemy.engine.Engine - INFO - [generated in 0.00048s] ('528155210',)
+2024-12-03 13:07:58,181 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 13:07:58,316 - aiogram.event - INFO - Update id=659305867 is handled. Duration 359 ms by bot id=7444575424
+2024-12-03 13:08:02,533 - aiogram.event - INFO - Update id=659305868 is handled. Duration 640 ms by bot id=7444575424
+2024-12-03 13:08:06,597 - aiogram.event - INFO - Update id=659305869 is handled. Duration 296 ms by bot id=7444575424
+2024-12-03 13:15:53,195 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 13:15:53,461 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:15:53,463 - root - INFO - Бот остановлен вручную.
+2024-12-03 13:17:40,379 - root - INFO - Инициализация бота...
+2024-12-03 13:17:40,519 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:17:40,519 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:17:40,519 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:17:40,520 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:17:40,521 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:17:40,521 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:17:40,532 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 13:17:40,532 - root - INFO - Инициализация диспетчера...
+2024-12-03 13:17:40,533 - root - INFO - Регистрация обработчиков...
+2024-12-03 13:17:40,534 - root - INFO - Запуск polling...
+2024-12-03 13:17:40,534 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 13:17:40,788 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:17:45,813 - aiogram.event - INFO - Update id=659305870 is handled. Duration 297 ms by bot id=7444575424
+2024-12-03 13:17:47,488 - aiogram.event - INFO - Update id=659305871 is handled. Duration 171 ms by bot id=7444575424
+2024-12-03 13:17:49,343 - aiogram.event - INFO - Update id=659305872 is handled. Duration 577 ms by bot id=7444575424
+2024-12-03 13:18:02,927 - aiogram.event - INFO - Update id=659305873 is handled. Duration 62 ms by bot id=7444575424
+2024-12-03 13:18:10,385 - root - INFO - {
+    "message_id": 1538,
+    "date": 1733221090,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 10000,
+        "invoice_payload": "7a1ed6f4-6b19-45ee-a660-0fd232910f96",
+        "telegram_payment_charge_id": "7444575424_528155210_326426",
+        "provider_payment_charge_id": "7444575424_528155210_326426",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 13:18:12,225 - root - INFO - Key created: OutlineKey(key_id='97', name='VPN Key84', password='iYGG4t0jitNMatPHKlGprE', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTppWUdHNHQwaml0Tk1hdFBIS2xHcHJF@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:18:12,225 - root - INFO - Key created: OutlineKey(key_id='97', name='VPN Key84', password='iYGG4t0jitNMatPHKlGprE', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTppWUdHNHQwaml0Tk1hdFBIS2xHcHJF@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:18:12,322 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:18:12,325 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:18:12,325 - sqlalchemy.engine.Engine - INFO - [generated in 0.00032s] ('528155210', 1, 0)
+2024-12-03 13:18:12,329 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 13:18:12,329 - sqlalchemy.engine.Engine - INFO - [generated in 0.00032s] ('97', '528155210', '2025-03-03 13:18:12.326555', '2024-12-03 13:18:12.326555')
+2024-12-03 13:18:12,331 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:18:12,337 - aiogram.event - INFO - Update id=659305874 is handled. Duration 1954 ms by bot id=7444575424
+2024-12-03 13:41:52,722 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 13:41:52,981 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:41:52,987 - root - INFO - Бот остановлен вручную.
+2024-12-03 13:58:17,341 - root - INFO - Инициализация бота...
+2024-12-03 13:58:17,492 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:58:17,492 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:58:17,492 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:58:17,494 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:58:17,494 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:58:17,494 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:58:41,000 - root - INFO - Инициализация бота...
+2024-12-03 13:58:41,133 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:58:41,133 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 13:58:41,134 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:58:41,135 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 13:58:41,135 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 13:58:41,135 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:58:41,148 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 13:58:41,148 - root - INFO - Инициализация диспетчера...
+2024-12-03 13:58:41,149 - root - INFO - Регистрация обработчиков...
+2024-12-03 13:58:41,151 - root - INFO - Запуск polling...
+2024-12-03 13:58:41,151 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 13:58:41,472 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 13:58:50,431 - aiogram.event - INFO - Update id=659305875 is handled. Duration 515 ms by bot id=7444575424
+2024-12-03 13:58:51,707 - aiogram.event - INFO - Update id=659305876 is handled. Duration 250 ms by bot id=7444575424
+2024-12-03 13:58:53,112 - aiogram.event - INFO - Update id=659305877 is handled. Duration 421 ms by bot id=7444575424
+2024-12-03 13:59:05,356 - aiogram.event - INFO - Update id=659305878 is handled. Duration 77 ms by bot id=7444575424
+2024-12-03 13:59:13,823 - root - INFO - {
+    "message_id": 1544,
+    "date": 1733223553,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 100000,
+        "invoice_payload": "b18f792b-4645-4c48-aec3-c66f5900bbbb",
+        "telegram_payment_charge_id": "7444575424_528155210_326563",
+        "provider_payment_charge_id": "7444575424_528155210_326563",
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-03 13:59:15,049 - root - INFO - Key created: OutlineKey(key_id='98', name='VPN Key85', password='x8To5OQE8o7uq4S86rpoja', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp4OFRvNU9RRThvN3VxNFM4NnJwb2ph@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:59:15,050 - root - INFO - Key created: OutlineKey(key_id='98', name='VPN Key85', password='x8To5OQE8o7uq4S86rpoja', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp4OFRvNU9RRThvN3VxNFM4NnJwb2ph@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-03 13:59:15,230 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:59:15,248 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:59:15,249 - sqlalchemy.engine.Engine - INFO - [generated in 0.00187s] ('528155210', 1, 0)
+2024-12-03 13:59:15,259 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date) VALUES (?, ?, ?, ?)
+2024-12-03 13:59:15,259 - sqlalchemy.engine.Engine - INFO - [generated in 0.00108s] ('98', '528155210', '2025-11-28 13:59:15.252579', '2024-12-03 13:59:15.252579')
+2024-12-03 13:59:15,267 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 13:59:15,278 - aiogram.event - INFO - Update id=659305879 is handled. Duration 1468 ms by bot id=7444575424
+2024-12-03 13:59:17,442 - aiogram.event - INFO - Update id=659305880 is handled. Duration 203 ms by bot id=7444575424
+2024-12-03 13:59:20,798 - aiogram.event - INFO - Update id=659305881 is handled. Duration 217 ms by bot id=7444575424
+2024-12-03 13:59:23,387 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 13:59:23,389 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 13:59:23,390 - sqlalchemy.engine.Engine - INFO - [cached since 8.143s ago] ('528155210', 1, 0)
+2024-12-03 13:59:23,404 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 13:59:23,405 - sqlalchemy.engine.Engine - INFO - [generated in 0.00104s] ('528155210',)
+2024-12-03 13:59:23,655 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 13:59:23,997 - aiogram.event - INFO - Update id=659305882 is handled. Duration 780 ms by bot id=7444575424
+2024-12-03 13:59:25,165 - aiogram.event - INFO - Update id=659305883 is handled. Duration 218 ms by bot id=7444575424
+2024-12-03 13:59:27,525 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 14:25:35,609 - root - INFO - Инициализация бота...
+2024-12-03 14:25:35,851 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:25:35,853 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 14:25:35,853 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:25:35,854 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 14:25:35,854 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:25:35,855 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 14:27:36,337 - root - INFO - Инициализация бота...
+2024-12-03 14:27:36,505 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:27:36,505 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 14:27:36,506 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:27:36,508 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 14:27:36,508 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:27:36,509 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 14:34:50,217 - root - INFO - Инициализация бота...
+2024-12-03 14:34:50,445 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:34:50,446 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 14:34:50,446 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:34:50,448 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 14:34:50,448 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:34:50,450 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 14:34:50,476 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 14:34:50,476 - root - INFO - Инициализация диспетчера...
+2024-12-03 14:34:50,478 - root - INFO - Регистрация обработчиков...
+2024-12-03 14:34:50,480 - root - INFO - Запуск polling...
+2024-12-03 14:34:50,481 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 14:34:50,811 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 14:34:56,364 - aiogram.event - INFO - Update id=659305884 is handled. Duration 515 ms by bot id=7444575424
+2024-12-03 14:34:57,849 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:34:57,857 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 14:34:57,858 - sqlalchemy.engine.Engine - INFO - [generated in 0.00139s] ('528155210', 1, 0)
+2024-12-03 14:34:57,868 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 14:34:57,868 - sqlalchemy.engine.Engine - INFO - [generated in 0.00099s] ('528155210',)
+2024-12-03 14:34:58,022 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 14:34:58,188 - aiogram.event - INFO - Update id=659305885 is handled. Duration 438 ms by bot id=7444575424
+2024-12-03 14:35:00,368 - aiogram.event - INFO - Update id=659305886 is handled. Duration 312 ms by bot id=7444575424
+2024-12-03 14:35:02,231 - aiogram.event - INFO - Update id=659305887 is handled. Duration 405 ms by bot id=7444575424
+2024-12-03 14:35:05,777 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:35:05,778 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 14:35:05,778 - sqlalchemy.engine.Engine - INFO - [cached since 7.921s ago] ('528155210', 1, 0)
+2024-12-03 14:35:05,962 - aiogram.event - INFO - Update id=659305888 is handled. Duration 187 ms by bot id=7444575424
+2024-12-03 14:35:07,932 - aiogram.event - INFO - Update id=659305889 is handled. Duration 217 ms by bot id=7444575424
+2024-12-03 14:35:09,636 - aiogram.event - INFO - Update id=659305890 is handled. Duration 500 ms by bot id=7444575424
+2024-12-03 14:35:15,411 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 14:36:21,079 - root - INFO - Инициализация бота...
+2024-12-03 14:36:21,283 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:36:21,283 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-03 14:36:21,284 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:36:21,285 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-03 14:36:21,285 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-03 14:36:21,286 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-03 14:36:21,303 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-03 14:36:21,303 - root - INFO - Инициализация диспетчера...
+2024-12-03 14:36:21,303 - root - INFO - Регистрация обработчиков...
+2024-12-03 14:36:21,305 - root - INFO - Запуск polling...
+2024-12-03 14:36:21,306 - aiogram.dispatcher - INFO - Start polling
+2024-12-03 14:36:21,661 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-03 14:36:26,764 - aiogram.event - INFO - Update id=659305891 is handled. Duration 406 ms by bot id=7444575424
+2024-12-03 14:36:28,444 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:36:28,449 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 14:36:28,450 - sqlalchemy.engine.Engine - INFO - [generated in 0.00079s] ('528155210', 1, 0)
+2024-12-03 14:36:28,456 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-03 14:36:28,457 - sqlalchemy.engine.Engine - INFO - [generated in 0.00086s] ('528155210',)
+2024-12-03 14:36:28,587 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-03 14:36:28,774 - aiogram.event - INFO - Update id=659305892 is handled. Duration 452 ms by bot id=7444575424
+2024-12-03 14:36:29,971 - aiogram.event - INFO - Update id=659305893 is handled. Duration 297 ms by bot id=7444575424
+2024-12-03 14:36:31,413 - aiogram.event - INFO - Update id=659305894 is handled. Duration 250 ms by bot id=7444575424
+2024-12-03 14:36:32,687 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-03 14:36:32,690 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-03 14:36:32,691 - sqlalchemy.engine.Engine - INFO - [cached since 4.242s ago] ('528155210', 1, 0)
+2024-12-03 14:36:32,822 - aiogram.event - INFO - Update id=659305895 is handled. Duration 141 ms by bot id=7444575424
+2024-12-03 14:36:34,586 - aiogram.event - INFO - Update id=659305896 is handled. Duration 484 ms by bot id=7444575424
+2024-12-03 14:36:47,807 - aiogram.dispatcher - INFO - Polling stopped

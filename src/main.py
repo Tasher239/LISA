@@ -1,38 +1,30 @@
 from aiogram.fsm.storage.memory import MemoryStorage
 from bot.handlers import handlers
+from bot.routers import payment_router, main_menu_router, key_management_router
+from src.logger.logging_config import setup_logger
 from aiogram import Dispatcher
-from bot.logger.logging_config import setup_logger
+from bot.initialization.bot_init import bot  # инициализируем бота
 import asyncio
-from aiogram import Bot, Dispatcher
-import os
-from dotenv import load_dotenv
-from database.user_db import DbProcessor
-from bot.utils.set_menu import set_main_menu
 
-load_dotenv()
-BOT_TOKEN = os.getenv("TOKEN")
 logger = setup_logger()
-if not BOT_TOKEN:
-    logger.critical("BOT_TOKEN не задан. Проверьте .env файл.")
-    exit("Отсутствует BOT_TOKEN")
-
-logger.info("Инициализация бота...")
-bot = Bot(token=BOT_TOKEN)
 
 logger.info("Инициализация хранилища состояний (MemoryStorage)...")
 storage = MemoryStorage()
 logger.info("Инициализация диспетчера...")
 dp = Dispatcher(storage=storage)
 logger.info("Регистрация обработчиков...")
+
+dp.include_router(main_menu_router.router)
+dp.include_router(key_management_router.router)
 dp.include_router(handlers.router)
-db_processor = DbProcessor()
+dp.include_router(payment_router.router)
+
 
 
 async def main() -> None:
     logger.info("Запуск polling...")
-    db_processor.init_db()
 
-    await set_main_menu(bot)
+    # await set_main_menu(bot)
     await dp.start_polling(bot)
 
 
