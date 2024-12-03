@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.state import default_state
 
-from src.logger.logging_config import setup_logger
+from logger.logging_config import setup_logger
 
 from bot.keyboards.keyboards import get_period_keyboard
 from bot.keyboards.keyboards import (get_main_menu_keyboard, )

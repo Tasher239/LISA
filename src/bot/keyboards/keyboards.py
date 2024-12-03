@@ -100,3 +100,51 @@ def get_back_button():
         text="В главное меню", callback_data="to_main_menu"
     )
     return InlineKeyboardMarkup(inline_keyboard=[[to_main_menu_button]])
+
+
+def get_prodlit_keyboard():
+    # Кнопки для продления подписки
+    extend_now_button = InlineKeyboardButton(
+        text="Продлить сейчас 🔄", callback_data="extend_now"
+    )
+    back_to_main_menu_button = InlineKeyboardButton(
+        text="В главное меню 🔙", callback_data="to_main_menu"
+    )
+
+    # Возвращаем клавиатуру
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [extend_now_button],  # Кнопка "Продлить сейчас"
+            [back_to_main_menu_button],  # Кнопка "В главное меню"
+        ]
+    )
+
+def get_prodlenie_keyboard():
+    # Кнопки для выбора периода
+    month_button = InlineKeyboardButton(text="1 Месяц (50₽)", callback_data="1_month")
+    three_month_button = InlineKeyboardButton(
+        text="3 Месяца (140₽)", callback_data="3_months"
+    )
+    six_month_button = InlineKeyboardButton(
+        text="6 Месяцев (270₽)", callback_data="6_months"
+    )
+    year_button = InlineKeyboardButton(
+        text="12 Месяцев (490₽)", callback_data="12_months"
+    )
+
+    trial_period_button = InlineKeyboardButton(
+        text="Пробный период", callback_data="trial_period"
+    )
+
+    back_button = InlineKeyboardButton(text="Назад", callback_data="go_back")
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [month_button],
+            [three_month_button],
+            [six_month_button],
+            [year_button],
+            [trial_period_button],
+            [back_button],
+        ]
+    )

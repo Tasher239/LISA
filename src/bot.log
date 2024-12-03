@@ -7241,3 +7241,4 @@ WHERE users.user_telegram_id = ?
 2024-12-03 14:36:32,822 - aiogram.event - INFO - Update id=659305895 is handled. Duration 141 ms by bot id=7444575424
 2024-12-03 14:36:34,586 - aiogram.event - INFO - Update id=659305896 is handled. Duration 484 ms by bot id=7444575424
 2024-12-03 14:36:47,807 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-03 17:52:36,444 - root - INFO - Инициализация бота...
