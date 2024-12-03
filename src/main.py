@@ -1,6 +1,12 @@
 from aiogram.fsm.storage.memory import MemoryStorage
 from bot.handlers import handlers
-from bot.routers import payment_router, main_menu_router, key_management_router, admins_router, reminder_router
+from bot.routers import (
+    payment_router,
+    main_menu_router,
+    key_management_router,
+    admins_router,
+    reminder_router,
+)
 from logger.logging_config import setup_logger
 from aiogram import Dispatcher
 from bot.initialization.bot_init import bot  # инициализируем бота
@@ -20,6 +26,7 @@ dp.include_router(key_management_router.router)
 dp.include_router(handlers.router)
 dp.include_router(payment_router.router)
 dp.include_router(reminder_router.router)
+
 
 async def main() -> None:
     logger.info("Запуск polling...")

@@ -37,10 +37,11 @@ async def send_message_subscription_expired(user):
         reply_markup=get_prodlit_keyboard(),  # Клавиатура для продления подписки
     )
 
+
 async def send_message_subscription_ends(user):
     await bot.send_message(
         user.user_telegram_id,
         Notification.SUBSCRIPTION_REMINDER,
         parse_mode="HTML",
-        reply_markup=get_prodlit_keyboard()
+        reply_markup=get_prodlit_keyboard(),
     )
