@@ -1,10 +1,11 @@
 from aiogram.fsm.storage.memory import MemoryStorage
 from bot.handlers import handlers
-from bot.routers import payment_router, main_menu_router, key_management_router
-from src.logger.logging_config import setup_logger
+from bot.routers import payment_router, main_menu_router, key_management_router, admins_router, reminder_router
+from logger.logging_config import setup_logger
 from aiogram import Dispatcher
 from bot.initialization.bot_init import bot  # инициализируем бота
 import asyncio
+from bot.initialization.db_processor_init import db_processor
 
 logger = setup_logger()
 
@@ -18,18 +19,16 @@ dp.include_router(main_menu_router.router)
 dp.include_router(key_management_router.router)
 dp.include_router(handlers.router)
 dp.include_router(payment_router.router)
-
-
+dp.include_router(reminder_router.router)
 
 async def main() -> None:
     logger.info("Запуск polling...")
-
+    asyncio.create_task(db_processor.check_db())
     # await set_main_menu(bot)
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):

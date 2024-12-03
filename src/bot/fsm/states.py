@@ -9,6 +9,7 @@ class GetKey(StatesGroup):
     choosing_period = State()
     waiting_for_payment = State()
     sending_key = State()
+    prodlenie = State()
 
 
 class ManageKeys(StatesGroup):
@@ -16,3 +17,7 @@ class ManageKeys(StatesGroup):
     choosing_action = State()
     rename_key = State()
     choose_trial_key = State()
+
+class Subscription_prodl(StatesGroup):
+    reminder = State()
+    expired = State()

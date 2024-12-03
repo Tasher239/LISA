@@ -1,6 +1,6 @@
 from bot.utils.string_makers import get_your_key_string
 from aiogram.types import Message
-from src.logger.logging_config import setup_logger
+from logger.logging_config import setup_logger
 from bot.keyboards.keyboards import (
     get_installation_button,
 )

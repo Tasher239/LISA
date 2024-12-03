@@ -1,21 +1,22 @@
 import os
-
 from dotenv import load_dotenv
 
+from aiogram import F, Router
+from aiogram.types import Message, PreCheckoutQuery, LabeledPrice, CallbackQuery
 from aiogram.filters import StateFilter
-from aiogram.types import Message, PreCheckoutQuery
-from aiogram import Router
 from aiogram.fsm.context import FSMContext
 
 from bot.fsm.states import GetKey
 from bot.initialization.outline_client_init import outline_processor
 from bot.initialization.bot_init import bot
-from bot.initialization.db_processor_init import db_processor
+from database.user_db import DbProcessor
 from bot.utils.send_message import send_key_to_user
+from bot.utils.dicts import prices_dict_prodl
 
 from logger.log_sender import LogSender
-
 from logger.logging_config import setup_logger
+from bot.keyboards.keyboards import get_prodlenie_keyboard
+
 
 load_dotenv()
 provider_token = os.getenv("PROVIDER_SBER_TOKEN")
@@ -55,8 +56,8 @@ async def successful_payment(message: Message, state: FSMContext):
         # Обновление базы данных
         data = await state.get_data()
         period = data.get("selected_period", "1 Month")
+        DbProcessor.update_database_with_key(message.from_user.id, key, period)
 
-        db_processor.update_database_with_key(message.from_user.id, key, period)
         # Отправка инструкций по установке
         await state.update_data(key_access_url=key.access_url)
         await state.set_state(GetKey.sending_key)
@@ -66,3 +67,27 @@ async def successful_payment(message: Message, state: FSMContext):
             "Произошла ошибка при обработке вашего платежа. Пожалуйста, свяжитесь с поддержкой."
         )
         await state.clear()
+
+@router.callback_query(StateFilter(GetKey.prodlenie), F.data != "trial_period")
+async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
+    # await delete_previous_message(callback.message.chat.id, state)
+    selected_period = callback.data.replace("_", " ").title()
+    amount = prices_dict_prodl[selected_period.split()[0]]
+    prices = [LabeledPrice(label="Ключ от VPN", amount=amount)]
+    description = f"Ключ от VPN Outline на {selected_period}"
+
+    # Сохранение выбранного периода в состоянии
+    await state.update_data(selected_period=selected_period)
+    await state.set_state(GetKey.waiting_for_payment)
+
+    await bot.send_invoice(
+        chat_id=callback.message.chat.id,
+        title="Покупка ключа",
+        description=description,
+        payload=str(uuid.uuid4()),
+        provider_token=provider_token,
+        start_parameter=str(uuid.uuid4()),
+        currency="rub",
+        prices=prices,
+    )
+    await callback.answer()
