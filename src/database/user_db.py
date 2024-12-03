@@ -10,6 +10,10 @@ from sqlalchemy import (
     MetaData,
 )
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
+from datetime import datetime, timedelta
+from src.logger.logging_config import setup_logger
+
+logger = setup_logger()
 
 # Создаем базовый класс для моделей
 Base = declarative_base()
@@ -24,6 +28,45 @@ class DbProcessor:
     def init_db(self):
         """Синхронная инициализация базы данных."""
         Base.metadata.create_all(self.engine)
+
+    def get_session(self):
+        """Создает и возвращает новую сессию."""
+        return self.Session()
+
+    def update_database_with_key(self, user_id, key, period):
+        session = self.get_session()
+        try:
+            user_id_str = str(user_id)
+            user = (
+                session.query(DbProcessor.User)
+                .filter_by(user_telegram_id=user_id_str)
+                .first()
+            )
+            if not user:
+                user = DbProcessor.User(
+                    user_telegram_id=user_id_str,
+                    subscription_status="active",
+                    use_trial_period=False,
+                )
+                session.add(user)
+                session.commit()
+
+            period_months = int(period.split()[0])
+            start_date = datetime.now()
+            expiration_date = start_date + timedelta(days=30 * period_months)
+            new_key = DbProcessor.Key(
+                key_id=key.key_id,
+                user_telegram_id=user_id_str,
+                expiration_date=expiration_date,
+                start_date=start_date,
+            )
+            session.add(new_key)
+            session.commit()
+        except Exception as e:
+            logger.error(f"Ошибка обновления базы данных: {e}")
+            raise
+        finally:
+            session.close()
 
     # Определение таблицы Users
     class User(Base):

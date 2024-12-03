@@ -65,7 +65,8 @@ def get_installation_button():
                     callback_data="installation_instructions",
                 ),
                 InlineKeyboardButton(
-                    text="В главное меню", callback_data="to_main_menu",
+                    text="В главное меню",
+                    callback_data="to_main_menu",
                 ),
             ]
         ]
@@ -85,15 +86,15 @@ def get_buttons_for_trial_period():
     )
 
 
-def get_instruction_keyboard():
-    # Создаем объекты инлайн-кнопок
-    to_main_menu_button = InlineKeyboardButton(
-        text="В главное меню", callback_data="to_main_menu"
-    )
-    return InlineKeyboardMarkup(inline_keyboard=[[to_main_menu_button]])
+# def get_instruction_keyboard():
+#     # Создаем объекты инлайн-кнопок
+#     to_main_menu_button = InlineKeyboardButton(
+#         text="В главное меню", callback_data="to_main_menu"
+#     )
+#     return InlineKeyboardMarkup(inline_keyboard=[[to_main_menu_button]])
 
 
-def back_button():
+def get_back_button():
     # Создаем объекты инлайн-кнопок
     to_main_menu_button = InlineKeyboardButton(
         text="В главное меню", callback_data="to_main_menu"
