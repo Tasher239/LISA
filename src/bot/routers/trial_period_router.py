@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import CallbackQuery
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
@@ -16,10 +16,7 @@ from database.db_processor import DbProcessor
 from datetime import datetime, timedelta
 
 router = Router()
-
 logger = setup_logger()
-
-
 
 
 @router.callback_query(StateFilter(GetKey.buy_key), F.data == "trial_period")

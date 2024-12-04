@@ -23,6 +23,11 @@ def get_main_menu_keyboard():
     )
 
 
+def get_about_us_keyboard():
+    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+    return InlineKeyboardMarkup(inline_keyboard=[[back_button]])
+
+
 def get_period_keyboard():
     # Кнопки для выбора периода
     month_button = InlineKeyboardButton(text="1 Месяц (60₽)", callback_data="1_month")
@@ -79,9 +84,7 @@ def get_buttons_for_trial_period():
     buy_key_button = InlineKeyboardButton(
         text="Купить ключ", callback_data="get_keys_pressed"
     )
-    back_button = InlineKeyboardButton(
-        text="Назад", callback_data="back_to_main_menu"
-    )
+    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[[get_trial_key], [buy_key_button], [back_button]]
@@ -200,10 +203,7 @@ def get_confirmation_keyboard():
     )
     cancel = InlineKeyboardButton(text="Отменить", callback_data="cancel_rename")
 
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [confirm_button],
-        [cancel]]
-    )
+    return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
 
 
 def get_no_trial_period():

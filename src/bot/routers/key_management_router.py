@@ -3,12 +3,14 @@ from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 
-from logger.logging_config import setup_logger
-
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
-from bot.keyboards.keyboards import get_buttons_for_trial_period, get_key_name_choosing_keyboard
+from bot.keyboards.keyboards import (
+    get_buttons_for_trial_period,
+    get_key_name_choosing_keyboard,
+)
 
+from logger.logging_config import setup_logger
 from database.db_processor import DbProcessor
 
 router = Router()

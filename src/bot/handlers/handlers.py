@@ -1,40 +1,20 @@
-import json
-import uuid
 import os
 
 from dotenv import load_dotenv
 from database.db_processor import DbProcessor
 from datetime import datetime, timedelta
 
-from aiogram.filters import CommandStart, StateFilter
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
-from aiogram.fsm.state import default_state, State, StatesGroup
-
-from aiogram import F, Router
+from aiogram.filters import StateFilter
+from aiogram.types import CallbackQuery
+from aiogram import Router
 from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.keyboards import (
-    get_main_menu_keyboard,
-    get_period_keyboard,
-    get_installation_button,
-    get_buttons_for_trial_period,
-    get_back_button,
-)
-
-from bot.utils.send_message import send_key_to_user
-from bot.fsm.states import MainMenu, GetKey, ManageKeys
-
-from bot.utils.string_makers import get_instruction_string, get_your_key_string
-
-from bot.keyboards.keyboards import get_back_button
-from logger.logging_config import setup_logger
-
-from bot.utils.dicts import prices_dict
-from bot.initialization.bot_init import bot
+from bot.fsm.states import ManageKeys
+from bot.keyboards.keyboards import get_buttons_for_trial_period, get_back_button
 from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.db_processor_init import db_processor
 
-from bot.utils.send_message import send_message_and_save
+from logger.logging_config import setup_logger
 
 router = Router()
 
@@ -101,7 +81,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
                     f"- Ключ ID: {key.key_id}, действует до {expiration_date}\n"
                 )
 
-            await callback.message.answer(key_details, reply_markup=back_button())
+            await callback.message.answer(key_details, reply_markup=get_back_button())
 
     except Exception as e:
         logger.error(f"Ошибка при выборе ключа: {e}")

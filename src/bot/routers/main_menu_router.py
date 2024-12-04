@@ -4,21 +4,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.state import default_state
 
-from logger.logging_config import setup_logger
-
-from bot.keyboards.keyboards import (
-    get_main_menu_keyboard,
-)
+from bot.keyboards.keyboards import get_main_menu_keyboard
 from bot.fsm.states import MainMenu, ManageKeys
 from bot.utils.send_message import send_message_and_save
 from bot.routers.key_management_router import choosing_key_handler
 from bot.routers.buy_key_router import buy_key_menu
+from bot.routers.about_us_router import show_about_us
+
+
+from logger.logging_config import setup_logger
 
 router = Router()
-
 logger = setup_logger()
 
 
+@router.message(CommandStart() or StateFilter(default_state))
 async def show_main_menu(
     message_or_callback: Message | CallbackQuery, state: FSMContext
 ):
@@ -50,19 +50,11 @@ async def main_menu_handler(callback: CallbackQuery, state: FSMContext):
         await choosing_key_handler(
             callback, state
         )  # тут идет связь с роутером менеджера ключей
+    elif action == "about_us":
+        await state.set_state(MainMenu.about_us)
+        await show_about_us(callback, state)
     else:
         await send_message_and_save(
             callback.message, "Неизвестное действие.", state=state
         )
     await callback.answer()
-
-
-@router.message(CommandStart() or StateFilter(default_state))
-async def process_start_command(message: Message, state: FSMContext):
-    await show_main_menu(message, state)
-
-
-# @router.callback_query(F.data == "to_main_menu")
-# async def go_to_main_menu(callback: CallbackQuery, state: FSMContext):
-#     await show_main_menu(callback, state)
-#     await callback.answer()
