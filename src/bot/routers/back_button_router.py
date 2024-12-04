@@ -8,8 +8,6 @@ from bot.keyboards.keyboards import get_main_menu_keyboard
 
 from logger.logging_config import setup_logger
 
-from bot.routers.main_menu_router import show_main_menu
-
 router = Router()
 logger = setup_logger()
 

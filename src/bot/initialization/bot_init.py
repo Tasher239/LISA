@@ -1,8 +1,9 @@
-from aiogram import Bot
 import os
 from dotenv import load_dotenv
+
+from aiogram import Bot
+
 from logger.logging_config import setup_logger
-from outline_vpn.outline_vpn import OutlineVPN
 
 load_dotenv()
 BOT_TOKEN = os.getenv("TOKEN")

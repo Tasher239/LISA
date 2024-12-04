@@ -1,5 +1,4 @@
 import os
-
 from dotenv import load_dotenv
 
 from aiogram.types import CallbackQuery, LabeledPrice
@@ -16,7 +15,6 @@ load_dotenv()
 provider_token = os.getenv("PROVIDER_SBER_TOKEN")
 
 router = Router()
-
 logger = setup_logger()
 
 

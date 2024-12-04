@@ -1,14 +1,14 @@
-from bot.utils.string_makers import get_your_key_string
-from aiogram.types import Message
-from logger.logging_config import setup_logger
-from bot.keyboards.keyboards import (
-    get_installation_button,
-)
-from bot.initialization.bot_init import bot
-
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
+
+from bot.keyboards.keyboards import get_installation_button
+
+from bot.initialization.bot_init import bot
 from bot.keyboards.keyboards import get_prodlit_keyboard
 from bot.lexicon.lexicon import Notification
+from bot.utils.string_makers import get_your_key_string
+
+from logger.logging_config import setup_logger
 
 logger = setup_logger()
 
