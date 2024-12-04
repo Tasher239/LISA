@@ -5,6 +5,8 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
+from bot.initialization.outline_processor_init import outline_processor
+
 
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
@@ -139,3 +141,56 @@ def get_prodlenie_keyboard():
             [back_button],
         ]
     )
+
+
+def get_key_name_choosing_keyboard(keys):
+    keyboard_buttons = []
+
+    for key in keys:
+        key_info = outline_processor.get_key_info(key.key_id)
+        button = InlineKeyboardButton(
+            text=key_info.name, callback_data=f"key_{key.key_id}"
+        )
+        keyboard_buttons.append([button])
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=keyboard_buttons
+    )  # Возвращаем клавиатуру
+
+
+def get_key_action_keyboard(key_info):
+    view_traffic_button = InlineKeyboardButton(
+        text="Посмотреть объем трафика", callback_data=f"traffic_{key_info.key_id}"
+    )
+    end_data_button = InlineKeyboardButton(
+        text="Посмотреть дату конца активации",
+        callback_data=f"expiration_{key_info.key_id}",
+    )
+    prodlit_key_button = InlineKeyboardButton(
+        text="Продлить действие ключа", callback_data=f"extend_{key_info.key_id}"
+    )
+    rename_key_button = InlineKeyboardButton(
+        text="Переименовать ключ", callback_data=f"rename_{key_info.key_id}"
+    )
+    get_url_key_button = InlineKeyboardButton(
+        text="Вывести сам ключ", callback_data=f"access_url_{key_info.key_id}"
+    )
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [view_traffic_button],
+            [end_data_button],
+            [prodlit_key_button],
+            [rename_key_button],
+            [get_url_key_button],
+        ]
+    )
+
+
+def get_confirmation_keyboard():
+    confirm_button = InlineKeyboardButton(
+        text="Подтвердить", callback_data="confirm_rename"
+    )
+    cancel = InlineKeyboardButton(text="Отменить", callback_data="cancel_rename")
+
+    return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
