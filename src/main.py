@@ -6,6 +6,7 @@ from bot.routers import (
     key_management_router,
     admins_router,
     reminder_router,
+    key_params_router,
 )
 from logger.logging_config import setup_logger
 from aiogram import Dispatcher
@@ -26,6 +27,7 @@ dp.include_router(key_management_router.router)
 dp.include_router(handlers.router)
 dp.include_router(payment_router.router)
 dp.include_router(reminder_router.router)
+dp.include_router(key_params_router.router)
 
 
 async def main() -> None:

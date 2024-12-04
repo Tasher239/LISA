@@ -31,7 +31,7 @@ from logger.logging_config import setup_logger
 
 from bot.utils.dicts import prices_dict
 from bot.initialization.bot_init import bot
-from bot.initialization.outline_client_init import outline_processor
+from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.db_processor_init import db_processor
 
 from bot.utils.send_message import send_message_and_save

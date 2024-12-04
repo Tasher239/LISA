@@ -81,26 +81,31 @@ class DbProcessor:
 
     async def check_db(self):
         while True:
-            await asyncio.sleep(60 * 60 * 12)  # каждые 12 ч
             session = self.get_session()
             try:
                 users = session.query(DbProcessor.User).all()
                 for user in users:
                     for key in user.keys:
-                        if (key.remembering == False) and (
+                        # ключ будет действовать меньше 3х дней
+                        if (key.remembering_before_exp == False) and (
                             key.expiration_date - datetime.now() < timedelta(days=3)
                         ):
                             key.remembering = True
                             session.commit()
-                            await send_message_subscription_ends()
+                            await send_message_subscription_ends(user)
+                            # ключ больше не работает
                         elif key.expiration_date < datetime.now():
                             await send_message_subscription_expired(user)
+                            # тухлый ключ лежит в бд 1 день - удаляем из бд
                         elif datetime.now() > key.expiration_date + timedelta(days=1):
                             session.delete(key)
                             session.commit()
             except Exception as e:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise
+            await asyncio.sleep(
+                60 * 60 * 12
+            )  # каждые 12 ч перенесена в конец чтобы 1 раз пробегаться при запуске бота
 
     # Определение таблицы Users
     class User(Base):

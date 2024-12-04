@@ -17,6 +17,10 @@ class ManageKeys(StatesGroup):
     choosing_action = State()
     rename_key = State()
     choose_trial_key = State()
+    get_key_params = State()
+    choose_key_action = State()
+    wait_for_new_name = State()
+    confirm_rename = State()
 
 
 class Subscription_prodl(StatesGroup):
