@@ -7,7 +7,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
 from bot.fsm.states import GetKey
-from bot.initialization.outline_client_init import outline_processor
+from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from database.user_db import DbProcessor
@@ -57,7 +57,7 @@ async def successful_payment(message: Message, state: FSMContext):
         # Обновление базы данных
         data = await state.get_data()
         period = data.get("selected_period", "1 Month")
-        DbProcessor.update_database_with_key(message.from_user.id, key, period)
+        db_processor.update_database_with_key(message.from_user.id, key, period)
 
         # Отправка инструкций по установке
         await state.update_data(key_access_url=key.access_url)
