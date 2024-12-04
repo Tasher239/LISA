@@ -32,7 +32,7 @@ Base = declarative_base()
 class DbProcessor:
     def __init__(self):
         # Создаем движок для подключения к базе данных
-        self.engine = create_engine("sqlite:///vpn_users.db", echo=True)
+        self.engine = create_engine("sqlite:///database/vpn_users.db", echo=True)
         self.Session = sessionmaker(bind=self.engine)
 
     def init_db(self):

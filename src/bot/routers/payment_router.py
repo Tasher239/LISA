@@ -10,13 +10,11 @@ from bot.fsm.states import GetKey
 from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
-from database.user_db import DbProcessor
 from bot.utils.send_message import send_key_to_user
 from bot.utils.dicts import prices_dict_prodl
 
 from logger.log_sender import LogSender
 from logger.logging_config import setup_logger
-from bot.keyboards.keyboards import get_prodlenie_keyboard
 
 
 load_dotenv()

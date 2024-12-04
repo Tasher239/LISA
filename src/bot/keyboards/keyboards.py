@@ -1,6 +1,4 @@
 from aiogram.types import (
-    ReplyKeyboardMarkup,
-    KeyboardButton,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
@@ -27,22 +25,22 @@ def get_main_menu_keyboard():
 
 def get_period_keyboard():
     # Кнопки для выбора периода
-    month_button = InlineKeyboardButton(text="1 Месяц (1$)", callback_data="1_month")
+    month_button = InlineKeyboardButton(text="1 Месяц (60₽)", callback_data="1_month")
     three_month_button = InlineKeyboardButton(
-        text="3 Месяца (10$)", callback_data="3_months"
+        text="3 Месяца (120₽)", callback_data="3_months"
     )
     six_month_button = InlineKeyboardButton(
-        text="6 Месяцев (100$)", callback_data="6_months"
+        text="6 Месяцев (1000₽)", callback_data="6_months"
     )
     year_button = InlineKeyboardButton(
-        text="12 Месяцев (1000$)", callback_data="12_months"
+        text="12 Месяцев (1200₽)", callback_data="12_months"
     )
 
     trial_period_button = InlineKeyboardButton(
         text="Пробный период", callback_data="trial_period"
     )
 
-    back_button = InlineKeyboardButton(text="Назад", callback_data="go_back")
+    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -66,30 +64,34 @@ def get_installation_button():
                 ),
                 InlineKeyboardButton(
                     text="В главное меню",
-                    callback_data="to_main_menu",
+                    callback_data="back_to_main_menu",
                 ),
             ]
         ]
     )
 
 
+# это нужно переименовать тк юзается еще в менеджере когда нет активных ключей
 def get_buttons_for_trial_period():
+    get_trial_key = InlineKeyboardButton(
+        text="Пробный ключ", callback_data="trial_period"
+    )
+    buy_key_button = InlineKeyboardButton(
+        text="Купить ключ", callback_data="get_keys_pressed"
+    )
+    back_button = InlineKeyboardButton(
+        text="Назад", callback_data="back_to_main_menu"
+    )
+
     return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Получить ключ", callback_data="trial_period"
-                ),
-                InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu"),
-            ]
-        ]
+        inline_keyboard=[[get_trial_key], [buy_key_button], [back_button]]
     )
 
 
 def get_back_button():
     # Создаем объекты инлайн-кнопок
     to_main_menu_button = InlineKeyboardButton(
-        text="В главное меню", callback_data="to_main_menu"
+        text="В главное меню", callback_data="back_to_main_menu"
     )
     return InlineKeyboardMarkup(inline_keyboard=[[to_main_menu_button]])
 
@@ -129,7 +131,7 @@ def get_prodlenie_keyboard():
         text="Пробный период", callback_data="trial_period"
     )
 
-    back_button = InlineKeyboardButton(text="Назад", callback_data="go_back")
+    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -153,9 +155,12 @@ def get_key_name_choosing_keyboard(keys):
         )
         keyboard_buttons.append([button])
 
-    return InlineKeyboardMarkup(
-        inline_keyboard=keyboard_buttons
-    )  # Возвращаем клавиатуру
+    back_button = [
+        InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+    ]
+    keyboard_buttons.append(back_button)
+
+    return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
 def get_key_action_keyboard(key_info):
@@ -175,6 +180,7 @@ def get_key_action_keyboard(key_info):
     get_url_key_button = InlineKeyboardButton(
         text="Вывести сам ключ", callback_data=f"access_url_{key_info.key_id}"
     )
+    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -183,6 +189,7 @@ def get_key_action_keyboard(key_info):
             [prodlit_key_button],
             [rename_key_button],
             [get_url_key_button],
+            [back_button],
         ]
     )
 
@@ -193,4 +200,20 @@ def get_confirmation_keyboard():
     )
     cancel = InlineKeyboardButton(text="Отменить", callback_data="cancel_rename")
 
-    return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [confirm_button],
+        [cancel]]
+    )
+
+
+def get_no_trial_period():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Приобрести ключ", callback_data="get_keys_pressed"
+                ),
+                InlineKeyboardButton(text="Назад", callback_data="back_to"),
+            ]
+        ]
+    )

@@ -2,25 +2,20 @@ from aiogram.types import CallbackQuery
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from logger.logging_config import setup_logger
 
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
-from bot.keyboards.keyboards import (
-    get_buttons_for_trial_period,
-    get_back_button,
-    get_key_name_choosing_keyboard,
-)
+from bot.keyboards.keyboards import get_buttons_for_trial_period, get_key_name_choosing_keyboard
 
-from database.user_db import DbProcessor
+from database.db_processor import DbProcessor
 
 router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(StateFilter(ManageKeys.choosing_key))
+@router.callback_query(StateFilter(ManageKeys.key_management_pressed))
 async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     user_id_str = str(user_id)
@@ -37,7 +32,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
                 "У вас нет активных ключей, но вы можете испытать пробный период.",
                 reply_markup=get_buttons_for_trial_period(),
             )
-            await state.set_state(ManageKeys.choose_trial_key)
+            await state.set_state(ManageKeys.no_active_keys)
 
         else:
             # user.keys - это список объектов алхимии.Key
