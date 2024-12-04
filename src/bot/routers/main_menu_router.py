@@ -6,13 +6,13 @@ from aiogram.fsm.state import default_state
 
 from logger.logging_config import setup_logger
 
-from bot.keyboards.keyboards import get_period_keyboard
 from bot.keyboards.keyboards import (
     get_main_menu_keyboard,
 )
-from bot.fsm.states import MainMenu, GetKey, ManageKeys
+from bot.fsm.states import MainMenu, ManageKeys
 from bot.utils.send_message import send_message_and_save
 from bot.routers.key_management_router import choosing_key_handler
+from bot.routers.buy_key_router import buy_key_menu
 
 router = Router()
 
@@ -44,13 +44,7 @@ async def main_menu_handler(callback: CallbackQuery, state: FSMContext):
     # await delete_previous_message(callback.message.chat.id, state)
     action = callback.data
     if action == "get_keys_pressed":
-        await send_message_and_save(
-            callback.message,
-            text="Выберите период действия ключа:",
-            state=state,
-            reply_markup=get_period_keyboard(),
-        )
-        await state.set_state(GetKey.choosing_period)
+        await buy_key_menu(callback, state)
     elif action == "key_management_pressed":
         await state.set_state(ManageKeys.choosing_key)
         await choosing_key_handler(
@@ -68,7 +62,7 @@ async def process_start_command(message: Message, state: FSMContext):
     await show_main_menu(message, state)
 
 
-@router.callback_query(F.data == "to_main_menu")
-async def go_to_main_menu(callback: CallbackQuery, state: FSMContext):
-    await show_main_menu(callback, state)
-    await callback.answer()
+# @router.callback_query(F.data == "to_main_menu")
+# async def go_to_main_menu(callback: CallbackQuery, state: FSMContext):
+#     await show_main_menu(callback, state)
+#     await callback.answer()

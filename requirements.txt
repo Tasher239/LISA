@@ -7,3 +7,4 @@ logging
 sys
 json
 uuid
+python-dotenv

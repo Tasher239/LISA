@@ -2,7 +2,6 @@ from aiogram.types import CallbackQuery, Message
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from logger.logging_config import setup_logger
 
@@ -10,7 +9,7 @@ from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.keyboards.keyboards import get_key_action_keyboard, get_confirmation_keyboard
 
-from database.user_db import DbProcessor
+from database.db_processor import DbProcessor
 
 from src.bot.initialization.outline_processor_init import outline_processor
 from src.bot.keyboards.keyboards import get_back_button
@@ -21,7 +20,9 @@ router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(StateFilter(ManageKeys.get_key_params))
+@router.callback_query(
+    StateFilter(ManageKeys.get_key_params), ~F.data.in_(["back_to_main_menu"])
+)
 async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     selected_key_id = callback.data.split("_")[1]  # Извлекаем ID ключа
     key_info = outline_processor.get_key_info(selected_key_id)
@@ -47,7 +48,8 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     await callback.message.answer(
-        "Выберите действие для ключа:", reply_markup=get_key_action_keyboard(key_info)
+        "Выберите действие для ключа:",
+        reply_markup=get_key_action_keyboard(key_info)
     )
     await state.set_state(ManageKeys.choose_key_action)
 
@@ -218,8 +220,6 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
         f"Ключ переименован в: {new_name}", reply_markup=get_back_button()
     )
 
-    # Завершаем процесс
-    await state.finish()
 
 
 @router.callback_query(
@@ -229,9 +229,6 @@ async def cancel_rename_handler(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         "Переименование отменено.", reply_markup=get_back_button()
     )
-
-    # Завершаем процесс
-    await state.finish()
 
 
 @router.callback_query(

@@ -10,6 +10,8 @@ class GetKey(StatesGroup):
     waiting_for_payment = State()
     sending_key = State()
     prodlenie = State()
+    buy_key = State()
+
 
 
 class ManageKeys(StatesGroup):
@@ -21,6 +23,8 @@ class ManageKeys(StatesGroup):
     choose_key_action = State()
     wait_for_new_name = State()
     confirm_rename = State()
+    key_management_pressed = State()
+    no_active_keys = State()
 
 
 class Subscription_prodl(StatesGroup):
