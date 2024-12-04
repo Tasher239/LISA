@@ -16,12 +16,11 @@ from bot.utils.dicts import prices_dict_prodl
 from logger.log_sender import LogSender
 from logger.logging_config import setup_logger
 
-
 load_dotenv()
 provider_token = os.getenv("PROVIDER_SBER_TOKEN")
-logger = setup_logger()
 
 router = Router()
+logger = setup_logger()
 
 """
 Метод answer_pre_checkout_query() отвечает на запрос Telegram о предварительной проверке платежа.

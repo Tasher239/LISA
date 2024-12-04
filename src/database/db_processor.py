@@ -1,31 +1,23 @@
 from sqlalchemy import (
     Column,
     String,
-    Integer,
     Boolean,
     ForeignKey,
     DateTime,
     create_engine,
-    Table,
-    MetaData,
 )
+import asyncio
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from datetime import datetime, timedelta
-from logger.logging_config import setup_logger
-from bot.initialization.bot_init import bot
-from bot.keyboards.keyboards import get_prodlit_keyboard
-from bot.fsm.states import GetKey
-import asyncio
-from aiogram.fsm.context import FSMContext
-from bot.lexicon.lexicon import Notification
+
 from bot.utils.send_message import (
     send_message_subscription_expired,
     send_message_subscription_ends,
 )
 
-logger = setup_logger()
+from logger.logging_config import setup_logger
 
-# Создаем базовый класс для моделей
+logger = setup_logger()
 Base = declarative_base()
 
 

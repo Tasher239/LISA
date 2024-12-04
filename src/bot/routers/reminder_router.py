@@ -1,17 +1,11 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import default_state
-
-from logger.logging_config import setup_logger
 
 from bot.keyboards.keyboards import get_prodlenie_keyboard
-from bot.keyboards.keyboards import (
-    get_main_menu_keyboard,
-)
-from bot.fsm.states import MainMenu, GetKey, ManageKeys, Subscription_prodl
-from bot.utils.dicts import prices_dict_prodl
-from bot.routers.key_management_router import choosing_key_handler
+from bot.fsm.states import GetKey
+
+from logger.logging_config import setup_logger
 
 router = Router()
 router.message.filter(F.data == "extend_now")

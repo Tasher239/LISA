@@ -1,8 +1,9 @@
-from aiogram.fsm.state import default_state, State, StatesGroup
+from aiogram.fsm.state import State, StatesGroup
 
 
 class MainMenu(StatesGroup):
     waiting_for_action = State()
+    about_us = State()
 
 
 class GetKey(StatesGroup):
@@ -11,7 +12,6 @@ class GetKey(StatesGroup):
     sending_key = State()
     prodlenie = State()
     buy_key = State()
-
 
 
 class ManageKeys(StatesGroup):

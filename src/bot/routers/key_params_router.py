@@ -3,16 +3,17 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 
-from logger.logging_config import setup_logger
-
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
-from bot.keyboards.keyboards import get_key_action_keyboard, get_confirmation_keyboard
+from bot.initialization.outline_processor_init import outline_processor
+from bot.keyboards.keyboards import (
+    get_key_action_keyboard,
+    get_confirmation_keyboard,
+    get_back_button,
+)
 
 from database.db_processor import DbProcessor
-
-from src.bot.initialization.outline_processor_init import outline_processor
-from src.bot.keyboards.keyboards import get_back_button
+from logger.logging_config import setup_logger
 
 from datetime import datetime
 
@@ -48,8 +49,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     await callback.message.answer(
-        "Выберите действие для ключа:",
-        reply_markup=get_key_action_keyboard(key_info)
+        "Выберите действие для ключа:", reply_markup=get_key_action_keyboard(key_info)
     )
     await state.set_state(ManageKeys.choose_key_action)
 
@@ -219,7 +219,6 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         f"Ключ переименован в: {new_name}", reply_markup=get_back_button()
     )
-
 
 
 @router.callback_query(

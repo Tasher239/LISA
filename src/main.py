@@ -12,6 +12,7 @@ from bot.routers import (
     trial_period_router,
     back_button_router,
     utils_router,
+    about_us_router,
 )
 from logger.logging_config import setup_logger
 from aiogram import Dispatcher
@@ -31,6 +32,7 @@ dp.include_router(main_menu_router.router)
 dp.include_router(payment_router.router)
 dp.include_router(key_management_router.router)
 dp.include_router(buy_key_router.router)
+dp.include_router(about_us_router.router)
 
 # dp.include_router(handlers.router)
 
