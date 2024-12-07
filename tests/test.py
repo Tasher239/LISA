@@ -149,19 +149,17 @@ def test_key_creation(db_processor):
     """Тест добавления ключа в базу данных."""
     session = db_processor.get_session()
 
-    # Создаём пользователя
     user = DbProcessor.User(
         user_telegram_id="12345", subscription_status="active", use_trial_period=False
     )
     session.add(user)
     session.commit()
 
-    # Добавляем ключ с объектами datetime
     key = DbProcessor.Key(
         key_id="key123",
         user_telegram_id="12345",
-        expiration_date=datetime(2024, 12, 31, 23, 59, 59),  # Используем datetime вместо строки
-        start_date=datetime(2024, 12, 1, 0, 0, 0),  # Используем datetime вместо строки
+        expiration_date=datetime(2024, 12, 31, 23, 59, 59),
+        start_date=datetime(2024, 12, 1, 0, 0, 0),
     )
     session.add(key)
     session.commit()
