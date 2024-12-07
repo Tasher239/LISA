@@ -18,7 +18,7 @@ router = Router()
 logger = setup_logger()
 
 
-@router.message(CommandStart() or StateFilter(default_state))
+@router.message(CommandStart())
 async def show_main_menu(
     message_or_callback: Message | CallbackQuery, state: FSMContext
 ):
