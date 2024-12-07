@@ -1,9 +1,11 @@
 venv/
 src/vpn_users.db
 .env
+readme_not_official.md
 # Ignore IDE settings
 .idea/
 # Ignore Python bytecode files
 __pycache__/
 *.pyc
 *.pyo
+
