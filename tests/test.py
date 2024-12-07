@@ -266,6 +266,7 @@ def test_delete_limit(outline_processor, mock_client):
 
 def test_delete_key(outline_processor, mock_client):
     """Тест удаления ключа."""
+
     mock_client.delete_key.return_value = "Key Deleted"
     delete_status = outline_processor.delete_key("key123")
     assert delete_status == "Key Deleted"
