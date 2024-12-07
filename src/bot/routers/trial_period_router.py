@@ -9,7 +9,7 @@ from bot.fsm.states import GetKey, ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
 from bot.utils.send_message import send_key_to_user
-from bot.keyboards.keyboards import get_back_button
+from bot.keyboards.keyboards import get_already_have_trial_key
 
 from database.db_processor import DbProcessor
 
@@ -68,5 +68,5 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(
             "Вы уже использовали пробный период. "
             "Вы можете купить ключ или вернуться в главное меню",
-            reply_markup=get_back_button(),
+            reply_markup=get_already_have_trial_key(),
         )

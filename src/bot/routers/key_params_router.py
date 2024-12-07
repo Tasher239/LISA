@@ -11,6 +11,7 @@ from bot.keyboards.keyboards import (
     get_confirmation_keyboard,
     get_back_button,
 )
+from bot.utils.send_message import send_key_to_user
 
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger
@@ -74,7 +75,7 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
     used_bytes = 0
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
-    total_traffic = used_bytes / (1024**2)
+    total_traffic = used_bytes / (1024 ** 2)
 
     # надо как-то считать
     avg_daily_usage = 1  # Сюда ваш расчет среднего использования в сутки
@@ -247,6 +248,4 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     # Отправляем ключ пользователю
-    await callback.message.answer(
-        f"Ваш ключ: {key_info.access_url}", reply_markup=get_back_button()
-    )
+    await send_key_to_user(callback.message, key_info, f'Ваш ключ «{key_info.name}»')

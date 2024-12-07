@@ -64,7 +64,7 @@ def get_installation_button():
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Нужна инструкция по установке",
+                    text="Установка",
                     callback_data="installation_instructions",
                 ),
                 InlineKeyboardButton(
@@ -105,7 +105,7 @@ def get_prodlit_keyboard():
         text="Продлить сейчас 🔄", callback_data="extend_now"
     )
     back_to_main_menu_button = InlineKeyboardButton(
-        text="В главное меню 🔙", callback_data="to_main_menu"
+        text="В главное меню 🔙", callback_data="back_to_main_menu"
     )
 
     # Возвращаем клавиатуру
@@ -183,7 +183,7 @@ def get_key_action_keyboard(key_info):
     get_url_key_button = InlineKeyboardButton(
         text="Вывести сам ключ", callback_data=f"access_url_{key_info.key_id}"
     )
-    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+    back_button = InlineKeyboardButton(text="Назад", callback_data="key_management_pressed")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -214,6 +214,18 @@ def get_no_trial_period():
                     text="Приобрести ключ", callback_data="get_keys_pressed"
                 ),
                 InlineKeyboardButton(text="Назад", callback_data="back_to"),
+            ]
+        ]
+    )
+
+def get_already_have_trial_key():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Назад", callback_data="get_keys_pressed"
+                ),
+                InlineKeyboardButton(text="В главное меню", callback_data="back_to_main_menu"),
             ]
         ]
     )
