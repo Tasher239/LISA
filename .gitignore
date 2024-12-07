@@ -1,11 +1,25 @@
+# Virtual environment
 venv/
-src/vpn_users.db
+.venv/
+
+# Database files
+*.db
+
+# Environment variables
 .env
-readme_not_official.md
+
+# Temporary and untracked files
+*.swp
+*.tmp
+
 # Ignore IDE settings
 .idea/
-# Ignore Python bytecode files
+.vscode/
+
+# Python bytecode and cache
 __pycache__/
 *.pyc
 *.pyo
 
+# Log files
+logger/bot.log
