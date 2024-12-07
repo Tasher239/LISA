@@ -49,3 +49,119 @@ FROM users
 2024-12-08 00:26:52,197 - aiogram.dispatcher - INFO - Polling stopped
 2024-12-08 00:26:52,451 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
 2024-12-08 00:26:52,453 - root - INFO - Бот остановлен вручную.
+2024-12-08 00:27:34,419 - root - INFO - Инициализация бота...
+2024-12-08 00:27:34,448 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:27:34,448 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-08 00:27:34,448 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:27:34,449 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-08 00:27:34,449 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:27:34,450 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-08 00:27:34,453 - root - INFO - Инициализация бота...
+2024-12-08 00:27:34,481 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-08 00:27:34,481 - root - INFO - Инициализация диспетчера...
+2024-12-08 00:27:34,481 - root - INFO - Регистрация обработчиков...
+2024-12-08 00:27:34,483 - root - INFO - Запуск polling...
+2024-12-08 00:27:34,484 - aiogram.dispatcher - INFO - Start polling
+2024-12-08 00:27:34,488 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:27:34,489 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-08 00:27:34,490 - sqlalchemy.engine.Engine - INFO - [generated in 0.00020s] ()
+2024-12-08 00:27:34,830 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-08 00:27:41,380 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-08 00:27:41,647 - aiogram.event - INFO - Update id=659307309 is not handled. Duration 2234 ms by bot id=7444575424
+2024-12-08 00:27:41,647 - aiogram.event - INFO - Update id=659307308 is not handled. Duration 4406 ms by bot id=7444575424
+2024-12-08 00:27:41,647 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-08 00:27:41,649 - root - INFO - Бот остановлен вручную.
+2024-12-08 00:27:45,516 - root - INFO - Инициализация бота...
+2024-12-08 00:27:45,546 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:27:45,547 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-08 00:27:45,547 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:27:45,548 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-08 00:27:45,548 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:27:45,548 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-08 00:27:45,551 - root - INFO - Инициализация бота...
+2024-12-08 00:27:45,580 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-08 00:27:45,580 - root - INFO - Инициализация диспетчера...
+2024-12-08 00:27:45,581 - root - INFO - Регистрация обработчиков...
+2024-12-08 00:27:45,583 - root - INFO - Запуск polling...
+2024-12-08 00:27:45,583 - aiogram.dispatcher - INFO - Start polling
+2024-12-08 00:27:45,587 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:27:45,589 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-08 00:27:45,589 - sqlalchemy.engine.Engine - INFO - [generated in 0.00021s] ()
+2024-12-08 00:27:45,860 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-08 00:27:58,593 - aiogram.event - INFO - Update id=659307310 is handled. Duration 500 ms by bot id=7444575424
+2024-12-08 00:28:00,507 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:28:00,511 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-08 00:28:00,511 - sqlalchemy.engine.Engine - INFO - [generated in 0.00043s] ('528155210', 1, 0)
+2024-12-08 00:28:00,514 - sqlalchemy.engine.Engine - INFO - INSERT INTO users (user_telegram_id, subscription_status, use_trial_period) VALUES (?, ?, ?)
+2024-12-08 00:28:00,514 - sqlalchemy.engine.Engine - INFO - [generated in 0.00029s] ('528155210', 'active', 0)
+2024-12-08 00:28:00,515 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-08 00:28:00,521 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:28:00,523 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-08 00:28:00,523 - sqlalchemy.engine.Engine - INFO - [generated in 0.00028s] ('528155210',)
+2024-12-08 00:28:00,525 - sqlalchemy.engine.Engine - INFO - UPDATE users SET use_trial_period=? WHERE users.user_telegram_id = ?
+2024-12-08 00:28:00,525 - sqlalchemy.engine.Engine - INFO - [generated in 0.00026s] (1, '528155210')
+2024-12-08 00:28:00,526 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-08 00:28:01,765 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:28:01,769 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date, remembering_before_exp) VALUES (?, ?, ?, ?, ?)
+2024-12-08 00:28:01,769 - sqlalchemy.engine.Engine - INFO - [generated in 0.00089s] ('91', '528155210', '2024-12-10 00:28:01.764175', '2024-12-08 00:28:01.764175', 0)
+2024-12-08 00:28:01,775 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-08 00:28:01,783 - root - INFO - Key created: OutlineKey(key_id='91', name='VPN Key78', password='wEh9PilVPTKKvMwB3tbTMq', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTp3RWg5UGlsVlBUS0t2TXdCM3RiVE1x@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 7444575424
+2024-12-08 00:28:01,984 - aiogram.event - INFO - Update id=659307311 is handled. Duration 1485 ms by bot id=7444575424
+2024-12-08 00:28:15,413 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-08 00:28:15,681 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-08 00:28:15,684 - root - INFO - Бот остановлен вручную.
+2024-12-08 00:28:46,239 - root - INFO - Инициализация бота...
+2024-12-08 00:28:46,269 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:28:46,270 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-08 00:28:46,270 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:28:46,270 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("users")
+2024-12-08 00:28:46,270 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:28:46,271 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-08 00:28:46,271 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:28:46,271 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("keys")
+2024-12-08 00:28:46,271 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-08 00:28:46,272 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE users (
+	user_telegram_id VARCHAR NOT NULL, 
+	subscription_status VARCHAR, 
+	use_trial_period BOOLEAN, 
+	PRIMARY KEY (user_telegram_id)
+)
+
+
+2024-12-08 00:28:46,272 - sqlalchemy.engine.Engine - INFO - [no key 0.00012s] ()
+2024-12-08 00:28:46,283 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE keys (
+	key_id VARCHAR NOT NULL, 
+	user_telegram_id VARCHAR, 
+	expiration_date DATETIME, 
+	start_date DATETIME, 
+	remembering_before_exp BOOLEAN, 
+	PRIMARY KEY (key_id), 
+	FOREIGN KEY(user_telegram_id) REFERENCES users (user_telegram_id)
+)
+
+
+2024-12-08 00:28:46,283 - sqlalchemy.engine.Engine - INFO - [no key 0.00019s] ()
+2024-12-08 00:28:46,292 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-08 00:28:46,295 - root - INFO - Инициализация бота...
+2024-12-08 00:28:46,325 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-08 00:28:46,325 - root - INFO - Инициализация диспетчера...
+2024-12-08 00:28:46,326 - root - INFO - Регистрация обработчиков...
+2024-12-08 00:28:46,327 - root - INFO - Запуск polling...
+2024-12-08 00:28:46,327 - aiogram.dispatcher - INFO - Start polling
+2024-12-08 00:28:46,331 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-08 00:28:46,333 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-08 00:28:46,333 - sqlalchemy.engine.Engine - INFO - [generated in 0.00029s] ()
+2024-12-08 00:28:46,657 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-08 00:28:50,221 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-08 00:28:50,474 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'safe_net_vpn'
+2024-12-08 00:28:50,475 - root - INFO - Бот остановлен вручную.
