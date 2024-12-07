@@ -271,7 +271,6 @@ def test_delete_key(outline_processor, mock_client):
     assert delete_status == "Key Deleted"
     mock_client.delete_key.assert_called_once_with("key123")
 
-
 def test_get_service_info(outline_processor, mock_client):
     """Тест получения информации о сервере."""
     mock_client.get_server_information.return_value = "Service Info"
