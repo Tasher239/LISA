@@ -1,6 +1,5 @@
 from aiogram.fsm.storage.memory import MemoryStorage
 
-# from bot.handlers import handlers
 from bot.routers import (
     payment_router,
     main_menu_router,
@@ -33,9 +32,6 @@ dp.include_router(payment_router.router)
 dp.include_router(key_management_router.router)
 dp.include_router(buy_key_router.router)
 dp.include_router(about_us_router.router)
-
-# dp.include_router(handlers.router)
-
 dp.include_router(reminder_router.router)
 dp.include_router(key_params_router.router)
 dp.include_router(trial_period_router.router)

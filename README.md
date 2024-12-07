@@ -82,11 +82,5 @@
 **Связь таблиц**:
 - Тип: один ко многим.
 - Поле связи: `user_telegram_id`.
-## Установка
-
-1. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/username/LISA.git
-
 
 

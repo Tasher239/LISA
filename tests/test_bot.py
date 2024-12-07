@@ -17,6 +17,7 @@ def fix_logger_path():
     os.environ["LOG_FILE_PATH"] = log_file_path
     setup_logger()
 
+
 @pytest.fixture
 def test_db():
     """Создаёт тестовую базу данных в памяти."""
@@ -26,6 +27,7 @@ def test_db():
     yield Session
     engine.dispose()
 
+
 @pytest.fixture
 def db_processor(test_db):
     """Создаёт экземпляр DbProcessor с тестовой базой."""
@@ -33,6 +35,7 @@ def db_processor(test_db):
     processor.engine = test_db.kw["bind"]
     processor.Session = test_db
     return processor
+
 
 def test_key_creation(db_processor):
     """Тест добавления ключа в базу данных."""
@@ -46,7 +49,7 @@ def test_key_creation(db_processor):
         key_id="key123",
         user_telegram_id="12345",
         expiration_date=datetime(2024, 12, 31, 23, 59, 59),  # Объект datetime
-        start_date=datetime(2024, 12, 1, 0, 0, 0),           # Объект datetime
+        start_date=datetime(2024, 12, 1, 0, 0, 0),  # Объект datetime
     )
     session.add(key)
     session.commit()
@@ -55,10 +58,13 @@ def test_key_creation(db_processor):
     assert key_from_db.user_telegram_id == "12345"
     session.close()
 
+
 def test_key_creation_duplicate(db_processor):
     """Тест добавления дублирующего ключа в базу данных."""
     session = db_processor.get_session()
-    user = DbProcessor.User(user_telegram_id="12345", subscription_status="active", use_trial_period=False)
+    user = DbProcessor.User(
+        user_telegram_id="12345", subscription_status="active", use_trial_period=False
+    )
     session.add(user)
     session.commit()
 
@@ -86,7 +92,6 @@ def test_key_creation_duplicate(db_processor):
     session.close()
 
 
-
 def test_delete_key_from_database(db_processor):
     """Тест удаления ключа из базы данных."""
     session = db_processor.get_session()
@@ -112,7 +117,9 @@ def test_update_key_data_limit(outline_processor, mock_client):
     mock_client.add_data_limit.return_value = "Data Limit Updated"
     status = outline_processor.upd_limit("key123", 10.0)
     assert status == "Data Limit Updated"
-    mock_client.add_data_limit.assert_called_once_with("key123", OutlineProcessor.gb_to_bytes(10.0))
+    mock_client.add_data_limit.assert_called_once_with(
+        "key123", OutlineProcessor.gb_to_bytes(10.0)
+    )
 
 
 def test_delete_non_existent_key(outline_processor, mock_client):
@@ -126,7 +133,9 @@ def test_delete_non_existent_key(outline_processor, mock_client):
 def test_create_vpn_key_duplicate(outline_processor, mock_client):
     """Тест попытки создания дублирующего VPN-ключа."""
     mock_client.get_keys.return_value = [
-        MagicMock(key_id="1"), MagicMock(key_id="2"), MagicMock(key_id="3")
+        MagicMock(key_id="1"),
+        MagicMock(key_id="2"),
+        MagicMock(key_id="3"),
     ]
     mock_client.create_key.side_effect = Exception("Key already exists")
     with pytest.raises(Exception, match="Key already exists"):
@@ -183,13 +192,15 @@ def test_update_database_with_key(db_processor):
         expiration_date=datetime(2024, 12, 31, 23, 59, 59),
         start_date=datetime(2024, 12, 1, 0, 0, 0),
     )
-    processor.update_database_with_key(
-        user_id="12345", key=key, period="1 month"
+    processor.update_database_with_key(user_id="12345", key=key, period="1 month")
+    user_from_db = (
+        session.query(DbProcessor.User).filter_by(user_telegram_id="12345").first()
     )
-    user_from_db = session.query(DbProcessor.User).filter_by(user_telegram_id="12345").first()
     assert user_from_db is not None
     assert user_from_db.subscription_status == "active"
-    keys_from_db = session.query(DbProcessor.Key).filter_by(user_telegram_id="12345").all()
+    keys_from_db = (
+        session.query(DbProcessor.Key).filter_by(user_telegram_id="12345").all()
+    )
     assert len(keys_from_db) == 1
     session.close()
 
@@ -210,7 +221,7 @@ def outline_processor(mock_client):
 def test_gb_to_bytes():
     """Тест конвертации ГБ в байты."""
     result = OutlineProcessor.gb_to_bytes(1.5)
-    assert result == 1.5 * 1024 ** 3  # Проверяем, что результат соответствует ожидаемому
+    assert result == 1.5 * 1024**3  # Проверяем, что результат соответствует ожидаемому
 
 
 def test_get_keys(outline_processor, mock_client):
@@ -233,7 +244,9 @@ def test_get_key_info(outline_processor, mock_client):
 def test_create_new_key(outline_processor, mock_client):
     """Тест создания нового ключа."""
     mock_client.create_key.return_value = "New Key Info"
-    new_key_info = outline_processor._create_new_key(key_id="key123", name="Test Key", data_limit_gb=2.5)
+    new_key_info = outline_processor._create_new_key(
+        key_id="key123", name="Test Key", data_limit_gb=2.5
+    )
     assert new_key_info == "New Key Info"
     mock_client.create_key.assert_called_once_with(
         key_id="key123", name="Test Key", data_limit=OutlineProcessor.gb_to_bytes(2.5)
@@ -253,7 +266,9 @@ def test_update_limit(outline_processor, mock_client):
     mock_client.add_data_limit.return_value = "Limit Updated"
     update_status = outline_processor.upd_limit("key123", 5.0)
     assert update_status == "Limit Updated"
-    mock_client.add_data_limit.assert_called_once_with("key123", OutlineProcessor.gb_to_bytes(5.0))
+    mock_client.add_data_limit.assert_called_once_with(
+        "key123", OutlineProcessor.gb_to_bytes(5.0)
+    )
 
 
 def test_delete_limit(outline_processor, mock_client):
@@ -271,6 +286,7 @@ def test_delete_key(outline_processor, mock_client):
     assert delete_status == "Key Deleted"
     mock_client.delete_key.assert_called_once_with("key123")
 
+
 def test_get_service_info(outline_processor, mock_client):
     """Тест получения информации о сервере."""
     mock_client.get_server_information.return_value = "Service Info"
@@ -282,7 +298,9 @@ def test_get_service_info(outline_processor, mock_client):
 def test_create_vpn_key(outline_processor, mock_client):
     """Тест создания нового VPN-ключа."""
     mock_client.get_keys.return_value = [
-        MagicMock(key_id="1"), MagicMock(key_id="2"), MagicMock(key_id="3")
+        MagicMock(key_id="1"),
+        MagicMock(key_id="2"),
+        MagicMock(key_id="3"),
     ]
     mock_client.create_key.return_value = "VPN Key Created"
 

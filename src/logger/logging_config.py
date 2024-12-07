@@ -4,6 +4,7 @@ import os
 
 LOG_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "bot.log"))
 
+
 def setup_logger():
     logging.basicConfig(
         level=logging.INFO,
