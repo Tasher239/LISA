@@ -3,17 +3,17 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
-from bot.initialization.outline_processor_init import outline_processor
+from LISA.src.bot.initialization.outline_processor_init import outline_processor
 
 
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
     get_key = InlineKeyboardButton(
-        text="Получить Ключ", callback_data="get_keys_pressed"
+        text="Получить ключ", callback_data="get_keys_pressed"
     )
 
     ket_management = InlineKeyboardButton(
-        text="Управление ключами", callback_data="key_management_pressed"
+        text="Менеджер ключей", callback_data="key_management_pressed"
     )
 
     about_us = InlineKeyboardButton(text="О нас", callback_data="about_us")
