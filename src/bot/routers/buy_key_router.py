@@ -9,8 +9,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 
 from bot.fsm.states import GetKey
-from bot.utils.dicts import prices_dict
-from bot.initialization.bot_init import bot
+
 from bot.fsm.states import MainMenu, ManageKeys
 from bot.keyboards.keyboards import get_period_keyboard
 
@@ -22,7 +21,7 @@ provider_token = os.getenv("PROVIDER_SBER_TOKEN")
 router = Router()
 logger = setup_logger()
 
-
+@router.callback_query(F.data=="get_keys_pressed")
 @router.callback_query(
     StateFilter(ManageKeys.no_active_keys),
     ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions"]),
@@ -40,29 +39,3 @@ async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(
-    StateFilter(GetKey.buy_key),
-    ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions"]),
-)
-async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
-    selected_period = callback.data.replace("_", " ").title()
-
-    amount = prices_dict[selected_period.split()[0]]
-    prices = [LabeledPrice(label="Ключ от VPN", amount=amount)]
-    description = f"Ключ от VPN Outline на {selected_period}"
-
-    # Сохранение выбранного периода в состоянии
-    await state.update_data(selected_period=selected_period)
-    await state.set_state(GetKey.waiting_for_payment)
-
-    await bot.send_invoice(
-        chat_id=callback.message.chat.id,
-        title="Покупка ключа",
-        description=description,
-        payload=str(uuid.uuid4()),
-        provider_token=provider_token,
-        start_parameter=str(uuid.uuid4()),
-        currency="rub",
-        prices=prices,
-    )
-    await callback.answer()

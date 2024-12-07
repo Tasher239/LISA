@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import uuid
 
 from aiogram import F, Router
 from aiogram.types import Message, PreCheckoutQuery, LabeledPrice, CallbackQuery
@@ -8,10 +9,10 @@ from aiogram.fsm.context import FSMContext
 
 from bot.fsm.states import GetKey
 from bot.initialization.outline_processor_init import outline_processor
-from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from bot.utils.send_message import send_key_to_user
-from bot.utils.dicts import prices_dict_prodl
+from bot.utils.dicts import prices_dict
+from bot.initialization.bot_init import bot
 
 from logger.log_sender import LogSender
 from logger.logging_config import setup_logger
@@ -28,6 +29,34 @@ logger = setup_logger()
 Параметр ok=True указывает, что запрос на предварительную проверку платежа был принят и все в порядке (платеж можно продолжать).
 Если вы хотите отклонить платеж, вы можете установить ok=False и добавить описание причины отклонения через параметр error_message.
 """
+
+
+@router.callback_query(
+    StateFilter(GetKey.buy_key),
+    ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions", 'get_keys_pressed']),
+)
+async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
+    selected_period = callback.data.replace("_", " ").title()
+
+    amount = prices_dict[selected_period.split()[0]]
+    prices = [LabeledPrice(label="Ключ от VPN", amount=amount)]
+    description = f"Ключ от VPN Outline на {selected_period}"
+
+    # Сохранение выбранного периода в состоянии
+    await state.update_data(selected_period=selected_period)
+    await state.set_state(GetKey.waiting_for_payment)
+
+    await bot.send_invoice(
+        chat_id=callback.message.chat.id,
+        title="Покупка ключа",
+        description=description,
+        payload=str(uuid.uuid4()),
+        provider_token=provider_token,
+        start_parameter=str(uuid.uuid4()),
+        currency="rub",
+        prices=prices,
+    )
+    await callback.answer()
 
 
 @router.pre_checkout_query()
@@ -65,28 +94,3 @@ async def successful_payment(message: Message, state: FSMContext):
             "Произошла ошибка при обработке вашего платежа. Пожалуйста, свяжитесь с поддержкой."
         )
         await state.clear()
-
-
-@router.callback_query(StateFilter(GetKey.prodlenie), F.data != "trial_period")
-async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
-    # await delete_previous_message(callback.message.chat.id, state)
-    selected_period = callback.data.replace("_", " ").title()
-    amount = prices_dict_prodl[selected_period.split()[0]]
-    prices = [LabeledPrice(label="Ключ от VPN", amount=amount)]
-    description = f"Ключ от VPN Outline на {selected_period}"
-
-    # Сохранение выбранного периода в состоянии
-    await state.update_data(selected_period=selected_period)
-    await state.set_state(GetKey.waiting_for_payment)
-
-    await bot.send_invoice(
-        chat_id=callback.message.chat.id,
-        title="Покупка ключа",
-        description=description,
-        payload=str(uuid.uuid4()),
-        provider_token=provider_token,
-        start_parameter=str(uuid.uuid4()),
-        currency="rub",
-        prices=prices,
-    )
-    await callback.answer()
