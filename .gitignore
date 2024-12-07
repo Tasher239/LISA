@@ -1,3 +1,9 @@
 venv/
 src/vpn_users.db
 .env
+# Ignore IDE settings
+.idea/
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
