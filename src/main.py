@@ -33,22 +33,17 @@ dp.include_router(payment_router.router)
 dp.include_router(key_management_router.router)
 dp.include_router(buy_key_router.router)
 dp.include_router(about_us_router.router)
-
-# dp.include_router(handlers.router)
-
 dp.include_router(reminder_router.router)
 dp.include_router(key_params_router.router)
 dp.include_router(trial_period_router.router)
 dp.include_router(back_button_router.router)
 dp.include_router(utils_router.router)
 
-
 async def main() -> None:
     logger.info("Запуск polling...")
     asyncio.create_task(db_processor.check_db())
     # await set_main_menu(bot)
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     try:
