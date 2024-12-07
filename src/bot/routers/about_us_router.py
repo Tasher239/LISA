@@ -15,4 +15,6 @@ logger = setup_logger()
 
 @router.callback_query(StateFilter(MainMenu.about_us), F.data != "back_to_main_menu")
 async def show_about_us(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(INFO.ABOUT_US, reply_markup=get_about_us_keyboard(), parse_mode="Markdown")
+    await callback.message.answer(
+        INFO.ABOUT_US, reply_markup=get_about_us_keyboard(), parse_mode="Markdown"
+    )

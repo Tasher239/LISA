@@ -1,14 +1,14 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from LISA.src.bot.keyboards.keyboards import get_installation_button
+from src.bot.keyboards.keyboards import get_installation_button
 
-from LISA.src.bot.initialization.bot_init import bot
-from LISA.src.bot.keyboards.keyboards import get_prodlit_keyboard
-from LISA.src.bot.lexicon.lexicon import Notification
-from LISA.src.bot.utils.string_makers import get_your_key_string
+from src.bot.initialization.bot_init import bot
+from src.bot.keyboards.keyboards import get_prodlit_keyboard
+from src.bot.lexicon.lexicon import Notification
+from src.bot.utils.string_makers import get_your_key_string
 
-from LISA.src.logger.logging_config import setup_logger
+from src.logger.logging_config import setup_logger
 
 logger = setup_logger()
 

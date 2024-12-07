@@ -10,12 +10,12 @@ import asyncio
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from datetime import datetime, timedelta
 
-from LISA.src.bot.utils.send_message import (
+from src.bot.utils.send_message import (
     send_message_subscription_expired,
     send_message_subscription_ends,
 )
 
-from LISA.src.logger.logging_config import setup_logger
+from src.logger.logging_config import setup_logger
 
 logger = setup_logger()
 Base = declarative_base()

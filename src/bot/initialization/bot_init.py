@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 from aiogram import Bot
 
-from LISA.src.logger.logging_config import setup_logger
+from src.logger.logging_config import setup_logger
 
 load_dotenv()
 BOT_TOKEN = os.getenv("TOKEN")

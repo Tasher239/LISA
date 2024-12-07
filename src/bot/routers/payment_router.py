@@ -33,7 +33,14 @@ logger = setup_logger()
 
 @router.callback_query(
     StateFilter(GetKey.buy_key),
-    ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions", 'get_keys_pressed']),
+    ~F.data.in_(
+        [
+            "trial_period",
+            "back_to_main_menu",
+            "installation_instructions",
+            "get_keys_pressed",
+        ]
+    ),
 )
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace("_", " ").title()
