@@ -75,7 +75,6 @@ def get_installation_button():
         ]
     )
 
-
 # это нужно переименовать тк юзается еще в менеджере когда нет активных ключей
 def get_buttons_for_trial_period():
     get_trial_key = InlineKeyboardButton(
@@ -226,6 +225,18 @@ def get_already_have_trial_key():
         inline_keyboard=[
             [
                 InlineKeyboardButton(text="Назад", callback_data="get_keys_pressed"),
+                InlineKeyboardButton(
+                    text="В главное меню", callback_data="back_to_main_menu"
+                ),
+            ]
+        ]
+    )
+
+def get_back_button_to_key_params():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Назад", callback_data="to_key_params"),
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),
