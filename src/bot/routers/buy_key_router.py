@@ -1,4 +1,3 @@
-import uuid
 import os
 
 from dotenv import load_dotenv
@@ -42,6 +41,10 @@ async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data.startswith("extend_"))
 async def extension_period_key_menu(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GetKey.choice_extension_period)
+    data = await state.get_data()
+    selected_key_id = data.get("selected_key_id", None)
+    if not selected_key_id:
+        await state.update_data(selected_key_id=callback.data.split("_")[1])
     await callback.message.edit_text(
         "Выберите период продления:",
         reply_markup=get_extension_periods_keyboard(),

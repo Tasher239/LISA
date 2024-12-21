@@ -1,19 +1,17 @@
-from aiogram.types import CallbackQuery, Message
 from aiogram import Router, F
+from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 
-from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
+from bot.utils.send_message import send_key_to_user_with_back_button
+from bot.fsm.states import ManageKeys
 from bot.keyboards.keyboards import (
     get_key_action_keyboard,
     get_confirmation_keyboard,
-    get_back_button,
     get_back_button_to_key_params,
 )
-from bot.utils.send_message import send_key_to_user_with_back_button
-from bot.utils.extend_key_in_db import extend_key_in_db
 
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger

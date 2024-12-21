@@ -10,7 +10,6 @@ class GetKey(StatesGroup):
     choosing_period = State()
     waiting_for_payment = State()
     sending_key = State()
-    prodlenie = State()
     buy_key = State()
     waiting_for_extension_payment = State()
     choice_extension_period = State()

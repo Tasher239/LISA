@@ -13,7 +13,6 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
-from pyexpat.errors import messages
 
 from bot.fsm.states import GetKey
 from bot.initialization.outline_processor_init import outline_processor
@@ -144,10 +143,11 @@ async def successful_payment(message: Message, state: FSMContext):
         key_id = data.get("selected_key_id")
         add_period = int(data.get("selected_period").split()[0])
         add_period = 31 * add_period
+        new_message = await message.answer(text="Оплата прошла успешно")
+        extend_key_in_db(key_id=key_id, add_period=add_period)
+
         key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
-        new_message = await message.edit_text(text="Оплата прошла успешно")
-        extend_key_in_db(key_id=key.key_id, add_period=add_period)
-        await message.answer(
+        await new_message.edit_text(
             f'Ключ «{outline_processor.get_key_info(key_id).name}» действует до <b>{key.expiration_date.strftime("%d.%m.%y")}</b>',
             parse_mode="HTML",
             reply_markup=get_back_button(),

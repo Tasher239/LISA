@@ -11,15 +11,14 @@ import asyncio
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from datetime import datetime, timedelta
 
-from bot.initialization.bot_init import bot
 from bot.initialization.outline_processor_init import outline_processor
 from bot.utils.send_message import send_message_subscription_expired
-from bot.keyboards.keyboards import get_key_name_extension_keyboard_with_names
 
 from logger.logging_config import setup_logger
 
 logger = setup_logger()
 Base = declarative_base()
+
 
 class DbProcessor:
     def __init__(self):
@@ -84,7 +83,7 @@ class DbProcessor:
                         key_name = key_info.name
                         # ключ будет действовать меньше 3х дней
                         if (key.remembering_before_exp == False) and (
-                            key.expiration_date - datetime.now() < timedelta(days=2)
+                            key.expiration_date - datetime.now() < timedelta(days=4)
                         ):
                             key.remembering = True
                             expiring_keys.append(key_name)
@@ -93,13 +92,16 @@ class DbProcessor:
                             # ключ больше не работает
                         elif key.expiration_date < datetime.now():
                             # Устанавливаем состояние "extension"
-                            await send_message_subscription_expired(user)
+                            expiring_keys.append(key_name)
+                            expiring_id.append(key.key_id)
                             # тухлый ключ лежит в бд 1 день - удаляем из бд
                         elif datetime.now() > key.expiration_date + timedelta(days=1):
                             session.delete(key)
                             session.commit()
                     if expiring_keys:
-                        await send_message_subscription_expired(user, expiring_keys, expiring_id)
+                        await send_message_subscription_expired(
+                            user, expiring_keys, expiring_id
+                        )
             except Exception as e:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise

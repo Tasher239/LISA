@@ -24,7 +24,9 @@ def get_main_menu_keyboard():
 
 
 def get_about_us_keyboard():
-    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+    back_button = InlineKeyboardButton(
+        text="🔙 Назад", callback_data="back_to_main_menu"
+    )
     return InlineKeyboardMarkup(inline_keyboard=[[back_button]])
 
 
@@ -45,7 +47,9 @@ def get_period_keyboard():
         text="Пробный период", callback_data="trial_period"
     )
 
-    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+    back_button = InlineKeyboardButton(
+        text="🔙 Назад", callback_data="back_to_main_menu"
+    )
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -84,7 +88,9 @@ def get_buttons_for_trial_period():
     buy_key_button = InlineKeyboardButton(
         text="Купить ключ", callback_data="get_keys_pressed"
     )
-    back_button = InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+    back_button = InlineKeyboardButton(
+        text="🔙 Назад", callback_data="back_to_main_menu"
+    )
 
     return InlineKeyboardMarkup(
         inline_keyboard=[[get_trial_key], [buy_key_button], [back_button]]
@@ -142,8 +148,6 @@ def get_extension_periods_keyboard():
 
 
 def get_key_name_choosing_keyboard(keys: list):
-    from database.db_processor import DbProcessor
-
     keyboard_buttons = []
 
     for key in keys:
@@ -154,47 +158,42 @@ def get_key_name_choosing_keyboard(keys: list):
         keyboard_buttons.append([button])
 
     back_button = [
-        InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+        InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")
     ]
     keyboard_buttons.append(back_button)
 
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def get_key_name_extension_keyboard(keys: list):
-    from database.db_processor import DbProcessor
-
-    keyboard_buttons = []
-
-    for key in keys:
-        key_info = outline_processor.get_key_info(key.key_id)
-        button = InlineKeyboardButton(
-            text=f"🔑 {key_info.name}", callback_data=f"extend_{key.key_id}"
-        )
-        keyboard_buttons.append([button])
-
-    back_button = [
-        InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
-    ]
-    keyboard_buttons.append(back_button)
-
-    return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+# def get_key_name_extension_keyboard(keys: list):
+#     keyboard_buttons = []
+#     for key in keys:
+#         key_info = outline_processor.get_key_info(key.key_id)
+#         button = InlineKeyboardButton(
+#             text=f"🔑 {key_info.name}", callback_data=f"extend_{key.key_id}"
+#         )
+#         keyboard_buttons.append([button])
+#
+#     back_button = [
+#         InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+#     ]
+#     keyboard_buttons.append(back_button)
+#
+#     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
 def get_key_name_extension_keyboard_with_names(keys: list, keys_id):
-    from database.db_processor import DbProcessor
-
     keyboard_buttons = []
     for i, key in enumerate(keys):
         key_id = keys_id[i]
         button = InlineKeyboardButton(
             text=f"🔑 {key}",
-            callback_data=f"extend_{keys_id}",
+            callback_data=f"extend_{key_id}",
         )
         keyboard_buttons.append([button])
 
     back_button = [
-        InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
+        InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")
     ]
     keyboard_buttons.append(back_button)
 
@@ -243,24 +242,24 @@ def get_confirmation_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
 
 
-def get_no_trial_period():
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Приобрести ключ", callback_data="get_keys_pressed"
-                ),
-                InlineKeyboardButton(text="Назад", callback_data="back_to"),
-            ]
-        ]
-    )
+# def get_no_trial_period():
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text="Приобрести ключ", callback_data="get_keys_pressed"
+#                 ),
+#                 InlineKeyboardButton(text="Назад", callback_data="back_to"),
+#             ]
+#         ]
+#     )
 
 
 def get_already_have_trial_key():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="Назад", callback_data="get_keys_pressed"),
+                InlineKeyboardButton(text="🔙 Назад", callback_data="get_keys_pressed"),
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),
@@ -273,7 +272,7 @@ def get_back_button_to_key_params():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="Назад", callback_data="to_key_params"),
+                InlineKeyboardButton(text="🔙 Назад", callback_data="to_key_params"),
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),
