@@ -5,13 +5,13 @@ from aiogram.fsm.state import default_state
 from aiogram.filters import StateFilter
 
 from bot.lexicon.lexicon import INFO
+from bot.fsm.states import MainMenu
 from bot.utils.string_makers import get_instruction_string
 from bot.keyboards.keyboards import (
     get_back_button,
     get_main_menu_keyboard,
     get_about_us_keyboard,
 )
-from bot.fsm.states import MainMenu
 
 from logger.logging_config import setup_logger
 
