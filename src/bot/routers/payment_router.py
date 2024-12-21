@@ -54,7 +54,9 @@ logger = setup_logger()
         ]
     ),
 )
-@router.callback_query(StateFilter(GetKey.choice_extension_period), ~F.data.in_('to_key_params'))
+@router.callback_query(
+    StateFilter(GetKey.choice_extension_period), ~F.data.in_("to_key_params")
+)
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace("_", " ").title()
 
