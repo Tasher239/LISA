@@ -12,6 +12,8 @@ class GetKey(StatesGroup):
     sending_key = State()
     prodlenie = State()
     buy_key = State()
+    waiting_for_extension_payment = State()
+    choice_extension_period = State()
 
 
 class ManageKeys(StatesGroup):
@@ -27,6 +29,5 @@ class ManageKeys(StatesGroup):
     no_active_keys = State()
 
 
-class Subscription_prodl(StatesGroup):
-    reminder = State()
-    expired = State()
+class SubscriptionExtension(StatesGroup):
+    extension = State()

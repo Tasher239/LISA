@@ -11,7 +11,7 @@ from aiogram.fsm.context import FSMContext
 from bot.fsm.states import GetKey
 
 from bot.fsm.states import MainMenu, ManageKeys
-from bot.keyboards.keyboards import get_period_keyboard
+from bot.keyboards.keyboards import get_period_keyboard, get_extension_periods_keyboard
 
 from logger.logging_config import setup_logger
 
@@ -37,4 +37,12 @@ async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
         "Выберите тип ключа:",
         reply_markup=get_period_keyboard(),
     )
-    # await callback.answer()
+
+
+@router.callback_query(F.data.startswith("extend_"))
+async def extension_period_key_menu(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(GetKey.choice_extension_period)
+    await callback.message.edit_text(
+        "Выберите период продления:",
+        reply_markup=get_extension_periods_keyboard(),
+    )

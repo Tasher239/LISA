@@ -12,7 +12,7 @@ from bot.keyboards.keyboards import (
     get_back_button,
     get_back_button_to_key_params,
 )
-from bot.utils.send_message import send_key_to_user
+from bot.utils.send_message import send_key_to_user_with_back_button
 from bot.utils.extend_key_in_db import extend_key_in_db
 
 from database.db_processor import DbProcessor
@@ -89,18 +89,12 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
         used_bytes = key_info.used_bytes
     total_traffic = used_bytes / (1024**2)
 
-    # надо как-то считать
-    avg_daily_usage = 1
-    avg_day_usage = 1
-    avg_night_usage = 0.5
-
     response = f"""
     Суммарный трафик: {total_traffic} Гб
-    Среднее использование в сутки: {avg_daily_usage} Гб/сут
-    Среднее использование за день/ночь: {avg_day_usage} Гб / {avg_night_usage} Гб
     """
-
-    await callback.message.edit_text(response, reply_markup=get_back_button_to_key_params())
+    await callback.message.edit_text(
+        response, reply_markup=get_back_button_to_key_params()
+    )
 
 
 # дата окончания активации
@@ -134,33 +128,6 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
         response, reply_markup=get_back_button_to_key_params()
     )
     callback.answer()
-
-
-# Пример для действия "Продлить ключ"
-@router.callback_query(
-    StateFilter(ManageKeys.choose_key_action), F.data.startswith("extend")
-)
-async def extend_key_handler(callback: CallbackQuery, state: FSMContext):
-    key_id = callback.data.split("_")[1]  # Извлекаем ID ключа
-
-    # Логика продления ключа (например, обновление даты окончания)
-    session = db_processor.get_session()
-    key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
-
-    if not key:
-        await callback.message.answer("Ключ не найден.")
-        return
-
-    # Продлить ключ на 30 дней
-    extend_key_in_db(key_id=key.key_id, add_period=30)
-
-    # нужно вызывать роутер которые будет обрабатывать всю логику продления:
-    # выбирать период, проводить оплату и вызывать функцию extend_key_in_db
-
-    await callback.message.edit_text(
-        "Ключ успешно продлен на 30 дней!", reply_markup=get_back_button_to_key_params()
-    )
-
 
 @router.callback_query(
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("rename")
@@ -260,4 +227,4 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     # Отправляем ключ пользователю
-    await send_key_to_user(callback.message, key_info, f"Ваш ключ «{key_info.name}»")
+    await send_key_to_user_with_back_button(callback.message, key_info, f"Ваш ключ «{key_info.name}»")
