@@ -53,7 +53,9 @@ async def main() -> None:
     await set_main_menu(bot)  # Вызываем set_main_menu напрямую до запуска polling
 
     logger.info("Запуск polling...")
-    asyncio.create_task(db_processor.check_db())  # Запуск фоновой проверки базы данных
+    asyncio.create_task(
+        db_processor.check_db(dp)
+    )  # Запуск фоновой проверки базы данных
     await dp.start_polling(bot)
 
 

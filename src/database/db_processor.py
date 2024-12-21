@@ -9,20 +9,17 @@ from sqlalchemy import (
 import asyncio
 
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
-
 from datetime import datetime, timedelta
 
-from src.bot.utils.send_message import (
-    send_message_subscription_expired,
-    send_message_subscription_ends,
-)
-
+from bot.initialization.bot_init import bot
+from bot.initialization.outline_processor_init import outline_processor
+from bot.utils.send_message import send_message_subscription_expired
+from bot.keyboards.keyboards import get_key_name_extension_keyboard_with_names
 
 from logger.logging_config import setup_logger
 
 logger = setup_logger()
 Base = declarative_base()
-
 
 class DbProcessor:
     def __init__(self):
@@ -74,27 +71,32 @@ class DbProcessor:
         finally:
             session.close()
 
-    async def check_db(self):
+    async def check_db(self, dp):
         while True:
             session = self.get_session()
             try:
                 users = session.query(DbProcessor.User).all()
                 for user in users:
+                    expiring_keys = []
+                    expiring_id = []
                     for key in user.keys:
+                        key_info = outline_processor.get_key_info(key.key_id)
+                        key_name = key_info.name
                         # ключ будет действовать меньше 3х дней
                         if (key.remembering_before_exp == False) and (
-                            key.expiration_date - datetime.now() < timedelta(days=3)
+                            key.expiration_date - datetime.now() < timedelta(days=2)
                         ):
                             key.remembering = True
+                            expiring_keys.append(key_name)
+                            expiring_id.append(key.key_id)
                             session.commit()
-                            await send_message_subscription_ends(user)
                             # ключ больше не работает
-                        elif key.expiration_date < datetime.now():
-                            await send_message_subscription_expired(user)
-                            # тухлый ключ лежит в бд 1 день - удаляем из бд
+
                         elif datetime.now() > key.expiration_date + timedelta(days=1):
                             session.delete(key)
                             session.commit()
+                    if expiring_keys:
+                        await send_message_subscription_expired(user, expiring_keys, expiring_id)
             except Exception as e:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise
