@@ -2,15 +2,13 @@ from aiogram.types import Message, CallbackQuery
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart, StateFilter
-from aiogram.fsm.state import default_state
 
 from bot.keyboards.keyboards import get_main_menu_keyboard
 from bot.fsm.states import MainMenu, ManageKeys
 from bot.utils.send_message import send_message_and_save
 from bot.routers.key_management_router import choosing_key_handler
 from bot.routers.buy_key_router import buy_key_menu
-from bot.routers.about_us_router import show_about_us
-
+from bot.routers.utils_router import show_about_us
 
 from logger.logging_config import setup_logger
 

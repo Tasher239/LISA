@@ -22,10 +22,10 @@ logger = setup_logger()
 @router.callback_query(StateFilter(GetKey.buy_key), F.data == "trial_period")
 @router.callback_query(StateFilter(ManageKeys.no_active_keys), F.data == "trial_period")
 async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
-    # Если пользователь выбрал использовать пробный ключ
-    # Проверяем, что пользователь не использовал пробный период ранее
-    # Если использовал возвращаем сообщение, что пробный период уже заюзан
-    # И делаем 2 кнопки - назад и купить ключ
+    """Если пользователь выбрал использовать пробный ключ
+    Проверяем, что пользователь не использовал пробный период ранее
+    Если использовал возвращаем сообщение, что пробный период уже заюзан
+    И делаем 2 кнопки - назад и купить ключ"""
 
     user_id = callback.from_user.id
     user_id_str = str(user_id)
@@ -38,7 +38,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     if not user:
         user = DbProcessor.User(
             user_telegram_id=user_id_str,
-            subscription_status="active",  # тут поменять + добавить инфу о конце периода для ключа
+            subscription_status="active",  # тут поменять + добавить информацию о конце периода для ключа
             use_trial_period=False,
         )
         session.add(user)
@@ -65,7 +65,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         text = "Ваш пробный ключ готов к использованию. Срок действия - 2 дня."
         await send_key_to_user(callback.message, key, text)
     else:
-        await callback.message.answer(
+        await callback.message.edit_text(
             "Вы уже использовали пробный период. "
             "Вы можете купить ключ или вернуться в главное меню",
             reply_markup=get_already_have_trial_key(),

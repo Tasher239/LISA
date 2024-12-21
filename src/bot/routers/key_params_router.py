@@ -18,7 +18,7 @@ from bot.utils.extend_key_in_db import extend_key_in_db
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 router = Router()
 logger = setup_logger()
@@ -62,8 +62,9 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Ключ не найден.")
         return
 
-    await callback.message.answer(
-        "Выберите действие для ключа:", reply_markup=get_key_action_keyboard(key_info)
+    await callback.message.edit_text(
+        f"Выберите действие для ключа: «{key_info.name}»",
+        reply_markup=get_key_action_keyboard(key_info),
     )
     await state.set_state(ManageKeys.choose_key_action)
 
@@ -82,18 +83,16 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Ключ не найден.")
         return
 
-    # Логика вычисления трафика и среднего потребления
-
     key_info = outline_processor.get_key_info(key_id)
     used_bytes = 0
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
-    total_traffic = used_bytes / (1024 ** 2)
+    total_traffic = used_bytes / (1024**2)
 
     # надо как-то считать
-    avg_daily_usage = 1  # Сюда ваш расчет среднего использования в сутки
-    avg_day_usage = 1  # Среднее дневное использование
-    avg_night_usage = 0.5  # Среднее ночное использование
+    avg_daily_usage = 1
+    avg_day_usage = 1
+    avg_night_usage = 0.5
 
     response = f"""
     Суммарный трафик: {total_traffic} Гб
@@ -101,10 +100,10 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
     Среднее использование за день/ночь: {avg_day_usage} Гб / {avg_night_usage} Гб
     """
 
-    await callback.message.answer(response, reply_markup=get_back_button())
+    await callback.message.edit_text(response, reply_markup=get_back_button_to_key_params())
 
 
-# Пример для другого действия, например, дата окончания активации
+# дата окончания активации
 @router.callback_query(
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("expiration")
 )
@@ -119,11 +118,10 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Ключ не найден.")
         return
 
-    # Логика для вычисления даты окончания активации
     expiration_date = key.expiration_date
     if expiration_date:
         # Вычисляем количество оставшихся дней
-        remaining_days = (expiration_date - datetime.now()).days
+        remaining_days = (expiration_date - datetime.now() + timedelta(days=1)).days
     else:
         remaining_days = None
 
@@ -132,7 +130,10 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
     else:
         response = "Дата окончания не установлена."
 
-    await callback.message.answer(response, reply_markup=get_back_button_to_key_params())
+    await callback.message.edit_text(
+        response, reply_markup=get_back_button_to_key_params()
+    )
+    callback.answer()
 
 
 # Пример для действия "Продлить ключ"
@@ -156,8 +157,8 @@ async def extend_key_handler(callback: CallbackQuery, state: FSMContext):
     # нужно вызывать роутер которые будет обрабатывать всю логику продления:
     # выбирать период, проводить оплату и вызывать функцию extend_key_in_db
 
-    await callback.message.answer(
-        "Ключ успешно продлен на 30 дней!", reply_markup=get_back_button()
+    await callback.message.edit_text(
+        "Ключ успешно продлен на 30 дней!", reply_markup=get_back_button_to_key_params()
     )
 
 
@@ -171,7 +172,7 @@ async def ask_new_name_handler(callback: CallbackQuery, state: FSMContext):
     await state.update_data(selected_key_id=key_id)
 
     # Запрашиваем у пользователя новое имя для ключа
-    await callback.message.answer("Введите новое имя для ключа:")
+    await callback.message.edit_text("Введите новое имя для ключа:")
 
     # Переходим к следующему состоянию
     await state.set_state(ManageKeys.wait_for_new_name)
@@ -195,7 +196,7 @@ async def receive_new_name_handler(message: Message, state: FSMContext):
 
     # Запрашиваем подтверждение переименования
     await message.answer(
-        f"Вы хотите переименовать ключ в '{new_name}'? Подтвердите действие.",
+        f"Вы хотите переименовать ключ в «{new_name}»? Подтвердите действие.",
         reply_markup=get_confirmation_keyboard(),
     )
 
@@ -228,8 +229,8 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
     outline_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
 
     # Отправляем сообщение пользователю
-    await callback.message.answer(
-        f"Ключ переименован в: {new_name}", reply_markup=get_back_button()
+    await callback.message.edit_text(
+        f"Ключ переименован в: {new_name}", reply_markup=get_back_button_to_key_params()
     )
 
 
@@ -237,8 +238,8 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
     StateFilter(ManageKeys.confirm_rename), F.data == "cancel_rename"
 )
 async def cancel_rename_handler(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(
-        "Переименование отменено.", reply_markup=get_back_button()
+    await callback.message.edit_text(
+        "Переименование отменено.", reply_markup=get_back_button_to_key_params()
     )
 
 
@@ -260,4 +261,3 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
 
     # Отправляем ключ пользователю
     await send_key_to_user(callback.message, key_info, f"Ваш ключ «{key_info.name}»")
-
