@@ -1,22 +1,23 @@
-from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
 
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand
+
+from bot.initialization.bot_init import bot  # инициализируем бота
+from bot.initialization.db_processor_init import db_processor
 from bot.routers import (
     payment_router,
     main_menu_router,
     key_management_router,
     admins_router,
-    reminder_router,
     key_params_router,
     buy_key_router,
     trial_period_router,
     utils_router,
 )
+
 from logger.logging_config import setup_logger
-from aiogram import Bot, Dispatcher
-from aiogram.types import BotCommand, BotCommandScopeDefault
-from bot.initialization.bot_init import bot  # инициализируем бота
-import asyncio
-from bot.initialization.db_processor_init import db_processor
 
 logger = setup_logger()
 
@@ -30,7 +31,6 @@ dp.include_router(main_menu_router.router)
 dp.include_router(payment_router.router)
 dp.include_router(key_management_router.router)
 dp.include_router(buy_key_router.router)
-dp.include_router(reminder_router.router)
 dp.include_router(key_params_router.router)
 dp.include_router(trial_period_router.router)
 dp.include_router(utils_router.router)
