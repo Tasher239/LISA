@@ -13,10 +13,10 @@ def get_main_menu_keyboard():
     )
 
     ket_management = InlineKeyboardButton(
-        text="Менеджер ключей", callback_data="key_management_pressed"
+        text="🛠️ Менеджер ключей", callback_data="key_management_pressed"
     )
 
-    about_us = InlineKeyboardButton(text="О нас", callback_data="about_us")
+    about_us = InlineKeyboardButton(text="ℹ️ О нас", callback_data="about_us")
 
     return InlineKeyboardMarkup(
         inline_keyboard=[[get_key], [ket_management], [about_us]]
@@ -74,6 +74,7 @@ def get_installation_button():
             ]
         ]
     )
+
 
 # это нужно переименовать тк юзается еще в менеджере когда нет активных ключей
 def get_buttons_for_trial_period():
@@ -153,7 +154,7 @@ def get_key_name_choosing_keyboard(keys):
     for key in keys:
         key_info = outline_processor.get_key_info(key.key_id)
         button = InlineKeyboardButton(
-            text=key_info.name, callback_data=f"key_{key.key_id}"
+            text=f'🔑 {key_info.name}', callback_data=f"key_{key.key_id}"
         )
         keyboard_buttons.append([button])
 
@@ -167,23 +168,23 @@ def get_key_name_choosing_keyboard(keys):
 
 def get_key_action_keyboard(key_info):
     view_traffic_button = InlineKeyboardButton(
-        text="Посмотреть объем трафика", callback_data=f"traffic_{key_info.key_id}"
+        text="📊 Посмотреть объем трафика", callback_data=f"traffic_{key_info.key_id}"
     )
     end_data_button = InlineKeyboardButton(
-        text="Посмотреть дату конца активации",
+        text="📅 Посмотреть дату конца активации",
         callback_data=f"expiration_{key_info.key_id}",
     )
     prodlit_key_button = InlineKeyboardButton(
-        text="Продлить действие ключа", callback_data=f"extend_{key_info.key_id}"
+        text="⏳ Продлить действие ключа", callback_data=f"extend_{key_info.key_id}"
     )
     rename_key_button = InlineKeyboardButton(
-        text="Переименовать ключ", callback_data=f"rename_{key_info.key_id}"
+        text="✏️ Переименовать ключ", callback_data=f"rename_{key_info.key_id}"
     )
     get_url_key_button = InlineKeyboardButton(
-        text="Вывести сам ключ", callback_data=f"access_url_{key_info.key_id}"
+        text="🔑 Вывести сам ключ", callback_data=f"access_url_{key_info.key_id}"
     )
     back_button = InlineKeyboardButton(
-        text="Назад", callback_data="key_management_pressed"
+        text="🔙 Назад", callback_data="key_management_pressed"
     )
 
     return InlineKeyboardMarkup(
@@ -200,9 +201,9 @@ def get_key_action_keyboard(key_info):
 
 def get_confirmation_keyboard():
     confirm_button = InlineKeyboardButton(
-        text="Подтвердить", callback_data="confirm_rename"
+        text="✅ Подтвердить", callback_data="confirm_rename"
     )
-    cancel = InlineKeyboardButton(text="Отменить", callback_data="cancel_rename")
+    cancel = InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_rename")
 
     return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
 
@@ -231,6 +232,7 @@ def get_already_have_trial_key():
             ]
         ]
     )
+
 
 def get_back_button_to_key_params():
     return InlineKeyboardMarkup(

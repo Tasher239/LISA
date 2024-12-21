@@ -9,12 +9,11 @@ from bot.routers import (
     key_params_router,
     buy_key_router,
     trial_period_router,
-    back_button_router,
     utils_router,
-    about_us_router,
 )
 from logger.logging_config import setup_logger
-from aiogram import Dispatcher
+from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand, BotCommandScopeDefault
 from bot.initialization.bot_init import bot  # инициализируем бота
 import asyncio
 from bot.initialization.db_processor_init import db_processor
@@ -31,18 +30,30 @@ dp.include_router(main_menu_router.router)
 dp.include_router(payment_router.router)
 dp.include_router(key_management_router.router)
 dp.include_router(buy_key_router.router)
-dp.include_router(about_us_router.router)
 dp.include_router(reminder_router.router)
 dp.include_router(key_params_router.router)
 dp.include_router(trial_period_router.router)
-dp.include_router(back_button_router.router)
 dp.include_router(utils_router.router)
 
 
+async def set_main_menu(bot: Bot):
+    main_menu_commands = [
+        BotCommand(command="/start", description="Перезапустить бота")
+    ]
+    try:
+        await bot.delete_my_commands()  # Удаляем старые команды
+        await bot.set_my_commands(main_menu_commands)  # Устанавливаем новые
+        logger.info("Команды успешно установлены")
+    except Exception as e:
+        logger.error(f"Ошибка при установке команд: {e}")
+
+
 async def main() -> None:
+    logger.info("Регистрация main menu команд...")
+    await set_main_menu(bot)  # Вызываем set_main_menu напрямую до запуска polling
+
     logger.info("Запуск polling...")
-    asyncio.create_task(db_processor.check_db())
-    # await set_main_menu(bot)
+    asyncio.create_task(db_processor.check_db())  # Запуск фоновой проверки базы данных
     await dp.start_polling(bot)
 
 
