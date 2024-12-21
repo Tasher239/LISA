@@ -7,7 +7,9 @@ from sqlalchemy import (
     create_engine,
 )
 import asyncio
+
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
+
 from datetime import datetime, timedelta
 
 from src.bot.utils.send_message import (
@@ -15,7 +17,6 @@ from src.bot.utils.send_message import (
     send_message_subscription_ends,
 )
 
-import aioschedule
 
 from logger.logging_config import setup_logger
 
@@ -82,7 +83,7 @@ class DbProcessor:
                     for key in user.keys:
                         # ключ будет действовать меньше 3х дней
                         if (key.remembering_before_exp == False) and (
-                                key.expiration_date - datetime.now() < timedelta(days=3)
+                            key.expiration_date - datetime.now() < timedelta(days=3)
                         ):
                             key.remembering = True
                             session.commit()
@@ -100,7 +101,6 @@ class DbProcessor:
             await asyncio.sleep(
                 60 * 60 * 12
             )  # каждые 12 ч перенесена в конец чтобы 1 раз пробегаться при запуске бота
-
 
     # Определение таблицы Users
     class User(Base):
