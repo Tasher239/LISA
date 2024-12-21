@@ -129,9 +129,7 @@ def get_extension_periods_keyboard():
     year_button = InlineKeyboardButton(
         text="12 Месяцев (490₽)", callback_data="12_months"
     )
-    back_button = InlineKeyboardButton(
-        text="🔙 Назад", callback_data="to_key_params"
-    )
+    back_button = InlineKeyboardButton(text="🔙 Назад", callback_data="to_key_params")
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [month_button],
@@ -182,8 +180,10 @@ def get_key_name_extension_keyboard(keys: list):
 
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
+
 def get_key_name_extension_keyboard_with_names(keys: list, keys_id):
     from database.db_processor import DbProcessor
+
     keyboard_buttons = []
     for i, key in enumerate(keys):
         key_id = keys_id[i]
@@ -199,6 +199,7 @@ def get_key_name_extension_keyboard_with_names(keys: list, keys_id):
     keyboard_buttons.append(back_button)
 
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
 
 def get_key_action_keyboard(key_info):
     view_traffic_button = InlineKeyboardButton(

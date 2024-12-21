@@ -129,6 +129,7 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
     )
     callback.answer()
 
+
 @router.callback_query(
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("rename")
 )
@@ -227,4 +228,6 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     # Отправляем ключ пользователю
-    await send_key_to_user_with_back_button(callback.message, key_info, f"Ваш ключ «{key_info.name}»")
+    await send_key_to_user_with_back_button(
+        callback.message, key_info, f"Ваш ключ «{key_info.name}»"
+    )

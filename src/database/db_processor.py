@@ -91,7 +91,10 @@ class DbProcessor:
                             expiring_id.append(key.key_id)
                             session.commit()
                             # ключ больше не работает
-
+                        elif key.expiration_date < datetime.now():
+                            # Устанавливаем состояние "extension"
+                            await send_message_subscription_expired(user)
+                            # тухлый ключ лежит в бд 1 день - удаляем из бд
                         elif datetime.now() > key.expiration_date + timedelta(days=1):
                             session.delete(key)
                             session.commit()
