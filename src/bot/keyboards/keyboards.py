@@ -165,23 +165,6 @@ def get_key_name_choosing_keyboard(keys: list):
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-# def get_key_name_extension_keyboard(keys: list):
-#     keyboard_buttons = []
-#     for key in keys:
-#         key_info = outline_processor.get_key_info(key.key_id)
-#         button = InlineKeyboardButton(
-#             text=f"🔑 {key_info.name}", callback_data=f"extend_{key.key_id}"
-#         )
-#         keyboard_buttons.append([button])
-#
-#     back_button = [
-#         InlineKeyboardButton(text="Назад", callback_data="back_to_main_menu")
-#     ]
-#     keyboard_buttons.append(back_button)
-#
-#     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
-
-
 def get_key_name_extension_keyboard_with_names(keys: list, keys_id):
     keyboard_buttons = []
     for i, key in enumerate(keys):
@@ -215,7 +198,7 @@ def get_key_action_keyboard(key_info):
         text="✏️ Переименовать ключ", callback_data=f"rename_{key_info.key_id}"
     )
     get_url_key_button = InlineKeyboardButton(
-        text="🔑 Вывести сам ключ", callback_data=f"access_url_{key_info.key_id}"
+        text="🔑 Показать ключ", callback_data=f"access_url_{key_info.key_id}"
     )
     back_button = InlineKeyboardButton(
         text="🔙 Назад", callback_data="key_management_pressed"
@@ -240,19 +223,6 @@ def get_confirmation_keyboard():
     cancel = InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_rename")
 
     return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
-
-
-# def get_no_trial_period():
-#     return InlineKeyboardMarkup(
-#         inline_keyboard=[
-#             [
-#                 InlineKeyboardButton(
-#                     text="Приобрести ключ", callback_data="get_keys_pressed"
-#                 ),
-#                 InlineKeyboardButton(text="Назад", callback_data="back_to"),
-#             ]
-#         ]
-#     )
 
 
 def get_already_have_trial_key():

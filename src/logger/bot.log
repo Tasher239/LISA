@@ -796,3 +796,1550 @@ WHERE users.user_telegram_id = ?
 2024-12-22 02:21:33,746 - sqlalchemy.engine.Engine - INFO - [cached since 1.011s ago] ('432629636',)
 2024-12-22 02:21:35,831 - aiogram.event - INFO - Update id=659308962 is handled. Duration 280 ms by bot id=7444575424
 2024-12-22 02:21:40,093 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-22 11:12:18,600 - root - INFO - Инициализация бота...
+2024-12-22 11:12:19,335 - root - INFO - Инициализация бота...
+2024-12-22 11:12:19,394 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:19,394 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-22 11:12:19,395 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 11:12:19,396 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-22 11:12:19,396 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 11:12:19,397 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:12:19,434 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-22 11:12:19,434 - root - INFO - Инициализация диспетчера...
+2024-12-22 11:12:19,435 - root - INFO - Регистрация обработчиков...
+2024-12-22 11:12:19,437 - root - INFO - Регистрация main menu команд...
+2024-12-22 11:12:20,228 - root - INFO - Команды успешно установлены
+2024-12-22 11:12:20,228 - root - INFO - Запуск polling...
+2024-12-22 11:12:20,229 - aiogram.dispatcher - INFO - Start polling
+2024-12-22 11:12:20,239 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:20,244 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-22 11:12:20,244 - sqlalchemy.engine.Engine - INFO - [generated in 0.00058s] ()
+2024-12-22 11:12:20,250 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:12:20,250 - sqlalchemy.engine.Engine - INFO - [generated in 0.00059s] ('528155210',)
+2024-12-22 11:12:21,986 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:12:21,987 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:21,988 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 11:12:21,989 - sqlalchemy.engine.Engine - INFO - [generated in 0.00036s] ('138',)
+2024-12-22 11:12:23,011 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:12:23,012 - sqlalchemy.engine.Engine - INFO - [generated in 0.00083s] ('528155210',)
+2024-12-22 11:12:23,077 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 11:12:23,301 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:12:23,302 - sqlalchemy.engine.Engine - INFO - [cached since 0.2917s ago] ('432629636',)
+2024-12-22 11:12:23,304 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:12:23,305 - sqlalchemy.engine.Engine - INFO - [cached since 3.055s ago] ('432629636',)
+2024-12-22 11:12:24,450 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:12:24,452 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:24,452 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:12:24,452 - sqlalchemy.engine.Engine - INFO - [cached since 1.441s ago] ('432629636',)
+2024-12-22 11:12:24,836 - aiogram.event - INFO - Update id=659308963 is handled. Duration 1593 ms by bot id=7444575424
+2024-12-22 11:12:27,086 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-22 11:12:27,339 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 11:12:27,342 - root - INFO - Бот остановлен вручную.
+2024-12-22 11:12:27,640 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x000002F1EF9A6810>
+2024-12-22 11:12:27,641 - asyncio - ERROR - Unclosed connector
+connections: ['[(<aiohttp.client_proto.ResponseHandler object at 0x000002F1F6C01710>, 66656.875)]']
+connector: <aiohttp.connector.TCPConnector object at 0x000002F1F3135A90>
+2024-12-22 11:12:33,477 - root - INFO - Инициализация бота...
+2024-12-22 11:12:34,082 - root - INFO - Инициализация бота...
+2024-12-22 11:12:34,149 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:34,149 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-22 11:12:34,150 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 11:12:34,151 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-22 11:12:34,151 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 11:12:34,152 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:12:34,184 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-22 11:12:34,184 - root - INFO - Инициализация диспетчера...
+2024-12-22 11:12:34,185 - root - INFO - Регистрация обработчиков...
+2024-12-22 11:12:34,186 - root - INFO - Регистрация main menu команд...
+2024-12-22 11:12:34,549 - root - INFO - Команды успешно установлены
+2024-12-22 11:12:34,550 - root - INFO - Запуск polling...
+2024-12-22 11:12:34,551 - aiogram.dispatcher - INFO - Start polling
+2024-12-22 11:12:34,567 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:34,573 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-22 11:12:34,574 - sqlalchemy.engine.Engine - INFO - [generated in 0.00088s] ()
+2024-12-22 11:12:34,586 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:12:34,587 - sqlalchemy.engine.Engine - INFO - [generated in 0.00103s] ('528155210',)
+2024-12-22 11:12:36,116 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:12:36,118 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:36,120 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 11:12:36,121 - sqlalchemy.engine.Engine - INFO - [generated in 0.00078s] ('138',)
+2024-12-22 11:12:37,340 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:12:37,341 - sqlalchemy.engine.Engine - INFO - [generated in 0.00141s] ('528155210',)
+2024-12-22 11:12:37,422 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 11:12:37,658 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:12:37,658 - sqlalchemy.engine.Engine - INFO - [cached since 0.3184s ago] ('432629636',)
+2024-12-22 11:12:37,660 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:12:37,660 - sqlalchemy.engine.Engine - INFO - [cached since 3.075s ago] ('432629636',)
+2024-12-22 11:12:38,879 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:12:38,881 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:12:38,883 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:12:38,883 - sqlalchemy.engine.Engine - INFO - [cached since 1.543s ago] ('432629636',)
+2024-12-22 11:14:39,556 - aiogram.event - INFO - Update id=659308964 is handled. Duration 390 ms by bot id=7444575424
+2024-12-22 11:14:44,333 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:14:44,336 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:14:44,336 - sqlalchemy.engine.Engine - INFO - [generated in 0.00053s] ('136', 1, 0)
+2024-12-22 11:14:44,464 - aiogram.event - INFO - Update id=659308965 is handled. Duration 1235 ms by bot id=7444575424
+2024-12-22 11:14:52,037 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-22 11:20:46,789 - root - INFO - Инициализация бота...
+2024-12-22 11:20:47,390 - root - INFO - Инициализация бота...
+2024-12-22 11:20:47,446 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:20:47,447 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-22 11:20:47,447 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 11:20:47,449 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-22 11:20:47,449 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 11:20:47,449 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:20:47,484 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-22 11:20:47,485 - root - INFO - Инициализация диспетчера...
+2024-12-22 11:20:47,485 - root - INFO - Регистрация обработчиков...
+2024-12-22 11:20:47,487 - root - INFO - Регистрация main menu команд...
+2024-12-22 11:20:47,879 - root - INFO - Команды успешно установлены
+2024-12-22 11:20:47,879 - root - INFO - Запуск polling...
+2024-12-22 11:20:47,880 - aiogram.dispatcher - INFO - Start polling
+2024-12-22 11:20:47,893 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:20:47,898 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-22 11:20:47,899 - sqlalchemy.engine.Engine - INFO - [generated in 0.00068s] ()
+2024-12-22 11:20:47,906 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:20:47,908 - sqlalchemy.engine.Engine - INFO - [generated in 0.00077s] ('528155210',)
+2024-12-22 11:20:48,969 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:20:48,972 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:20:48,975 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 11:20:48,976 - sqlalchemy.engine.Engine - INFO - [generated in 0.00080s] ('138',)
+2024-12-22 11:20:49,878 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:20:49,879 - sqlalchemy.engine.Engine - INFO - [generated in 0.00102s] ('528155210',)
+2024-12-22 11:20:49,950 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 11:20:50,134 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:20:50,134 - sqlalchemy.engine.Engine - INFO - [cached since 0.2562s ago] ('432629636',)
+2024-12-22 11:20:50,136 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:20:50,136 - sqlalchemy.engine.Engine - INFO - [cached since 2.229s ago] ('432629636',)
+2024-12-22 11:20:51,077 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:20:51,078 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:20:51,079 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 11:20:51,079 - sqlalchemy.engine.Engine - INFO - [cached since 1.202s ago] ('432629636',)
+2024-12-22 11:20:56,467 - aiogram.event - INFO - Update id=659308966 is handled. Duration 297 ms by bot id=7444575424
+2024-12-22 11:20:58,757 - aiogram.event - INFO - Update id=659308967 is handled. Duration 218 ms by bot id=7444575424
+2024-12-22 11:21:20,080 - aiogram.event - INFO - Update id=659308968 is handled. Duration 202 ms by bot id=7444575424
+2024-12-22 11:21:26,333 - root - INFO - {
+    "message_id": 4354,
+    "date": 1734855687,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 5000,
+        "invoice_payload": "438be681-0ae4-42cd-a25b-348d0e6fb2dc",
+        "telegram_payment_charge_id": "7444575424_528155210_340586",
+        "provider_payment_charge_id": "7444575424_528155210_340586",
+        "subscription_expiration_date": null,
+        "is_recurring": null,
+        "is_first_recurring": null,
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-22 11:21:26,422 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:26,429 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:26,429 - sqlalchemy.engine.Engine - INFO - [generated in 0.00120s] ('136', 1, 0)
+2024-12-22 11:21:26,441 - sqlalchemy.engine.Engine - INFO - UPDATE keys SET expiration_date=? WHERE keys.key_id = ?
+2024-12-22 11:21:26,442 - sqlalchemy.engine.Engine - INFO - [generated in 0.00145s] ('2025-01-24 01:23:22.098292', '136')
+2024-12-22 11:21:26,448 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 11:21:26,461 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:26,463 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 11:21:26,464 - sqlalchemy.engine.Engine - INFO - [cached since 37.49s ago] ('136',)
+2024-12-22 11:21:26,469 - root - INFO - Ключ с ID 136 успешно продлён на 31 дней. Новая дата окончания: 2025-01-24 01:23:22.098292
+2024-12-22 11:21:26,471 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 11:21:26,474 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:26,476 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:26,477 - sqlalchemy.engine.Engine - INFO - [cached since 0.0492s ago] ('136', 1, 0)
+2024-12-22 11:21:27,823 - aiogram.event - INFO - Update id=659308969 is handled. Duration 1500 ms by bot id=7444575424
+2024-12-22 11:21:33,888 - aiogram.event - INFO - Update id=659308970 is handled. Duration 264 ms by bot id=7444575424
+2024-12-22 11:21:35,394 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:35,397 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:35,398 - sqlalchemy.engine.Engine - INFO - [generated in 0.00088s] ('528155210', 1, 0)
+2024-12-22 11:21:35,402 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:21:35,402 - sqlalchemy.engine.Engine - INFO - [cached since 47.5s ago] ('528155210',)
+2024-12-22 11:21:37,902 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 11:21:38,058 - aiogram.event - INFO - Update id=659308971 is handled. Duration 2671 ms by bot id=7444575424
+2024-12-22 11:21:40,459 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:40,460 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:40,460 - sqlalchemy.engine.Engine - INFO - [cached since 14.03s ago] ('136', 1, 0)
+2024-12-22 11:21:40,592 - aiogram.event - INFO - Update id=659308972 is handled. Duration 1141 ms by bot id=7444575424
+2024-12-22 11:21:43,652 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:43,653 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:43,653 - sqlalchemy.engine.Engine - INFO - [cached since 17.23s ago] ('136', 1, 0)
+2024-12-22 11:21:44,832 - aiogram.event - INFO - Update id=659308973 is handled. Duration 1187 ms by bot id=7444575424
+2024-12-22 11:21:47,629 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:47,630 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:47,632 - sqlalchemy.engine.Engine - INFO - [cached since 21.2s ago] ('136', 1, 0)
+2024-12-22 11:21:47,755 - aiogram.event - INFO - Update id=659308974 is handled. Duration 1156 ms by bot id=7444575424
+2024-12-22 11:21:49,217 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:49,218 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:49,218 - sqlalchemy.engine.Engine - INFO - [cached since 13.82s ago] ('528155210', 1, 0)
+2024-12-22 11:21:49,220 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 11:21:49,220 - sqlalchemy.engine.Engine - INFO - [cached since 61.31s ago] ('528155210',)
+2024-12-22 11:21:51,536 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 11:21:51,536 - aiogram.event - INFO - Update id=659308975 is handled. Duration 2312 ms by bot id=7444575424
+2024-12-22 11:21:52,903 - aiogram.event - INFO - Update id=659308976 is handled. Duration 359 ms by bot id=7444575424
+2024-12-22 11:21:54,413 - aiogram.event - INFO - Update id=659308977 is handled. Duration 172 ms by bot id=7444575424
+2024-12-22 11:21:56,706 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 11:21:56,707 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 11:21:56,707 - sqlalchemy.engine.Engine - INFO - [cached since 21.31s ago] ('528155210', 1, 0)
+2024-12-22 11:21:56,792 - aiogram.event - INFO - Update id=659308978 is handled. Duration 110 ms by bot id=7444575424
+2024-12-22 11:22:00,590 - aiogram.event - INFO - Update id=659308979 is handled. Duration 157 ms by bot id=7444575424
+2024-12-22 11:22:06,016 - aiogram.event - INFO - Update id=659308980 is handled. Duration 218 ms by bot id=7444575424
+2024-12-22 11:22:14,395 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-22 12:25:47,800 - root - INFO - Инициализация бота...
+2024-12-22 12:25:49,592 - root - INFO - Инициализация бота...
+2024-12-22 12:25:49,948 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:25:49,949 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-22 12:25:49,949 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 12:25:49,953 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("users")
+2024-12-22 12:25:49,953 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 12:25:49,954 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-22 12:25:49,955 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 12:25:49,956 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("keys")
+2024-12-22 12:25:49,957 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 12:25:49,958 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE users (
+	user_telegram_id VARCHAR NOT NULL, 
+	subscription_status VARCHAR, 
+	use_trial_period BOOLEAN, 
+	PRIMARY KEY (user_telegram_id)
+)
+
+
+2024-12-22 12:25:49,959 - sqlalchemy.engine.Engine - INFO - [no key 0.00049s] ()
+2024-12-22 12:25:49,971 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE keys (
+	key_id VARCHAR NOT NULL, 
+	user_telegram_id VARCHAR, 
+	expiration_date DATETIME, 
+	start_date DATETIME, 
+	remembering_before_exp BOOLEAN, 
+	PRIMARY KEY (key_id), 
+	FOREIGN KEY(user_telegram_id) REFERENCES users (user_telegram_id)
+)
+
+
+2024-12-22 12:25:49,972 - sqlalchemy.engine.Engine - INFO - [no key 0.00055s] ()
+2024-12-22 12:25:49,981 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 12:25:50,106 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-22 12:25:50,107 - root - INFO - Инициализация диспетчера...
+2024-12-22 12:25:50,108 - root - INFO - Регистрация обработчиков...
+2024-12-22 12:25:50,111 - root - INFO - Регистрация main menu команд...
+2024-12-22 12:25:50,743 - root - INFO - Команды успешно установлены
+2024-12-22 12:25:50,744 - root - INFO - Запуск polling...
+2024-12-22 12:25:50,744 - aiogram.dispatcher - INFO - Start polling
+2024-12-22 12:25:50,754 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:25:50,758 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-22 12:25:50,759 - sqlalchemy.engine.Engine - INFO - [generated in 0.00052s] ()
+2024-12-22 12:25:50,822 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 12:26:39,298 - aiogram.event - INFO - Update id=659308981 is handled. Duration 235 ms by bot id=7444575424
+2024-12-22 12:30:55,058 - aiogram.event - INFO - Update id=659308982 is handled. Duration 233 ms by bot id=7444575424
+2024-12-22 12:31:03,989 - aiogram.event - INFO - Update id=659308983 is handled. Duration 233 ms by bot id=7444575424
+2024-12-22 12:31:09,641 - aiogram.event - INFO - Update id=659308984 is handled. Duration 156 ms by bot id=7444575424
+2024-12-22 12:31:37,833 - aiogram.event - INFO - Update id=659308985 is handled. Duration 218 ms by bot id=7444575424
+2024-12-22 12:31:39,773 - aiogram.event - INFO - Update id=659308986 is handled. Duration 203 ms by bot id=7444575424
+2024-12-22 12:41:11,797 - aiogram.event - INFO - Update id=659308987 is handled. Duration 406 ms by bot id=7444575424
+2024-12-22 12:41:13,684 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:41:13,687 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:41:13,687 - sqlalchemy.engine.Engine - INFO - [generated in 0.00035s] ('528155210', 1, 0)
+2024-12-22 12:41:13,806 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 12:41:13,875 - aiogram.event - INFO - Update id=659308988 is handled. Duration 188 ms by bot id=7444575424
+2024-12-22 12:41:25,530 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:41:25,530 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:41:25,531 - sqlalchemy.engine.Engine - INFO - [cached since 11.84s ago] ('528155210', 1, 0)
+2024-12-22 12:41:25,533 - sqlalchemy.engine.Engine - INFO - INSERT INTO users (user_telegram_id, subscription_status, use_trial_period) VALUES (?, ?, ?)
+2024-12-22 12:41:25,534 - sqlalchemy.engine.Engine - INFO - [generated in 0.00030s] ('528155210', 'active', 0)
+2024-12-22 12:41:25,542 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 12:41:25,548 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:41:25,549 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 12:41:25,549 - sqlalchemy.engine.Engine - INFO - [generated in 0.00028s] ('528155210',)
+2024-12-22 12:41:25,552 - sqlalchemy.engine.Engine - INFO - UPDATE users SET use_trial_period=? WHERE users.user_telegram_id = ?
+2024-12-22 12:41:25,552 - sqlalchemy.engine.Engine - INFO - [generated in 0.00031s] (1, '528155210')
+2024-12-22 12:41:25,553 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 12:41:26,780 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:41:26,782 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date, remembering_before_exp) VALUES (?, ?, ?, ?, ?)
+2024-12-22 12:41:26,782 - sqlalchemy.engine.Engine - INFO - [generated in 0.00044s] ('98', '528155210', '2024-12-24 12:41:26.780159', '2024-12-22 12:41:26.780159', 0)
+2024-12-22 12:41:26,790 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 12:41:26,795 - root - INFO - Key created: OutlineKey(key_id='98', name='VPN Key56', password='dWThsKB4YQXzciLlrEBmIu', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpkV1Roc0tCNFlRWHpjaUxsckVCbUl1@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 7444575424
+2024-12-22 12:41:27,049 - aiogram.event - INFO - Update id=659308989 is handled. Duration 1515 ms by bot id=7444575424
+2024-12-22 12:41:28,723 - aiogram.event - INFO - Update id=659308990 is handled. Duration 157 ms by bot id=7444575424
+2024-12-22 12:41:29,876 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:41:29,877 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:41:29,877 - sqlalchemy.engine.Engine - INFO - [cached since 16.19s ago] ('528155210', 1, 0)
+2024-12-22 12:41:29,880 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 12:41:29,880 - sqlalchemy.engine.Engine - INFO - [generated in 0.00032s] ('528155210',)
+2024-12-22 12:41:31,438 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 12:41:31,588 - aiogram.event - INFO - Update id=659308991 is handled. Duration 1718 ms by bot id=7444575424
+2024-12-22 12:41:34,385 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:41:34,387 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:41:34,387 - sqlalchemy.engine.Engine - INFO - [generated in 0.00042s] ('98', 1, 0)
+2024-12-22 12:41:34,513 - aiogram.event - INFO - Update id=659308992 is handled. Duration 1671 ms by bot id=7444575424
+2024-12-22 12:43:35,390 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-22 12:43:35,646 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 12:43:35,648 - root - INFO - Бот остановлен вручную.
+2024-12-22 12:43:43,654 - root - INFO - Инициализация бота...
+2024-12-22 12:43:44,321 - root - INFO - Инициализация бота...
+2024-12-22 12:43:44,390 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:43:44,391 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-22 12:43:44,391 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 12:43:44,392 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-22 12:43:44,392 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 12:43:44,393 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 12:43:44,427 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-22 12:43:44,427 - root - INFO - Инициализация диспетчера...
+2024-12-22 12:43:44,428 - root - INFO - Регистрация обработчиков...
+2024-12-22 12:43:44,430 - root - INFO - Регистрация main menu команд...
+2024-12-22 12:43:44,782 - root - INFO - Команды успешно установлены
+2024-12-22 12:43:44,782 - root - INFO - Запуск polling...
+2024-12-22 12:43:44,783 - aiogram.dispatcher - INFO - Start polling
+2024-12-22 12:43:44,792 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:43:44,796 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-22 12:43:44,797 - sqlalchemy.engine.Engine - INFO - [generated in 0.00071s] ()
+2024-12-22 12:43:44,803 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 12:43:44,803 - sqlalchemy.engine.Engine - INFO - [generated in 0.00054s] ('528155210',)
+2024-12-22 12:43:45,777 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 12:43:45,777 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:43:45,778 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 12:43:45,778 - sqlalchemy.engine.Engine - INFO - [generated in 0.00026s] ('528155210',)
+2024-12-22 12:43:45,843 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 12:43:47,642 - aiogram.event - INFO - Update id=659308993 is handled. Duration 343 ms by bot id=7444575424
+2024-12-22 12:43:49,098 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:43:49,100 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:43:49,100 - sqlalchemy.engine.Engine - INFO - [generated in 0.00050s] ('528155210', 1, 0)
+2024-12-22 12:43:49,102 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 12:43:49,103 - sqlalchemy.engine.Engine - INFO - [cached since 4.3s ago] ('528155210',)
+2024-12-22 12:43:50,177 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 12:43:50,311 - aiogram.event - INFO - Update id=659308994 is handled. Duration 1217 ms by bot id=7444575424
+2024-12-22 12:43:52,128 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:43:52,129 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:43:52,129 - sqlalchemy.engine.Engine - INFO - [generated in 0.00030s] ('98', 1, 0)
+2024-12-22 12:43:52,272 - aiogram.event - INFO - Update id=659308995 is handled. Duration 1281 ms by bot id=7444575424
+2024-12-22 12:46:57,909 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:46:57,910 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:46:57,910 - sqlalchemy.engine.Engine - INFO - [cached since 188.8s ago] ('528155210', 1, 0)
+2024-12-22 12:46:57,912 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 12:46:57,912 - sqlalchemy.engine.Engine - INFO - [cached since 193.1s ago] ('528155210',)
+2024-12-22 12:46:59,551 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 12:46:59,552 - aiogram.event - INFO - Update id=659308996 is handled. Duration 1640 ms by bot id=7444575424
+2024-12-22 12:47:00,907 - aiogram.event - INFO - Update id=659308997 is handled. Duration 141 ms by bot id=7444575424
+2024-12-22 12:47:09,944 - aiogram.event - INFO - Update id=659308998 is handled. Duration 327 ms by bot id=7444575424
+2024-12-22 12:47:12,276 - aiogram.event - INFO - Update id=659308999 is handled. Duration 187 ms by bot id=7444575424
+2024-12-22 12:47:14,236 - aiogram.event - INFO - Update id=659309000 is handled. Duration 264 ms by bot id=7444575424
+2024-12-22 12:47:15,837 - aiogram.event - INFO - Update id=659309001 is handled. Duration 281 ms by bot id=7444575424
+2024-12-22 12:47:18,363 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:47:18,364 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:47:18,364 - sqlalchemy.engine.Engine - INFO - [cached since 209.3s ago] ('528155210', 1, 0)
+2024-12-22 12:47:18,365 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 12:47:18,366 - sqlalchemy.engine.Engine - INFO - [cached since 213.6s ago] ('528155210',)
+2024-12-22 12:47:19,570 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 12:47:19,710 - aiogram.event - INFO - Update id=659309002 is handled. Duration 1343 ms by bot id=7444575424
+2024-12-22 12:47:21,092 - aiogram.event - INFO - Update id=659309003 is handled. Duration 266 ms by bot id=7444575424
+2024-12-22 12:49:45,131 - aiogram.event - INFO - Update id=659309004 is handled. Duration 453 ms by bot id=7444575424
+2024-12-22 12:49:46,154 - aiogram.event - INFO - Update id=659309005 is handled. Duration 125 ms by bot id=7444575424
+2024-12-22 12:49:47,763 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 12:49:47,763 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 12:49:47,764 - sqlalchemy.engine.Engine - INFO - [cached since 358.7s ago] ('528155210', 1, 0)
+2024-12-22 12:49:47,766 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 12:49:47,766 - sqlalchemy.engine.Engine - INFO - [cached since 363s ago] ('528155210',)
+2024-12-22 12:49:48,802 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 12:49:48,862 - aiogram.event - INFO - Update id=659309006 is handled. Duration 1093 ms by bot id=7444575424
+2024-12-22 12:49:50,065 - aiogram.event - INFO - Update id=659309007 is handled. Duration 139 ms by bot id=7444575424
+2024-12-22 12:49:51,419 - aiogram.event - INFO - Update id=659309008 is handled. Duration 235 ms by bot id=7444575424
+2024-12-22 13:03:17,328 - aiogram.event - INFO - Update id=659309009 is handled. Duration 202 ms by bot id=7444575424
+2024-12-22 13:03:23,295 - aiogram.event - INFO - Update id=659309010 is handled. Duration 156 ms by bot id=7444575424
+2024-12-22 13:03:25,636 - aiogram.event - INFO - Update id=659309011 is handled. Duration 171 ms by bot id=7444575424
+2024-12-22 13:03:27,584 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:03:27,585 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:03:27,585 - sqlalchemy.engine.Engine - INFO - [cached since 1178s ago] ('528155210', 1, 0)
+2024-12-22 13:03:27,589 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:03:27,589 - sqlalchemy.engine.Engine - INFO - [cached since 1183s ago] ('528155210',)
+2024-12-22 13:03:29,192 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:03:29,287 - aiogram.event - INFO - Update id=659309012 is handled. Duration 1703 ms by bot id=7444575424
+2024-12-22 13:03:31,395 - aiogram.event - INFO - Update id=659309013 is handled. Duration 375 ms by bot id=7444575424
+2024-12-22 13:03:33,344 - aiogram.event - INFO - Update id=659309014 is handled. Duration 203 ms by bot id=7444575424
+2024-12-22 13:03:34,487 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:03:34,488 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:03:34,488 - sqlalchemy.engine.Engine - INFO - [cached since 1185s ago] ('528155210', 1, 0)
+2024-12-22 13:03:34,908 - aiogram.event - INFO - Update id=659309015 is handled. Duration 422 ms by bot id=7444575424
+2024-12-22 13:03:37,045 - aiogram.event - INFO - Update id=659309016 is handled. Duration 93 ms by bot id=7444575424
+2024-12-22 13:03:42,006 - aiogram.event - INFO - Update id=659309017 is handled. Duration 266 ms by bot id=7444575424
+2024-12-22 13:04:11,096 - aiogram.event - INFO - Update id=659309018 is handled. Duration 703 ms by bot id=7444575424
+2024-12-22 13:04:34,758 - aiogram.event - INFO - Update id=659309019 is handled. Duration 281 ms by bot id=7444575424
+2024-12-22 13:04:43,501 - root - INFO - {
+    "message_id": 4367,
+    "date": 1734861885,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 14000,
+        "invoice_payload": "517e1f38-331b-489c-812f-50ec214165d2",
+        "telegram_payment_charge_id": "7444575424_528155210_340606",
+        "provider_payment_charge_id": "7444575424_528155210_340606",
+        "subscription_expiration_date": null,
+        "is_recurring": null,
+        "is_first_recurring": null,
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-22 13:04:44,830 - root - INFO - Key created: OutlineKey(key_id='99', name='VPN Key57', password='hMKsYerDqscrlxblpoJdV0', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpoTUtzWWVyRHFzY3JseGJscG9KZFYw@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 528155210
+2024-12-22 13:04:44,962 - root - INFO - Key created: OutlineKey(key_id='99', name='VPN Key57', password='hMKsYerDqscrlxblpoJdV0', port=20669, method='chacha20-ietf-poly1305', access_url='ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpoTUtzWWVyRHFzY3JseGJscG9KZFYw@5.35.38.7:20669/?outline=1', used_bytes=0, data_limit=1073741824) for user 7444575424
+2024-12-22 13:04:45,105 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:04:45,106 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:04:45,108 - sqlalchemy.engine.Engine - INFO - [cached since 1256s ago] ('528155210', 1, 0)
+2024-12-22 13:04:45,116 - sqlalchemy.engine.Engine - INFO - INSERT INTO keys (key_id, user_telegram_id, expiration_date, start_date, remembering_before_exp) VALUES (?, ?, ?, ?, ?)
+2024-12-22 13:04:45,116 - sqlalchemy.engine.Engine - INFO - [generated in 0.00081s] ('99', '528155210', '2025-03-22 13:04:45.112587', '2024-12-22 13:04:45.112587', 0)
+2024-12-22 13:04:45,119 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:04:45,128 - aiogram.event - INFO - Update id=659309020 is handled. Duration 1625 ms by bot id=7444575424
+2024-12-22 13:05:03,543 - aiogram.event - INFO - Update id=659309021 is handled. Duration 390 ms by bot id=7444575424
+2024-12-22 13:05:27,208 - aiogram.event - INFO - Update id=659309022 is handled. Duration 625 ms by bot id=7444575424
+2024-12-22 13:05:28,606 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:05:28,606 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:05:28,606 - sqlalchemy.engine.Engine - INFO - [cached since 1300s ago] ('528155210', 1, 0)
+2024-12-22 13:05:28,607 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:05:28,607 - sqlalchemy.engine.Engine - INFO - [cached since 1304s ago] ('528155210',)
+2024-12-22 13:05:30,898 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:05:30,959 - aiogram.event - INFO - Update id=659309023 is handled. Duration 2343 ms by bot id=7444575424
+2024-12-22 13:05:33,142 - aiogram.event - INFO - Update id=659309024 is handled. Duration 139 ms by bot id=7444575424
+2024-12-22 13:05:43,256 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:05:43,256 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:05:43,257 - sqlalchemy.engine.Engine - INFO - [cached since 1314s ago] ('528155210', 1, 0)
+2024-12-22 13:05:43,259 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:05:43,259 - sqlalchemy.engine.Engine - INFO - [cached since 1318s ago] ('528155210',)
+2024-12-22 13:05:45,448 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:05:45,548 - aiogram.event - INFO - Update id=659309025 is handled. Duration 2296 ms by bot id=7444575424
+2024-12-22 13:05:50,035 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:05:50,035 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:05:50,035 - sqlalchemy.engine.Engine - INFO - [cached since 1318s ago] ('99', 1, 0)
+2024-12-22 13:05:50,174 - aiogram.event - INFO - Update id=659309026 is handled. Duration 1327 ms by bot id=7444575424
+2024-12-22 13:05:57,226 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:05:57,228 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:05:57,229 - sqlalchemy.engine.Engine - INFO - [cached since 1325s ago] ('99', 1, 0)
+2024-12-22 13:05:58,636 - aiogram.event - INFO - Update id=659309027 is handled. Duration 1421 ms by bot id=7444575424
+2024-12-22 13:06:04,982 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:06:04,983 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:06:04,983 - sqlalchemy.engine.Engine - INFO - [cached since 1333s ago] ('99', 1, 0)
+2024-12-22 13:06:05,131 - aiogram.event - INFO - Update id=659309028 is handled. Duration 1656 ms by bot id=7444575424
+2024-12-22 13:06:07,141 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:06:07,142 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:06:07,142 - sqlalchemy.engine.Engine - INFO - [cached since 1335s ago] ('99', 1, 0)
+2024-12-22 13:06:07,232 - aiogram.event - INFO - Update id=659309029 is handled. Duration 93 ms by bot id=7444575424
+2024-12-22 13:06:15,961 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:06:15,962 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:06:15,962 - sqlalchemy.engine.Engine - INFO - [cached since 1344s ago] ('99', 1, 0)
+2024-12-22 13:06:16,082 - aiogram.event - INFO - Update id=659309030 is handled. Duration 1468 ms by bot id=7444575424
+2024-12-22 13:06:21,420 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:06:21,420 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:06:21,421 - sqlalchemy.engine.Engine - INFO - [cached since 1349s ago] ('99', 1, 0)
+2024-12-22 13:06:22,878 - aiogram.event - INFO - Update id=659309031 is handled. Duration 1468 ms by bot id=7444575424
+2024-12-22 13:06:27,609 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:06:27,610 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:06:27,610 - sqlalchemy.engine.Engine - INFO - [cached since 1355s ago] ('99', 1, 0)
+2024-12-22 13:06:27,855 - aiogram.event - INFO - Update id=659309032 is handled. Duration 1250 ms by bot id=7444575424
+2024-12-22 13:06:36,163 - aiogram.event - INFO - Update id=659309033 is handled. Duration 109 ms by bot id=7444575424
+2024-12-22 13:06:47,716 - aiogram.event - INFO - Update id=659309034 is handled. Duration 141 ms by bot id=7444575424
+2024-12-22 13:06:51,792 - aiogram.event - INFO - Update id=659309035 is handled. Duration 93 ms by bot id=7444575424
+2024-12-22 13:06:54,263 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:06:54,264 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:06:54,264 - sqlalchemy.engine.Engine - INFO - [cached since 1382s ago] ('99', 1, 0)
+2024-12-22 13:06:54,441 - aiogram.event - INFO - Update id=659309036 is handled. Duration 1546 ms by bot id=7444575424
+2024-12-22 13:06:59,652 - aiogram.event - INFO - Update id=659309037 is handled. Duration 156 ms by bot id=7444575424
+2024-12-22 13:07:03,428 - aiogram.event - INFO - Update id=659309038 is handled. Duration 110 ms by bot id=7444575424
+2024-12-22 13:07:05,145 - aiogram.event - INFO - Update id=659309039 is handled. Duration 93 ms by bot id=7444575424
+2024-12-22 13:07:07,957 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:07,963 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:07:07,965 - sqlalchemy.engine.Engine - INFO - [cached since 1396s ago] ('99', 1, 0)
+2024-12-22 13:07:08,148 - aiogram.event - INFO - Update id=659309040 is handled. Duration 2000 ms by bot id=7444575424
+2024-12-22 13:07:10,178 - aiogram.event - INFO - Update id=659309041 is handled. Duration 93 ms by bot id=7444575424
+2024-12-22 13:07:13,234 - aiogram.event - INFO - Update id=659309042 is handled. Duration 218 ms by bot id=7444575424
+2024-12-22 13:07:14,283 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:14,284 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:07:14,285 - sqlalchemy.engine.Engine - INFO - [cached since 1402s ago] ('99', 1, 0)
+2024-12-22 13:07:14,288 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:07:14,291 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:14,295 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 13:07:14,296 - sqlalchemy.engine.Engine - INFO - [generated in 0.00105s] ('99',)
+2024-12-22 13:07:15,091 - aiogram.event - INFO - Update id=659309043 is handled. Duration 828 ms by bot id=7444575424
+2024-12-22 13:07:17,167 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:17,169 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:07:17,170 - sqlalchemy.engine.Engine - INFO - [cached since 1405s ago] ('99', 1, 0)
+2024-12-22 13:07:17,325 - aiogram.event - INFO - Update id=659309044 is handled. Duration 1108 ms by bot id=7444575424
+2024-12-22 13:07:26,289 - aiogram.event - INFO - Update id=659309045 is handled. Duration 125 ms by bot id=7444575424
+2024-12-22 13:07:29,600 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:29,602 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:07:29,604 - sqlalchemy.engine.Engine - INFO - [cached since 1417s ago] ('99', 1, 0)
+2024-12-22 13:07:29,973 - aiogram.event - INFO - Update id=659309046 is handled. Duration 2000 ms by bot id=7444575424
+2024-12-22 13:07:32,214 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:32,215 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:07:32,216 - sqlalchemy.engine.Engine - INFO - [cached since 1420s ago] ('99', 1, 0)
+2024-12-22 13:07:32,312 - aiogram.event - INFO - Update id=659309047 is handled. Duration 108 ms by bot id=7444575424
+2024-12-22 13:07:35,939 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:07:35,940 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:07:35,941 - sqlalchemy.engine.Engine - INFO - [cached since 1424s ago] ('99', 1, 0)
+2024-12-22 13:07:36,164 - aiogram.event - INFO - Update id=659309048 is handled. Duration 1422 ms by bot id=7444575424
+2024-12-22 13:07:43,101 - aiogram.event - INFO - Update id=659309049 is handled. Duration 78 ms by bot id=7444575424
+2024-12-22 13:07:50,196 - aiogram.event - INFO - Update id=659309050 is handled. Duration 342 ms by bot id=7444575424
+2024-12-22 13:08:06,020 - aiogram.event - INFO - Update id=659309051 is handled. Duration 203 ms by bot id=7444575424
+2024-12-22 13:08:13,585 - root - INFO - {
+    "message_id": 4376,
+    "date": 1734862095,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 14000,
+        "invoice_payload": "979b1752-22d2-4bf3-9f5f-b2032c5d7918",
+        "telegram_payment_charge_id": "7444575424_528155210_340615",
+        "provider_payment_charge_id": "7444575424_528155210_340615",
+        "subscription_expiration_date": null,
+        "is_recurring": null,
+        "is_first_recurring": null,
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-22 13:08:13,720 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:13,721 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:13,722 - sqlalchemy.engine.Engine - INFO - [cached since 1462s ago] ('99', 1, 0)
+2024-12-22 13:08:13,727 - sqlalchemy.engine.Engine - INFO - UPDATE keys SET expiration_date=? WHERE keys.key_id = ?
+2024-12-22 13:08:13,728 - sqlalchemy.engine.Engine - INFO - [generated in 0.00117s] ('2025-06-23 13:04:45.112587', '99')
+2024-12-22 13:08:13,730 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:08:13,746 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:13,747 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 13:08:13,748 - sqlalchemy.engine.Engine - INFO - [cached since 59.45s ago] ('99',)
+2024-12-22 13:08:13,750 - root - INFO - Ключ с ID 99 успешно продлён на 93 дней. Новая дата окончания: 2025-06-23 13:04:45.112587
+2024-12-22 13:08:13,750 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:08:13,751 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:13,752 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:13,752 - sqlalchemy.engine.Engine - INFO - [cached since 1462s ago] ('99', 1, 0)
+2024-12-22 13:08:16,698 - aiogram.event - INFO - Update id=659309052 is handled. Duration 3125 ms by bot id=7444575424
+2024-12-22 13:08:24,438 - aiogram.event - INFO - Update id=659309053 is handled. Duration 171 ms by bot id=7444575424
+2024-12-22 13:08:25,740 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:25,741 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:25,741 - sqlalchemy.engine.Engine - INFO - [cached since 1477s ago] ('528155210', 1, 0)
+2024-12-22 13:08:25,742 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:08:25,742 - sqlalchemy.engine.Engine - INFO - [cached since 1481s ago] ('528155210',)
+2024-12-22 13:08:27,748 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:08:27,812 - aiogram.event - INFO - Update id=659309054 is handled. Duration 2077 ms by bot id=7444575424
+2024-12-22 13:08:29,713 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:29,713 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:29,714 - sqlalchemy.engine.Engine - INFO - [cached since 1478s ago] ('99', 1, 0)
+2024-12-22 13:08:29,863 - aiogram.event - INFO - Update id=659309055 is handled. Duration 1312 ms by bot id=7444575424
+2024-12-22 13:08:31,870 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:31,870 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:31,870 - sqlalchemy.engine.Engine - INFO - [cached since 1480s ago] ('99', 1, 0)
+2024-12-22 13:08:31,943 - aiogram.event - INFO - Update id=659309056 is handled. Duration 77 ms by bot id=7444575424
+2024-12-22 13:08:51,558 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:51,559 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:51,559 - sqlalchemy.engine.Engine - INFO - [cached since 1499s ago] ('99', 1, 0)
+2024-12-22 13:08:51,753 - aiogram.event - INFO - Update id=659309057 is handled. Duration 1297 ms by bot id=7444575424
+2024-12-22 13:08:54,391 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:54,391 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:54,392 - sqlalchemy.engine.Engine - INFO - [cached since 1505s ago] ('528155210', 1, 0)
+2024-12-22 13:08:54,394 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:08:54,394 - sqlalchemy.engine.Engine - INFO - [cached since 1510s ago] ('528155210',)
+2024-12-22 13:08:56,380 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:08:56,380 - aiogram.event - INFO - Update id=659309058 is handled. Duration 1985 ms by bot id=7444575424
+2024-12-22 13:08:58,425 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:08:58,425 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:08:58,425 - sqlalchemy.engine.Engine - INFO - [cached since 1506s ago] ('98', 1, 0)
+2024-12-22 13:08:58,553 - aiogram.event - INFO - Update id=659309059 is handled. Duration 1093 ms by bot id=7444575424
+2024-12-22 13:09:00,425 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:00,425 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:00,425 - sqlalchemy.engine.Engine - INFO - [cached since 1508s ago] ('98', 1, 0)
+2024-12-22 13:09:00,553 - aiogram.event - INFO - Update id=659309060 is handled. Duration 125 ms by bot id=7444575424
+2024-12-22 13:09:05,390 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:05,390 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:05,391 - sqlalchemy.engine.Engine - INFO - [cached since 1513s ago] ('98', 1, 0)
+2024-12-22 13:09:05,533 - aiogram.event - INFO - Update id=659309061 is handled. Duration 1219 ms by bot id=7444575424
+2024-12-22 13:09:06,897 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:06,898 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:06,898 - sqlalchemy.engine.Engine - INFO - [cached since 1518s ago] ('528155210', 1, 0)
+2024-12-22 13:09:06,899 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:09:06,899 - sqlalchemy.engine.Engine - INFO - [cached since 1522s ago] ('528155210',)
+2024-12-22 13:09:09,129 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:09:09,129 - aiogram.event - INFO - Update id=659309062 is handled. Duration 2235 ms by bot id=7444575424
+2024-12-22 13:09:14,126 - aiogram.event - INFO - Update id=659309063 is handled. Duration 203 ms by bot id=7444575424
+2024-12-22 13:09:30,954 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:30,956 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:30,956 - sqlalchemy.engine.Engine - INFO - [cached since 1542s ago] ('528155210', 1, 0)
+2024-12-22 13:09:30,957 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:09:30,958 - sqlalchemy.engine.Engine - INFO - [cached since 1546s ago] ('528155210',)
+2024-12-22 13:09:34,095 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:09:34,237 - aiogram.event - INFO - Update id=659309064 is handled. Duration 3281 ms by bot id=7444575424
+2024-12-22 13:09:35,484 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:35,485 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:35,486 - sqlalchemy.engine.Engine - INFO - [cached since 1543s ago] ('98', 1, 0)
+2024-12-22 13:09:35,790 - aiogram.event - INFO - Update id=659309065 is handled. Duration 1484 ms by bot id=7444575424
+2024-12-22 13:09:37,388 - aiogram.event - INFO - Update id=659309066 is handled. Duration 218 ms by bot id=7444575424
+2024-12-22 13:09:41,324 - aiogram.event - INFO - Update id=659309067 is handled. Duration 93 ms by bot id=7444575424
+2024-12-22 13:09:43,291 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:43,293 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:43,293 - sqlalchemy.engine.Engine - INFO - [cached since 1551s ago] ('98', 1, 0)
+2024-12-22 13:09:43,295 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:09:43,296 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:43,297 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 13:09:43,298 - sqlalchemy.engine.Engine - INFO - [cached since 149s ago] ('98',)
+2024-12-22 13:09:43,601 - aiogram.event - INFO - Update id=659309068 is handled. Duration 312 ms by bot id=7444575424
+2024-12-22 13:09:45,994 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:45,995 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:45,995 - sqlalchemy.engine.Engine - INFO - [cached since 1554s ago] ('98', 1, 0)
+2024-12-22 13:09:46,114 - aiogram.event - INFO - Update id=659309069 is handled. Duration 1139 ms by bot id=7444575424
+2024-12-22 13:09:47,605 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:09:47,606 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:09:47,607 - sqlalchemy.engine.Engine - INFO - [cached since 1559s ago] ('528155210', 1, 0)
+2024-12-22 13:09:47,609 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:09:47,610 - sqlalchemy.engine.Engine - INFO - [cached since 1563s ago] ('528155210',)
+2024-12-22 13:09:49,640 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:09:49,642 - aiogram.event - INFO - Update id=659309070 is handled. Duration 2046 ms by bot id=7444575424
+2024-12-22 13:09:51,138 - aiogram.event - INFO - Update id=659309071 is handled. Duration 343 ms by bot id=7444575424
+2024-12-22 13:09:58,284 - aiogram.dispatcher - INFO - Polling stopped
+2024-12-22 13:09:58,539 - aiogram.dispatcher - INFO - Polling stopped for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 13:09:58,550 - root - INFO - Бот остановлен вручную.
+2024-12-22 13:10:34,369 - root - INFO - Инициализация бота...
+2024-12-22 13:10:35,509 - root - INFO - Инициализация бота...
+2024-12-22 13:10:35,606 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:10:35,607 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("users")
+2024-12-22 13:10:35,607 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 13:10:35,609 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2024-12-22 13:10:35,609 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-12-22 13:10:35,611 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:10:35,679 - root - INFO - Инициализация хранилища состояний (MemoryStorage)...
+2024-12-22 13:10:35,679 - root - INFO - Инициализация диспетчера...
+2024-12-22 13:10:35,681 - root - INFO - Регистрация обработчиков...
+2024-12-22 13:10:35,683 - root - INFO - Регистрация main menu команд...
+2024-12-22 13:10:37,215 - root - INFO - Команды успешно установлены
+2024-12-22 13:10:37,215 - root - INFO - Запуск polling...
+2024-12-22 13:10:37,216 - aiogram.dispatcher - INFO - Start polling
+2024-12-22 13:10:37,226 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:10:37,230 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users
+2024-12-22 13:10:37,230 - sqlalchemy.engine.Engine - INFO - [generated in 0.00047s] ()
+2024-12-22 13:10:37,237 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:10:37,237 - sqlalchemy.engine.Engine - INFO - [generated in 0.00053s] ('528155210',)
+2024-12-22 13:10:38,468 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:10:38,470 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:10:38,472 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 13:10:38,472 - sqlalchemy.engine.Engine - INFO - [generated in 0.00041s] ('99',)
+2024-12-22 13:10:39,719 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+2024-12-22 13:10:39,719 - sqlalchemy.engine.Engine - INFO - [generated in 0.00075s] ('528155210',)
+2024-12-22 13:10:39,783 - aiogram.dispatcher - INFO - Run polling for bot @safe_net_vpnbot id=7444575424 - 'LISA_connect'
+2024-12-22 13:10:55,907 - aiogram.event - INFO - Update id=659309072 is handled. Duration 234 ms by bot id=7444575424
+2024-12-22 13:11:02,289 - aiogram.event - INFO - Update id=659309073 is handled. Duration 766 ms by bot id=7444575424
+2024-12-22 13:11:17,338 - aiogram.event - INFO - Update id=659309074 is handled. Duration 78 ms by bot id=7444575424
+2024-12-22 13:11:26,897 - root - INFO - {
+    "message_id": 4382,
+    "date": 1734862288,
+    "chat": {
+        "id": 528155210,
+        "type": "private",
+        "title": null,
+        "username": "dastroo",
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "is_forum": null,
+        "accent_color_id": null,
+        "active_usernames": null,
+        "available_reactions": null,
+        "background_custom_emoji_id": null,
+        "bio": null,
+        "birthdate": null,
+        "business_intro": null,
+        "business_location": null,
+        "business_opening_hours": null,
+        "can_set_sticker_set": null,
+        "custom_emoji_sticker_set_name": null,
+        "description": null,
+        "emoji_status_custom_emoji_id": null,
+        "emoji_status_expiration_date": null,
+        "has_aggressive_anti_spam_enabled": null,
+        "has_hidden_members": null,
+        "has_private_forwards": null,
+        "has_protected_content": null,
+        "has_restricted_voice_and_video_messages": null,
+        "has_visible_history": null,
+        "invite_link": null,
+        "join_by_request": null,
+        "join_to_send_messages": null,
+        "linked_chat_id": null,
+        "location": null,
+        "message_auto_delete_time": null,
+        "permissions": null,
+        "personal_chat": null,
+        "photo": null,
+        "pinned_message": null,
+        "profile_accent_color_id": null,
+        "profile_background_custom_emoji_id": null,
+        "slow_mode_delay": null,
+        "sticker_set_name": null,
+        "unrestrict_boost_count": null
+    },
+    "message_thread_id": null,
+    "from_user": {
+        "id": 528155210,
+        "is_bot": false,
+        "first_name": "Daniel Kostin\ud83d\udce1",
+        "last_name": null,
+        "username": "dastroo",
+        "language_code": "ru",
+        "is_premium": null,
+        "added_to_attachment_menu": null,
+        "can_join_groups": null,
+        "can_read_all_group_messages": null,
+        "supports_inline_queries": null,
+        "can_connect_to_business": null,
+        "has_main_web_app": null
+    },
+    "sender_chat": null,
+    "sender_boost_count": null,
+    "sender_business_bot": null,
+    "business_connection_id": null,
+    "forward_origin": null,
+    "is_topic_message": null,
+    "is_automatic_forward": null,
+    "reply_to_message": null,
+    "external_reply": null,
+    "quote": null,
+    "reply_to_story": null,
+    "via_bot": null,
+    "edit_date": null,
+    "has_protected_content": null,
+    "is_from_offline": null,
+    "media_group_id": null,
+    "author_signature": null,
+    "text": null,
+    "entities": null,
+    "link_preview_options": null,
+    "effect_id": null,
+    "animation": null,
+    "audio": null,
+    "document": null,
+    "paid_media": null,
+    "photo": null,
+    "sticker": null,
+    "story": null,
+    "video": null,
+    "video_note": null,
+    "voice": null,
+    "caption": null,
+    "caption_entities": null,
+    "show_caption_above_media": null,
+    "has_media_spoiler": null,
+    "contact": null,
+    "dice": null,
+    "game": null,
+    "poll": null,
+    "venue": null,
+    "location": null,
+    "new_chat_members": null,
+    "left_chat_member": null,
+    "new_chat_title": null,
+    "new_chat_photo": null,
+    "delete_chat_photo": null,
+    "group_chat_created": null,
+    "supergroup_chat_created": null,
+    "channel_chat_created": null,
+    "message_auto_delete_timer_changed": null,
+    "migrate_to_chat_id": null,
+    "migrate_from_chat_id": null,
+    "pinned_message": null,
+    "invoice": null,
+    "successful_payment": {
+        "currency": "RUB",
+        "total_amount": 5000,
+        "invoice_payload": "eb744459-dc7b-492e-8769-9d08a975e7e7",
+        "telegram_payment_charge_id": "7444575424_528155210_340621",
+        "provider_payment_charge_id": "7444575424_528155210_340621",
+        "subscription_expiration_date": null,
+        "is_recurring": null,
+        "is_first_recurring": null,
+        "shipping_option_id": null,
+        "order_info": null
+    },
+    "refunded_payment": null,
+    "users_shared": null,
+    "chat_shared": null,
+    "connected_website": null,
+    "write_access_allowed": null,
+    "passport_data": null,
+    "proximity_alert_triggered": null,
+    "boost_added": null,
+    "chat_background_set": null,
+    "forum_topic_created": null,
+    "forum_topic_edited": null,
+    "forum_topic_closed": null,
+    "forum_topic_reopened": null,
+    "general_forum_topic_hidden": null,
+    "general_forum_topic_unhidden": null,
+    "giveaway_created": null,
+    "giveaway": null,
+    "giveaway_winners": null,
+    "giveaway_completed": null,
+    "video_chat_scheduled": null,
+    "video_chat_started": null,
+    "video_chat_ended": null,
+    "video_chat_participants_invited": null,
+    "web_app_data": null,
+    "reply_markup": null,
+    "forward_date": null,
+    "forward_from": null,
+    "forward_from_chat": null,
+    "forward_from_message_id": null,
+    "forward_sender_name": null,
+    "forward_signature": null,
+    "user_shared": null
+}
+2024-12-22 13:11:26,991 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:26,994 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:26,994 - sqlalchemy.engine.Engine - INFO - [generated in 0.00091s] ('98', 1, 0)
+2024-12-22 13:11:27,002 - sqlalchemy.engine.Engine - INFO - UPDATE keys SET expiration_date=? WHERE keys.key_id = ?
+2024-12-22 13:11:27,002 - sqlalchemy.engine.Engine - INFO - [generated in 0.00068s] ('2025-01-24 12:41:26.780159', '98')
+2024-12-22 13:11:27,005 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-12-22 13:11:27,059 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:27,060 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+2024-12-22 13:11:27,060 - sqlalchemy.engine.Engine - INFO - [cached since 48.59s ago] ('98',)
+2024-12-22 13:11:27,062 - root - INFO - Ключ с ID 98 успешно продлён на 31 дней. Новая дата окончания: 2025-01-24 12:41:26.780159
+2024-12-22 13:11:27,063 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:11:27,064 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:27,066 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:27,066 - sqlalchemy.engine.Engine - INFO - [cached since 0.07261s ago] ('98', 1, 0)
+2024-12-22 13:11:29,022 - aiogram.event - INFO - Update id=659309075 is handled. Duration 2125 ms by bot id=7444575424
+2024-12-22 13:11:33,845 - aiogram.event - INFO - Update id=659309076 is handled. Duration 141 ms by bot id=7444575424
+2024-12-22 13:11:36,554 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:36,556 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:36,556 - sqlalchemy.engine.Engine - INFO - [generated in 0.00044s] ('528155210', 1, 0)
+2024-12-22 13:11:36,558 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:11:36,558 - sqlalchemy.engine.Engine - INFO - [cached since 59.32s ago] ('528155210',)
+2024-12-22 13:11:39,366 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:11:39,509 - aiogram.event - INFO - Update id=659309077 is handled. Duration 2953 ms by bot id=7444575424
+2024-12-22 13:11:43,154 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:43,154 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:43,154 - sqlalchemy.engine.Engine - INFO - [cached since 16.16s ago] ('98', 1, 0)
+2024-12-22 13:11:43,403 - aiogram.event - INFO - Update id=659309078 is handled. Duration 1891 ms by bot id=7444575424
+2024-12-22 13:11:44,924 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:44,925 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:44,925 - sqlalchemy.engine.Engine - INFO - [cached since 17.93s ago] ('98', 1, 0)
+2024-12-22 13:11:45,062 - aiogram.event - INFO - Update id=659309079 is handled. Duration 139 ms by bot id=7444575424
+2024-12-22 13:11:55,944 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:55,944 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE keys.key_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:55,944 - sqlalchemy.engine.Engine - INFO - [cached since 28.95s ago] ('98', 1, 0)
+2024-12-22 13:11:56,128 - aiogram.event - INFO - Update id=659309080 is handled. Duration 1328 ms by bot id=7444575424
+2024-12-22 13:11:59,133 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-12-22 13:11:59,134 - sqlalchemy.engine.Engine - INFO - SELECT users.user_telegram_id AS users_user_telegram_id, users.subscription_status AS users_subscription_status, users.use_trial_period AS users_use_trial_period 
+FROM users 
+WHERE users.user_telegram_id = ?
+ LIMIT ? OFFSET ?
+2024-12-22 13:11:59,134 - sqlalchemy.engine.Engine - INFO - [cached since 22.58s ago] ('528155210', 1, 0)
+2024-12-22 13:11:59,136 - sqlalchemy.engine.Engine - INFO - SELECT keys.key_id AS keys_key_id, keys.user_telegram_id AS keys_user_telegram_id, keys.expiration_date AS keys_expiration_date, keys.start_date AS keys_start_date, keys.remembering_before_exp AS keys_remembering_before_exp 
+FROM keys 
+WHERE ? = keys.user_telegram_id
+2024-12-22 13:11:59,137 - sqlalchemy.engine.Engine - INFO - [cached since 81.9s ago] ('528155210',)
+2024-12-22 13:12:01,759 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2024-12-22 13:12:01,760 - aiogram.event - INFO - Update id=659309081 is handled. Duration 2639 ms by bot id=7444575424
