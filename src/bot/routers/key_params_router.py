@@ -85,7 +85,7 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
     used_bytes = 0
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
-    total_traffic = used_bytes / (1024**2)
+    total_traffic = used_bytes / (1024 ** 3)
 
     response = f"""
     Суммарный трафик: {total_traffic} Гб
