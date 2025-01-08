@@ -1,14 +1,16 @@
-import pytest
-from LISA.src.database.db_processor import DbProcessor, Base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 import os
-from LISA.src.logger.logging_config import setup_logger
+import warnings
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
-from LISA.src.bot.utils.outline_processor import OutlineProcessor
-import warnings
+
+import pytest
+from sqlalchemy import create_engine
 from sqlalchemy.exc import SAWarning
+from sqlalchemy.orm import sessionmaker
+
+from LISA.src.bot.utils.outline_processor import OutlineProcessor
+from LISA.src.database.db_processor import Base, DbProcessor
+from LISA.src.logger.logging_config import setup_logger
 
 
 @pytest.fixture(scope="session", autouse=True)
