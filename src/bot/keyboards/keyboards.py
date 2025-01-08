@@ -1,7 +1,4 @@
-from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from src.bot.initialization.outline_processor_init import outline_processor
 
@@ -9,7 +6,7 @@ from src.bot.initialization.outline_processor_init import outline_processor
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
     get_key = InlineKeyboardButton(
-        text="Получить ключ", callback_data="get_keys_pressed"
+        text="🆕 Получить ключ", callback_data="get_keys_pressed"
     )
 
     ket_management = InlineKeyboardButton(
@@ -68,7 +65,7 @@ def get_installation_button():
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Установка",
+                    text="Инструкция",
                     callback_data="installation_instructions",
                 ),
                 InlineKeyboardButton(

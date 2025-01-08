@@ -1,6 +1,6 @@
 import logging
-import sys
 import os
+import sys
 
 LOG_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "bot.log"))
 

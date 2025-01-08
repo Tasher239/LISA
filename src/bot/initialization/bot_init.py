@@ -1,7 +1,7 @@
 import os
-from dotenv import load_dotenv
 
 from aiogram import Bot
+from dotenv import load_dotenv
 
 from src.logger.logging_config import setup_logger
 

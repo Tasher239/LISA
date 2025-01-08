@@ -1,8 +1,9 @@
 import os
 import sys
 
-from outline_vpn.outline_vpn import OutlineVPN
 from dotenv import load_dotenv
+from outline_vpn.outline_vpn import OutlineVPN
+
 from src.bot.utils.outline_processor import OutlineProcessor
 
 sys.path.append("/Users/aydar/Desktop/VPN2_2/lib/python3.11/site-packages")

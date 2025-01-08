@@ -1,19 +1,11 @@
-from sqlalchemy import (
-    Column,
-    String,
-    Boolean,
-    ForeignKey,
-    DateTime,
-    create_engine,
-)
 import asyncio
-
-from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from datetime import datetime, timedelta
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, create_engine
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 from bot.initialization.outline_processor_init import outline_processor
 from bot.utils.send_message import send_message_subscription_expired
-
 from logger.logging_config import setup_logger
 
 logger = setup_logger()
