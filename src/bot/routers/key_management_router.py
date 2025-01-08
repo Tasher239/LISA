@@ -1,7 +1,7 @@
-from aiogram.types import CallbackQuery
-from aiogram import Router, F
-from aiogram.fsm.context import FSMContext
+from aiogram import F, Router
 from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
@@ -9,9 +9,8 @@ from bot.keyboards.keyboards import (
     get_buttons_for_trial_period,
     get_key_name_choosing_keyboard,
 )
-
-from logger.logging_config import setup_logger
 from database.db_processor import DbProcessor
+from logger.logging_config import setup_logger
 
 router = Router()
 logger = setup_logger()

@@ -1,17 +1,13 @@
 import os
 
+from aiogram import F, Router
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, LabeledPrice
 from dotenv import load_dotenv
 
-from aiogram.filters import StateFilter
-from aiogram.types import CallbackQuery, LabeledPrice
-from aiogram import F, Router
-from aiogram.fsm.context import FSMContext
-
-from bot.fsm.states import GetKey
-
-from bot.fsm.states import MainMenu, ManageKeys
-from bot.keyboards.keyboards import get_period_keyboard, get_extension_periods_keyboard
-
+from bot.fsm.states import GetKey, MainMenu, ManageKeys
+from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_keyboard
 from logger.logging_config import setup_logger
 
 load_dotenv()

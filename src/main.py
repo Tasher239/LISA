@@ -1,22 +1,21 @@
 import asyncio
 
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
 from bot.initialization.bot_init import bot  # инициализируем бота
 from bot.initialization.db_processor_init import db_processor
 from bot.routers import (
-    payment_router,
-    main_menu_router,
-    key_management_router,
     admins_router,
-    key_params_router,
     buy_key_router,
+    key_management_router,
+    key_params_router,
+    main_menu_router,
+    payment_router,
     trial_period_router,
     utils_router,
 )
-
 from logger.logging_config import setup_logger
 
 logger = setup_logger()

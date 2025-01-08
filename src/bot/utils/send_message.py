@@ -1,18 +1,16 @@
-from outline_vpn.outline_vpn import OutlineKey
-
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from outline_vpn.outline_vpn import OutlineKey
 
 from src.bot.initialization.bot_init import bot
-from src.bot.lexicon.lexicon import Notification
-from src.bot.utils.string_makers import get_your_key_string
 from src.bot.keyboards.keyboards import (
+    get_back_button_to_key_params,
     get_extension_keyboard,
     get_installation_button,
-    get_back_button_to_key_params,
     get_key_name_extension_keyboard_with_names,
 )
-
+from src.bot.lexicon.lexicon import Notification
+from src.bot.utils.string_makers import get_your_key_string
 from src.logger.logging_config import setup_logger
 
 logger = setup_logger()

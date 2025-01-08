@@ -1,22 +1,21 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
-from aiogram.fsm.context import FSMContext
-from aiogram.filters import StateFilter
+from datetime import datetime, timedelta
 
+from aiogram import F, Router
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, Message
+
+from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
-from bot.utils.send_message import send_key_to_user_with_back_button
-from bot.fsm.states import ManageKeys
 from bot.keyboards.keyboards import (
-    get_key_action_keyboard,
-    get_confirmation_keyboard,
     get_back_button_to_key_params,
+    get_confirmation_keyboard,
+    get_key_action_keyboard,
 )
-
+from bot.utils.send_message import send_key_to_user_with_back_button
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger
-
-from datetime import datetime, timedelta
 
 router = Router()
 logger = setup_logger()
@@ -85,10 +84,10 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
     used_bytes = 0
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
-    total_traffic = used_bytes / (1024 ** 3)
+    total_traffic = used_bytes / (1024**3)
 
     response = f"""
-    Суммарный трафик: {total_traffic} Гб
+    Суммарный трафик: {total_traffic:.2f} Гб
     """
     await callback.message.edit_text(
         response, reply_markup=get_back_button_to_key_params()
