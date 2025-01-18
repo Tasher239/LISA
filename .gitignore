@@ -23,3 +23,6 @@ __pycache__/
 
 # Log files
 logger/bot.log
+
+# Docker archive
+*.tar
