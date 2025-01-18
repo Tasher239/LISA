@@ -68,8 +68,7 @@ class DbProcessor:
             try:
                 users = session.query(DbProcessor.User).all()
                 for user in users:
-                    expiring_keys = []
-                    expiring_id = []
+                    expiring_keys = {}  # {key_id: (key_name, expiration_time)}
                     for key in user.keys:
                         key_info = outline_processor.get_key_info(key.key_id)
                         key_name = key_info.name
@@ -78,22 +77,20 @@ class DbProcessor:
                             key.expiration_date - datetime.now() < timedelta(days=4)
                         ):
                             key.remembering = True
-                            expiring_keys.append(key_name)
-                            expiring_id.append(key.key_id)
-                            session.commit()
-                            # ключ больше не работает
+                            expiring_keys[key.key_id] = (
+                                key_name,
+                                (key.expiration_date - datetime.now()).days + 1,
+                            )
+                        # ключ больше не работает
                         elif key.expiration_date < datetime.now():
                             # Устанавливаем состояние "extension"
-                            expiring_keys.append(key_name)
-                            expiring_id.append(key.key_id)
-                            # тухлый ключ лежит в бд 1 день - удаляем из бд
+                            expiring_keys[key.key_id] = (key_name, 0)
+                        # тухлый ключ лежит в бд 1 день - удаляем из бд
                         elif datetime.now() > key.expiration_date + timedelta(days=1):
                             session.delete(key)
                             session.commit()
                     if expiring_keys:
-                        await send_message_subscription_expired(
-                            user, expiring_keys, expiring_id
-                        )
+                        await send_message_subscription_expired(user, expiring_keys)
             except Exception as e:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise

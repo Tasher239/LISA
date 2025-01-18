@@ -4,7 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, LabeledPrice
 
-from bot.fsm.states import MainMenu
+from bot.fsm.states import MainMenu, GetKey
+from bot.initialization.bot_init import bot
 from bot.keyboards.keyboards import (
     get_about_us_keyboard,
     get_back_button,
@@ -38,14 +39,26 @@ async def send_installation_instructions(callback: CallbackQuery, state: FSMCont
 # фильтр кнопки в главное меню из любого места
 @router.callback_query(F.data == "back_to_main_menu")
 async def back_button(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(default_state)
-    # await delete_previous_message(callback.message.chat.id, state)
-    await callback.message.edit_text(
-        "Вы вернулись в главное меню. Выберите, что вы хотите сделать",
-        reply_markup=get_main_menu_keyboard(),
-    )
-    await state.set_state(MainMenu.waiting_for_action)
-    await callback.answer()
+    cur_state = await state.get_state()
+    if cur_state in {GetKey.waiting_for_payment, GetKey.waiting_for_extension_payment}:
+        await callback.message.delete()
+        data = await state.get_data()
+        payment_message_id = data.get("payment_message_id")
+        await bot.edit_message_text(
+            text="Вы вернулись в главное меню. Выберите, что вы хотите сделать",
+            chat_id=callback.message.chat.id,
+            message_id=payment_message_id,
+            reply_markup=get_main_menu_keyboard(),
+        )
+        await state.set_state(MainMenu.waiting_for_action)
+        await callback.answer()
+    else:
+        await callback.message.edit_text(
+            "Вы вернулись в главное меню. Выберите, что вы хотите сделать",
+            reply_markup=get_main_menu_keyboard(),
+        )
+        await state.set_state(MainMenu.waiting_for_action)
+        await callback.answer()
 
 
 @router.callback_query(StateFilter(MainMenu.about_us), F.data != "back_to_main_menu")
