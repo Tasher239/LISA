@@ -36,15 +36,16 @@ dp.include_router(utils_router.router)
 
 
 async def set_main_menu(bot: Bot):
-    main_menu_commands = [
-        BotCommand(command="/start", description="Перезапустить бота")
-    ]
-    try:
-        await bot.delete_my_commands()  # Удаляем старые команды
-        await bot.set_my_commands(main_menu_commands)  # Устанавливаем новые
-        logger.info("Команды успешно установлены")
-    except Exception as e:
-        logger.error(f"Ошибка при установке команд: {e}")
+    pass
+    # main_menu_commands = [
+    #     BotCommand(command="/start", description="Перезапустить бота")
+    # ]
+    # try:
+    #     await bot.delete_my_commands()  # Удаляем старые команды
+    #     await bot.set_my_commands(main_menu_commands)  # Устанавливаем новые
+    #     logger.info("Команды успешно установлены")
+    # except Exception as e:
+    #     logger.error(f"Ошибка при установке команд: {e}")
 
 
 async def main() -> None:

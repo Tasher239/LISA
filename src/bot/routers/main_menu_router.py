@@ -38,7 +38,6 @@ async def show_main_menu(
 
 @router.callback_query(StateFilter(MainMenu.waiting_for_action))
 async def main_menu_handler(callback: CallbackQuery, state: FSMContext):
-    # await delete_previous_message(callback.message.chat.id, state)
     action = callback.data
     if action == "get_keys_pressed":
         await buy_key_menu(callback, state)

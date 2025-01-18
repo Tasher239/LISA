@@ -29,15 +29,15 @@ def get_about_us_keyboard():
 
 def get_period_keyboard():
     # Кнопки для выбора периода
-    month_button = InlineKeyboardButton(text="1 Месяц (50₽)", callback_data="1_month")
+    month_button = InlineKeyboardButton(text="1 Месяц (90₽)", callback_data="1_month")
     three_month_button = InlineKeyboardButton(
-        text="3 Месяца (140₽)", callback_data="3_months"
+        text="3 Месяца (240₽)", callback_data="3_months"
     )
     six_month_button = InlineKeyboardButton(
-        text="6 Месяцев (270₽)", callback_data="6_months"
+        text="6 Месяцев (390₽)", callback_data="6_months"
     )
     year_button = InlineKeyboardButton(
-        text="12 Месяцев (490₽)", callback_data="12_months"
+        text="12 Месяцев (690₽)", callback_data="12_months"
     )
 
     trial_period_button = InlineKeyboardButton(
@@ -122,15 +122,15 @@ def get_extension_keyboard():
 
 def get_extension_periods_keyboard():
     # Кнопки для выбора периода
-    month_button = InlineKeyboardButton(text="1 Месяц (50₽)", callback_data="1_month")
+    month_button = InlineKeyboardButton(text="1 Месяц (90₽)", callback_data="1_month")
     three_month_button = InlineKeyboardButton(
-        text="3 Месяца (140₽)", callback_data="3_months"
+        text="3 Месяца (240₽)", callback_data="3_months"
     )
     six_month_button = InlineKeyboardButton(
-        text="6 Месяцев (270₽)", callback_data="6_months"
+        text="6 Месяцев (390₽)", callback_data="6_months"
     )
     year_button = InlineKeyboardButton(
-        text="12 Месяцев (490₽)", callback_data="12_months"
+        text="12 Месяцев (690₽)", callback_data="12_months"
     )
     back_button = InlineKeyboardButton(text="🔙 Назад", callback_data="to_key_params")
     return InlineKeyboardMarkup(
@@ -162,12 +162,11 @@ def get_key_name_choosing_keyboard(keys: list):
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def get_key_name_extension_keyboard_with_names(keys: list, keys_id):
+def get_key_name_extension_keyboard_with_names(keys: dict):
     keyboard_buttons = []
-    for i, key in enumerate(keys):
-        key_id = keys_id[i]
+    for key_id in keys:
         button = InlineKeyboardButton(
-            text=f"🔑 {key}",
+            text=f"🔑 {keys[key_id][0]} ({keys[key_id][1]} дней)",
             callback_data=f"extend_{key_id}",
         )
         keyboard_buttons.append([button])
@@ -244,5 +243,19 @@ def get_back_button_to_key_params():
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),
             ]
+        ]
+    )
+
+
+def get_back_button_to_buy_key(price):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=f"Оплатить {price}₽", pay=True)],
+            [
+                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_buy_key"),
+                InlineKeyboardButton(
+                    text="В главное меню", callback_data="back_to_main_menu"
+                ),
+            ],
         ]
     )

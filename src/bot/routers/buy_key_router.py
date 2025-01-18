@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from bot.fsm.states import GetKey, MainMenu, ManageKeys
 from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_keyboard
+from bot.initialization.bot_init import bot
 from logger.logging_config import setup_logger
 
 load_dotenv()
@@ -17,7 +18,7 @@ router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(F.data == "get_keys_pressed")
+@router.callback_query(F.data.in_(["get_keys_pressed"]))
 @router.callback_query(
     StateFilter(ManageKeys.no_active_keys),
     ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions"]),
@@ -30,6 +31,24 @@ async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GetKey.buy_key)
     await callback.message.edit_text(
         "Выберите тип ключа:",
+        reply_markup=get_period_keyboard(),
+    )
+
+
+@router.callback_query(
+    StateFilter(GetKey.waiting_for_payment, GetKey.waiting_for_extension_payment),
+    F.data == "back_to_buy_key",
+)
+async def back_buy_key_menu(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(GetKey.buy_key)
+    await callback.message.delete()
+    data = await state.get_data()
+    payment_message_id = data.get("payment_message_id")
+
+    await bot.edit_message_text(
+        text="Выберите тип ключа:",
+        chat_id=callback.message.chat.id,
+        message_id=payment_message_id,
         reply_markup=get_period_keyboard(),
     )
 

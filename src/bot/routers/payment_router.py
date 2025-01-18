@@ -18,7 +18,11 @@ from bot.fsm.states import GetKey
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
-from bot.keyboards.keyboards import get_back_button
+from bot.keyboards.keyboards import (
+    get_back_button,
+    get_back_button_to_buy_key,
+    get_already_have_trial_key,
+)
 from bot.utils.dicts import prices_dict
 from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
@@ -70,8 +74,9 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
         await state.set_state(GetKey.waiting_for_extension_payment)
         await state.update_data(selected_period=selected_period)
 
-    # Обновляем текст старого сообщения
-    await callback.message.edit_text(text="Оплата")
+    logger.info(f"Sending invoice with currency=RUB, amount={prices}")
+    payment_message = await callback.message.edit_text(text="Оплата")
+    await state.update_data(payment_message_id=payment_message.message_id)
 
     await bot.send_invoice(
         chat_id=callback.message.chat.id,
@@ -82,7 +87,9 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
         start_parameter=str(uuid.uuid4()),
         currency="rub",
         prices=prices,
+        reply_markup=get_back_button_to_buy_key(amount / 100),
     )
+
     await callback.answer()
 
 
@@ -112,7 +119,7 @@ async def successful_payment(message: Message, state: FSMContext):
 
         # Обновление базы данных
         data = await state.get_data()
-        period = data.get("selected_period", "1 Month")
+        period = data.get("selected_period")
         db_processor.update_database_with_key(message.from_user.id, key, period)
 
         # Отправка инструкций по установке
@@ -150,5 +157,6 @@ async def successful_payment(message: Message, state: FSMContext):
             parse_mode="HTML",
             reply_markup=get_back_button(),
         )
+        await state.set_state(GetKey.sending_key)
     except Exception as e:
         logger.info(e)

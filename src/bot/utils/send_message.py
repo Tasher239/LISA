@@ -43,13 +43,13 @@ async def send_message_and_save(message, text: str, state: FSMContext, **kwargs)
     return sent_message
 
 
-async def send_message_subscription_expired(user, keys, keys_id):
+async def send_message_subscription_expired(user, keys):
     # Клавиатура для продления подписки
     await bot.send_message(
         user.user_telegram_id,
         Notification.SUBSCRIPTION_EXPIRING.value,
         parse_mode="HTML",
-        reply_markup=get_key_name_extension_keyboard_with_names(keys, keys_id),
+        reply_markup=get_key_name_extension_keyboard_with_names(keys),
     )
 
 

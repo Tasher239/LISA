@@ -2,9 +2,5 @@ outline-vpn-api
 python-decouple
 sqlalchemy
 aiogram
-outline_vpn
-logging
-sys
-json
 uuid
 python-dotenv
