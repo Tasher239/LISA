@@ -3,7 +3,14 @@ from dotenv import load_dotenv
 import uuid
 
 from aiogram import F, Router
-from aiogram.types import Message, PreCheckoutQuery, LabeledPrice, CallbackQuery
+from aiogram.types import (
+    Message,
+    PreCheckoutQuery,
+    LabeledPrice,
+    CallbackQuery,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 
@@ -33,7 +40,14 @@ logger = setup_logger()
 
 @router.callback_query(
     StateFilter(GetKey.buy_key),
-    ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions", 'get_keys_pressed']),
+    ~F.data.in_(
+        [
+            "trial_period",
+            "back_to_main_menu",
+            "installation_instructions",
+            "get_keys_pressed",
+        ]
+    ),
 )
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace("_", " ").title()
@@ -45,6 +59,9 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     # Сохранение выбранного периода в состоянии
     await state.update_data(selected_period=selected_period)
     await state.set_state(GetKey.waiting_for_payment)
+
+    # Обновляем текст старого сообщения
+    await callback.message.edit_text(text="Оплата")
 
     await bot.send_invoice(
         chat_id=callback.message.chat.id,
@@ -78,7 +95,8 @@ async def successful_payment(message: Message, state: FSMContext):
 
         logger.info(f"Key created: {key} for user {message.from_user.id}")
 
-        await send_key_to_user(message, key)
+        new_message = await message.answer(text="Оплата прошла успешно")
+        await send_key_to_user(new_message, key, text=f'Ваш ключ «{key.name}» добавлен в менеджер ключей')
 
         # Обновление базы данных
         data = await state.get_data()

@@ -16,6 +16,7 @@ from database.db_processor import DbProcessor
 router = Router()
 logger = setup_logger()
 
+
 @router.callback_query(F.data == "key_management_pressed")
 @router.callback_query(StateFilter(ManageKeys.key_management_pressed))
 async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
@@ -30,15 +31,15 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
             .first()
         )
         if not user or len(user.keys) == 0:
-            await callback.message.answer(
-                "У вас нет активных ключей, но вы можете испытать пробный период.",
+            await callback.message.edit_text(
+                "У вас нет активных ключей, но вы можете получить пробный период или приобрести ключ",
                 reply_markup=get_buttons_for_trial_period(),
             )
             await state.set_state(ManageKeys.no_active_keys)
 
         else:
-            # user.keys - это список объектов алхимии.Key
-            await callback.message.answer(
+            # user.keys - это список объектов алхимии Key
+            await callback.message.edit_text(
                 "Выберите ключ для управления:",
                 reply_markup=get_key_name_choosing_keyboard(user.keys),
             )
