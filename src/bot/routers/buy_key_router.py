@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from bot.fsm.states import GetKey, MainMenu, ManageKeys
 from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_keyboard
 from bot.initialization.bot_init import bot
+
 from logger.logging_config import setup_logger
 
 router = Router()
