@@ -17,7 +17,7 @@ logger = setup_logger()
 
 
 async def send_key_to_user(
-    message: Message, key: OutlineKey, text: str = "Ваш ключ от VPN"
+        message: Message, key: OutlineKey, text: str = "Ваш ключ от VPN"
 ) -> None:
     """Отправляет ключ пользователю."""
     logger.info(f"Key created: {key} for user {message.from_user.id}")

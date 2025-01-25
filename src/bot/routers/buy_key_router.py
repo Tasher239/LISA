@@ -11,26 +11,16 @@ from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_k
 from bot.initialization.bot_init import bot
 from logger.logging_config import setup_logger
 
-load_dotenv()
-provider_token = os.getenv("PROVIDER_SBER_TOKEN")
-
 router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(F.data.in_(["get_keys_pressed"]))
-@router.callback_query(
-    StateFilter(ManageKeys.no_active_keys),
-    ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions"]),
-)
-@router.callback_query(
-    StateFilter(MainMenu.waiting_for_action),
-    ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions"]),
-)
+@router.callback_query(F.data.in_(['VPNtype_Outline', 'VPNtype_VLESS']))
 async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GetKey.buy_key)
+    await state.update_data(vpn_type=callback.data.split("_")[1])
     await callback.message.edit_text(
-        "Выберите тип ключа:",
+        "Выберите период подписки:",
         reply_markup=get_period_keyboard(),
     )
 

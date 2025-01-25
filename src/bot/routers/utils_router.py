@@ -61,8 +61,15 @@ async def back_button(callback: CallbackQuery, state: FSMContext):
         await callback.answer()
 
 
-@router.callback_query(StateFilter(MainMenu.about_us), F.data != "back_to_main_menu")
+@router.callback_query(F.data == "about_us")
 async def show_about_us(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         INFO.ABOUT_US, reply_markup=get_about_us_keyboard(), parse_mode="Markdown"
     )
+
+@router.callback_query(F.data == "installation_instructions")
+def foo():
+    # await callback.message.edit_text(
+    #     INFO.
+    # )
+    pass

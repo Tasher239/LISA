@@ -17,7 +17,6 @@ logger = setup_logger()
 
 
 @router.callback_query(F.data == "key_management_pressed")
-@router.callback_query(StateFilter(ManageKeys.key_management_pressed))
 async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     user_id_str = str(user_id)
@@ -37,6 +36,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
             await state.set_state(ManageKeys.no_active_keys)
 
         else:
+            print("HEREEEE!!!!!!!!!")
             # user.keys - это список объектов алхимии Key
             await callback.message.edit_text(
                 "Выберите ключ для управления:",

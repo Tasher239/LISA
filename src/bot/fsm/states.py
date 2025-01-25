@@ -7,6 +7,7 @@ class MainMenu(StatesGroup):
 
 
 class GetKey(StatesGroup):
+    choosing_vpn_protocol_type = State()
     choosing_period = State()
     waiting_for_payment = State()
     sending_key = State()

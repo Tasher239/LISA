@@ -1,7 +1,7 @@
 from outline_vpn.outline_vpn import OutlineKey
+from bot.processors.base_processor import BaseProcessor
 
-
-class OutlineProcessor:
+class OutlineProcessor(BaseProcessor):
     def __init__(self, client):
         self.client = client
 

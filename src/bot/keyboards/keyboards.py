@@ -1,12 +1,13 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from src.bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.vless_processor_init import vless_processor
 
 
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
     get_key = InlineKeyboardButton(
-        text="🆕 Получить ключ", callback_data="get_keys_pressed"
+        text="🆕 Получить ключ", callback_data="choice_vpn_type"
     )
 
     ket_management = InlineKeyboardButton(
@@ -15,8 +16,24 @@ def get_main_menu_keyboard():
 
     about_us = InlineKeyboardButton(text="ℹ️ О нас", callback_data="about_us")
 
+    get_instruction = InlineKeyboardButton(text="📃 Инструкция по установке", callback_data="installation_instructions")
     return InlineKeyboardMarkup(
-        inline_keyboard=[[get_key], [ket_management], [about_us]]
+        inline_keyboard=[[get_key], [ket_management], [get_instruction], [about_us]]
+    )
+
+
+def get_choice_vpn_type_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
+             InlineKeyboardButton(
+                 text="OUTLINE", callback_data="VPNtype_Outline"
+             )
+             ],
+            [
+                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")
+            ]
+        ]
     )
 
 
@@ -45,7 +62,7 @@ def get_period_keyboard():
     )
 
     back_button = InlineKeyboardButton(
-        text="🔙 Назад", callback_data="back_to_main_menu"
+        text="🔙 Назад", callback_data="back_to_choice_vpn_type"
     )
 
     return InlineKeyboardMarkup(
@@ -148,7 +165,11 @@ def get_key_name_choosing_keyboard(keys: list):
     keyboard_buttons = []
 
     for key in keys:
-        key_info = outline_processor.get_key_info(key.key_id)
+        match key.protocol_type:
+            case 'Outline':
+                key_info = outline_processor.get_key_info(key.key_id)
+            case 'VLESS':
+                key_info = vless_processor.get_key_info(key.key_id)
         button = InlineKeyboardButton(
             text=f"🔑 {key_info.name}", callback_data=f"key_{key.key_id}"
         )
