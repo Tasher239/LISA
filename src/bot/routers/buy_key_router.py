@@ -21,7 +21,8 @@ provider_token = os.getenv("PROVIDER_SBER_TOKEN")
 router = Router()
 logger = setup_logger()
 
-@router.callback_query(F.data=="get_keys_pressed")
+
+@router.callback_query(F.data == "get_keys_pressed")
 @router.callback_query(
     StateFilter(ManageKeys.no_active_keys),
     ~F.data.in_(["trial_period", "back_to_main_menu", "installation_instructions"]),
@@ -32,10 +33,8 @@ logger = setup_logger()
 )
 async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GetKey.buy_key)
-    await callback.message.answer(
+    await callback.message.edit_text(
         "Выберите тип ключа:",
         reply_markup=get_period_keyboard(),
     )
-    await callback.answer()
-
-
+    # await callback.answer()

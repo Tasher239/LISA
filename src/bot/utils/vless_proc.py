@@ -422,4 +422,3 @@ if __name__ == "__main__":
         logger.info(f"Ключ TEST_VPN_77777 удалён успешно")
     else:
         logger.warning(f"Ошибка при удалении ключа: {msg}")
-z
