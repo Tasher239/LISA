@@ -6,6 +6,7 @@ from aiogram.types import CallbackQuery, Message
 from bot.fsm.states import MainMenu, ManageKeys
 from bot.keyboards.keyboards import get_main_menu_keyboard
 from bot.routers.choice_vpn_type_router import choice_vpn_type
+from bot.routers.buy_key_router import buy_key_menu
 from bot.routers.key_management_router import choosing_key_handler
 from bot.routers.utils_router import show_about_us
 from bot.utils.send_message import send_message_and_save
