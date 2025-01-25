@@ -16,7 +16,9 @@ def get_main_menu_keyboard():
 
     about_us = InlineKeyboardButton(text="ℹ️ О нас", callback_data="about_us")
 
-    get_instruction = InlineKeyboardButton(text="📃 Инструкция по установке", callback_data="installation_instructions")
+    get_instruction = InlineKeyboardButton(
+        text="📃 Инструкция по установке", callback_data="installation_instructions"
+    )
     return InlineKeyboardMarkup(
         inline_keyboard=[[get_key], [ket_management], [get_instruction], [about_us]]
     )
@@ -25,14 +27,11 @@ def get_main_menu_keyboard():
 def get_choice_vpn_type_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
-             InlineKeyboardButton(
-                 text="OUTLINE", callback_data="VPNtype_Outline"
-             )
-             ],
             [
-                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")
-            ]
+                InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
+                InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
+            ],
+            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")],
         ]
     )
 
@@ -166,9 +165,9 @@ def get_key_name_choosing_keyboard(keys: list):
 
     for key in keys:
         match key.protocol_type:
-            case 'Outline':
+            case "Outline":
                 key_info = outline_processor.get_key_info(key.key_id)
-            case 'VLESS':
+            case "VLESS":
                 key_info = vless_processor.get_key_info(key.key_id)
         button = InlineKeyboardButton(
             text=f"🔑 {key_info.name}", callback_data=f"key_{key.key_id}"

@@ -46,9 +46,14 @@ logger = setup_logger()
 """
 
 
-@router.callback_query(StateFilter(GetKey.buy_key), ~F.data.in_(["trial_period", "back_to_choice_vpn_type"]))
-@router.callback_query(StateFilter(GetKey.choice_extension_period),
-                       ~F.data.in_(["to_key_params", "back_to_choice_vpn_type"]))
+@router.callback_query(
+    StateFilter(GetKey.buy_key),
+    ~F.data.in_(["trial_period", "back_to_choice_vpn_type"]),
+)
+@router.callback_query(
+    StateFilter(GetKey.choice_extension_period),
+    ~F.data.in_(["to_key_params", "back_to_choice_vpn_type"]),
+)
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace("_", " ").title()
 
@@ -102,12 +107,12 @@ async def successful_payment(message: Message, state: FSMContext):
         data = await state.get_data()
         print(data.get("vpn_type"))
         match data.get("vpn_type"):
-            case 'Outline':
+            case "Outline":
                 processor = outline_processor
-                protocol_type = 'Outline'
-            case 'VLESS':
+                protocol_type = "Outline"
+            case "VLESS":
                 processor = vless_processor
-                protocol_type = 'VLESS'
+                protocol_type = "VLESS"
 
         key = processor.create_vpn_key()
 
@@ -121,7 +126,9 @@ async def successful_payment(message: Message, state: FSMContext):
         # Обновление базы данных
         data = await state.get_data()
         period = data.get("selected_period")
-        db_processor.update_database_with_key(message.from_user.id, key, period, protocol_type)
+        db_processor.update_database_with_key(
+            message.from_user.id, key, period, protocol_type
+        )
 
         # Отправка инструкций по установке
         await state.update_data(key_access_url=key.access_url)

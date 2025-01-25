@@ -15,7 +15,7 @@ router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(F.data.in_(['VPNtype_Outline', 'VPNtype_VLESS']))
+@router.callback_query(F.data.in_(["VPNtype_Outline", "VPNtype_VLESS"]))
 async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GetKey.buy_key)
     await state.update_data(vpn_type=callback.data.split("_")[1])
