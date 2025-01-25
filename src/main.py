@@ -15,7 +15,7 @@ from bot.routers import (
     payment_router,
     trial_period_router,
     utils_router,
-    choice_vpn_type_router
+    choice_vpn_type_router,
 )
 from logger.logging_config import setup_logger
 

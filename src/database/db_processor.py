@@ -78,7 +78,11 @@ class DbProcessor:
                             key_info = vless_processor.get_key_info(key.key_id)
                         key_name = key_info.name
                         # ключ будет действовать меньше 3х дней
-                        if timedelta(days=0) < key.expiration_date - datetime.now() < timedelta(days=4):
+                        if (
+                            timedelta(days=0)
+                            < key.expiration_date - datetime.now()
+                            < timedelta(days=4)
+                        ):
                             key.remembering = True
                             expiring_keys[key.key_id] = (
                                 key_name,

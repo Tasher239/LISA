@@ -67,6 +67,7 @@ async def show_about_us(callback: CallbackQuery, state: FSMContext):
         INFO.ABOUT_US, reply_markup=get_about_us_keyboard(), parse_mode="Markdown"
     )
 
+
 @router.callback_query(F.data == "installation_instructions")
 def foo():
     # await callback.message.edit_text(
