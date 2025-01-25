@@ -18,6 +18,8 @@ from bot.fsm.states import GetKey
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.vless_processor_init import vless_processor
+
 from bot.keyboards.keyboards import (
     get_back_button,
     get_back_button_to_buy_key,
@@ -31,7 +33,7 @@ from logger.log_sender import LogSender
 from logger.logging_config import setup_logger
 
 load_dotenv()
-provider_token = os.getenv("PROVIDER_SBER_TOKEN")
+provider_token = os.getenv("PROVIDER_PAYMENT_TOKEN")
 
 router = Router()
 logger = setup_logger()
@@ -44,20 +46,9 @@ logger = setup_logger()
 """
 
 
-@router.callback_query(
-    StateFilter(GetKey.buy_key),
-    ~F.data.in_(
-        [
-            "trial_period",
-            "back_to_main_menu",
-            "installation_instructions",
-            "get_keys_pressed",
-        ]
-    ),
-)
-@router.callback_query(
-    StateFilter(GetKey.choice_extension_period), ~F.data.in_("to_key_params")
-)
+@router.callback_query(StateFilter(GetKey.buy_key), ~F.data.in_(["trial_period", "back_to_choice_vpn_type"]))
+@router.callback_query(StateFilter(GetKey.choice_extension_period),
+                       ~F.data.in_(["to_key_params", "back_to_choice_vpn_type"]))
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace("_", " ").title()
 
@@ -108,7 +99,17 @@ async def successful_payment(message: Message, state: FSMContext):
         # Логирование успешного платежа
         LogSender.log_payment_details(message)
         # Создание нового ключа VPN
-        key = outline_processor.create_vpn_key()
+        data = await state.get_data()
+        print(data.get("vpn_type"))
+        match data.get("vpn_type"):
+            case 'Outline':
+                processor = outline_processor
+                protocol_type = 'Outline'
+            case 'VLESS':
+                processor = vless_processor
+                protocol_type = 'VLESS'
+
+        key = processor.create_vpn_key()
 
         logger.info(f"Key created: {key} for user {message.from_user.id}")
 
@@ -120,7 +121,7 @@ async def successful_payment(message: Message, state: FSMContext):
         # Обновление базы данных
         data = await state.get_data()
         period = data.get("selected_period")
-        db_processor.update_database_with_key(message.from_user.id, key, period)
+        db_processor.update_database_with_key(message.from_user.id, key, period, protocol_type)
 
         # Отправка инструкций по установке
         await state.update_data(key_access_url=key.access_url)
@@ -128,7 +129,7 @@ async def successful_payment(message: Message, state: FSMContext):
     except Exception as e:
         logger.error(f"Произошла ошибка: {e}")
         await message.answer(
-            "Произошла ошибка при обработке вашего платежа. Пожалуйста, свяжитесь с поддержкой."
+            "Произошла ошибка при создании ключа. Пожалуйста, свяжитесь с поддержкой."
         )
         await state.clear()
 

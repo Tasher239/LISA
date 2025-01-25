@@ -5,6 +5,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, create_eng
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 from bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.vless_processor_init import vless_processor
 from bot.utils.send_message import send_message_subscription_expired
 from logger.logging_config import setup_logger
 
@@ -26,7 +27,7 @@ class DbProcessor:
         """Создает и возвращает новую сессию."""
         return self.Session()
 
-    def update_database_with_key(self, user_id, key, period):
+    def update_database_with_key(self, user_id, key, period, protocol_type="Outline"):
         """Обновляет БД по новому созданному ключу для пользователя"""
         session = self.get_session()
         try:
@@ -53,6 +54,7 @@ class DbProcessor:
                 user_telegram_id=user_id_str,
                 expiration_date=expiration_date,
                 start_date=start_date,
+                protocol_type=protocol_type,
             )
             session.add(new_key)
             session.commit()
@@ -70,12 +72,13 @@ class DbProcessor:
                 for user in users:
                     expiring_keys = {}  # {key_id: (key_name, expiration_time)}
                     for key in user.keys:
-                        key_info = outline_processor.get_key_info(key.key_id)
+                        if key.protocol_type == "Outline":
+                            key_info = outline_processor.get_key_info(key.key_id)
+                        else:
+                            key_info = vless_processor.get_key_info(key.key_id)
                         key_name = key_info.name
                         # ключ будет действовать меньше 3х дней
-                        if (key.remembering_before_exp == False) and (
-                            key.expiration_date - datetime.now() < timedelta(days=4)
-                        ):
+                        if timedelta(days=0) < key.expiration_date - datetime.now() < timedelta(days=4):
                             key.remembering = True
                             expiring_keys[key.key_id] = (
                                 key_name,
@@ -95,8 +98,8 @@ class DbProcessor:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise
             await asyncio.sleep(
-                60 * 60 * 12
-            )  # каждые 12 ч перенесена в конец чтобы 1 раз пробегаться при запуске бота
+                60 * 60 * 24
+            )  # каждые 24 ч перенесена в конец чтобы 1 раз пробегаться при запуске бота
 
     # Определение таблицы Users
     class User(Base):
@@ -110,7 +113,7 @@ class DbProcessor:
     # Определение таблицы Keys
     class Key(Base):
         __tablename__ = "keys"
-        key_id = Column(String, primary_key=True)  # id ключа в outline и бд
+        key_id = Column(String, primary_key=True)  # id ключа в outline или vless и бд
         user_telegram_id = Column(
             String, ForeignKey("users.user_telegram_id")
         )  # ID пользователя (ссылка на пользователя)
@@ -118,6 +121,7 @@ class DbProcessor:
         expiration_date = Column(DateTime)  # Дата окончания подписки
         start_date = Column(DateTime)  # Дата начала подписки
         user = relationship("User", back_populates="keys")
+        protocol_type = Column(String, default="Outline")
         remembering_before_exp = Column(
             Boolean, default=False
         )  # напомнить о продлении 1 раз

@@ -15,6 +15,7 @@ from bot.routers import (
     payment_router,
     trial_period_router,
     utils_router,
+    choice_vpn_type_router
 )
 from logger.logging_config import setup_logger
 
@@ -33,6 +34,7 @@ dp.include_router(buy_key_router.router)
 dp.include_router(key_params_router.router)
 dp.include_router(trial_period_router.router)
 dp.include_router(utils_router.router)
+dp.include_router(choice_vpn_type_router.router)
 
 
 async def set_main_menu(bot: Bot):
