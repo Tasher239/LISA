@@ -28,8 +28,8 @@ def get_choice_vpn_type_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS_inst"),
-                InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline_inst"),
+                InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
+                InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
             ],
             [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")],
         ]

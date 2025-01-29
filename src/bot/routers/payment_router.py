@@ -50,18 +50,19 @@ logger = setup_logger()
 
 @router.callback_query(
     StateFilter(GetKey.buy_key),
-    ~F.data.in_(["trial_period", "back_to_choice_vpn_type"]),
+    ~F.data.in_(["trial_period", "back_to_choice_vpn_type", 'back_to_main_menu', 'installation_instructions']),
 )
 @router.callback_query(
     StateFilter(GetKey.choice_extension_period),
-    ~F.data.in_(["to_key_params", "back_to_choice_vpn_type"]),
+    ~F.data.in_(["to_key_params", "back_to_choice_vpn_type", 'back_to_main_menu', 'installation_instructions']),
 )
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
     selected_period = callback.data.replace("_", " ").title()
-
     amount = prices_dict[selected_period.split()[0]]
     prices = [LabeledPrice(label="Ключ от VPN", amount=amount)]
-    description = f"Ключ от VPN Outline на {selected_period}"
+
+    data = await state.get_data()
+    description = f"Ключ от VPN {data.get('vpn_type')} на {selected_period}"
 
     # Сохранение выбранного периода в состоянии
     await state.update_data(selected_period=selected_period)

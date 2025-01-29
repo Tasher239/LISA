@@ -29,11 +29,11 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
             .first()
         )
         if not user or len(user.keys) == 0:
+            await state.set_state(ManageKeys.no_active_keys)
             await callback.message.edit_text(
                 "У вас нет активных ключей, но вы можете получить пробный период или приобрести ключ",
                 reply_markup=get_buttons_for_trial_period(),
             )
-            await state.set_state(ManageKeys.no_active_keys)
 
         else:
             # user.keys - это список объектов алхимии Key

@@ -17,6 +17,7 @@ class GetKey(StatesGroup):
 
 
 class ManageKeys(StatesGroup):
+    key_management_no_key = State()
     choosing_key = State()
     choosing_action = State()
     rename_key = State()
