@@ -5,18 +5,24 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
+
+from bot.utils.get_processor import get_processor
+from bot.utils.send_message import send_key_to_user_with_back_button
+from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
     get_back_button_to_key_params,
     get_confirmation_keyboard,
     get_key_action_keyboard,
 )
-from bot.utils.send_message import send_key_to_user_with_back_button
+
 from database.db_processor import DbProcessor
+
 from logger.logging_config import setup_logger
-from src.bot.initialization.vless_processor_init import vless_processor
+
 
 router = Router()
 logger = setup_logger()
@@ -43,12 +49,11 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("ID ключа не найден.")
         return
 
-    # Получаем информацию о ключе
-    if str(selected_key_id)[0] == 's':
-        key_info = outline_processor.get_key_info(selected_key_id)
-    else:
-        key_info = vless_processor.get_key_info(selected_key_id)
+    vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
 
+    # Получаем информацию о ключе
+    processor = await get_processor(vpn_type)
+    key_info = processor.get_key_info(selected_key_id)
     if not selected_key_id:
         await callback.message.answer(
             "Ключ не выбран. Пожалуйста, вернитесь назад и выберите ключ."
@@ -84,7 +89,7 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Ключ не найден.")
         return
 
-    if str(key_id)[0] == 's':
+    if str(key_id)[0] == "s":
         key_info = outline_processor.get_key_info(key_id)
     else:
         key_info = vless_processor.get_key_info(key_id)
@@ -123,8 +128,9 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
     else:
         remaining_days = None
 
+    days = get_day_by_number(remaining_days)
     if remaining_days is not None:
-        response = f"""Действует до: {expiration_date.strftime('%d.%m.%Y')}\nДо окончания: {remaining_days} дней"""
+        response = f"Действует до: {expiration_date.strftime('%d.%m.%Y')}\nДо окончания: {remaining_days} {days}"
     else:
         response = "Дата окончания не установлена."
 
