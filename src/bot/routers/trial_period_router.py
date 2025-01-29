@@ -8,7 +8,7 @@ from aiogram.types import CallbackQuery
 from bot.fsm.states import GetKey, ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
-from bot.keyboards.keyboards import get_already_have_trial_key
+from bot.keyboards.keyboards import get_already_have_trial_key_keyboard
 from bot.utils.send_message import send_key_to_user
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger
@@ -33,6 +33,8 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     Проверяем, что пользователь не использовал пробный период ранее
     Если использовал возвращаем сообщение, что пробный период уже заюзан
     И делаем 2 кнопки - назад и купить ключ"""
+
+    await state.set_state(GetKey.get_trial_key)
     cur_state = await state.get_state()
     match cur_state:
         case GetKey.buy_key:
@@ -63,7 +65,6 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         # генерируем и высылаем ключ
         user.use_trial_period = True
         session.commit()
-        protocol_type = ""
         match vpn_type:
             case "Outline":
                 processor = outline_processor
@@ -79,7 +80,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
             user_telegram_id=user_id_str,
             expiration_date=expiration_date,
             start_date=start_date,
-            protocol_type=protocol_type,
+            protocol_type=vpn_type,
         )
         session.add(new_key)
         session.commit()
@@ -90,5 +91,5 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_text(
             "Вы уже использовали пробный период. "
             "Вы можете купить ключ или вернуться в главное меню",
-            reply_markup=get_already_have_trial_key(),
+            reply_markup=get_already_have_trial_key_keyboard(),
         )
