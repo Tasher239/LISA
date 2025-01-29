@@ -2,14 +2,14 @@ import os
 
 from dotenv import load_dotenv
 
-from bot.processors.vless_processor import VlessPocessor
+from bot.processors.vless_processor import VlessProcessor
 
 load_dotenv()
 
 vless_ip = os.getenv("VLESS_IP")
 vless_password = os.getenv("VLESS_PASSWORD")
 
-vless_processor = VlessPocessor(ip=vless_ip, password=vless_password)
+vless_processor = VlessProcessor(ip=vless_ip, password=vless_password)
 
 
 """
