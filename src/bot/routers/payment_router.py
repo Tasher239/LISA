@@ -1,5 +1,6 @@
 import os
 import uuid
+from dotenv import load_dotenv
 
 from aiogram import F, Router
 from aiogram.filters import StateFilter
@@ -12,25 +13,22 @@ from aiogram.types import (
     Message,
     PreCheckoutQuery,
 )
-from dotenv import load_dotenv
 
 from bot.fsm.states import GetKey
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
-
 from bot.initialization.vless_processor_init import vless_processor
-
-from bot.keyboards.keyboards import (
-    get_back_button,
-    get_back_button_to_buy_key,
-    get_already_have_trial_key_keyboard,
-)
+from bot.keyboards.keyboards import get_back_button_to_buy_key
 from bot.keyboards.keyboards import get_back_button
 from bot.utils.dicts import prices_dict
 from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
+from bot.utils.get_processor import get_processor
+from bot.lexicon.lexicon import get_day_by_number, get_month_by_number
+
 from database.db_processor import DbProcessor
+
 from logger.log_sender import LogSender
 from logger.logging_config import setup_logger
 
@@ -50,22 +48,52 @@ logger = setup_logger()
 
 @router.callback_query(
     StateFilter(GetKey.buy_key),
-    ~F.data.in_(["trial_period", "back_to_choice_vpn_type", 'back_to_main_menu', 'installation_instructions']),
+    ~F.data.in_(
+        [
+            "trial_period",
+            "back_to_choice_vpn_type",
+            "back_to_main_menu",
+            "installation_instructions",
+        ]
+    ),
 )
 @router.callback_query(
     StateFilter(GetKey.choice_extension_period),
-    ~F.data.in_(["to_key_params", "back_to_choice_vpn_type", 'back_to_main_menu', 'installation_instructions']),
+    ~F.data.in_(
+        [
+            "to_key_params",
+            "back_to_choice_vpn_type",
+            "back_to_main_menu",
+            "installation_instructions",
+        ]
+    ),
 )
 async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
-    selected_period = callback.data.replace("_", " ").title()
-    amount = prices_dict[selected_period.split()[0]]
+    selected_period = callback.data.split("_")[0]
+    amount = prices_dict[selected_period]
     prices = [LabeledPrice(label="Ключ от VPN", amount=amount)]
 
+    moths = get_month_by_number(int(selected_period))
+    cur_state = await state.get_state()
     data = await state.get_data()
-    description = f"Ключ от VPN {data.get('vpn_type')} на {selected_period}"
+    match cur_state:
+        case GetKey.buy_key:
+            vpn_type = data.get("vpn_type")
+            description = f"Ключ от VPN {vpn_type} на {selected_period} {moths}"
+            title = "Покупка ключа"
+        case GetKey.choice_extension_period:
+            selected_key_id = data.get("selected_key_id")
+            vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
+            await state.update_data(vpn_type=vpn_type)
+            processor = await get_processor(vpn_type)
+            key_info = processor.get_key_info(selected_key_id)
+            await state.update_data(key_name=key_info.name)
+            title = "Продление ключа"
+            description = f"Продление ключа {key_info.name} от VPN {vpn_type} на {selected_period} {moths}"
 
     # Сохранение выбранного периода в состоянии
     await state.update_data(selected_period=selected_period)
+
     current_state = await state.get_state()
     if current_state == GetKey.buy_key:
         await state.set_state(GetKey.waiting_for_payment)
@@ -79,7 +107,7 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
 
     await bot.send_invoice(
         chat_id=callback.message.chat.id,
-        title="Покупка ключа",
+        title=title,
         description=description,
         payload=str(uuid.uuid4()),
         provider_token=provider_token,
@@ -149,7 +177,7 @@ async def successful_payment(message: Message, state: FSMContext):
     StateFilter(GetKey.waiting_for_extension_payment),
     lambda message: message.successful_payment,
 )
-async def successful_payment(message: Message, state: FSMContext):
+async def successful_extension_payment(message: Message, state: FSMContext):
     try:
         # Логирование успешного платежа
         LogSender.log_payment_details(message)
@@ -161,10 +189,10 @@ async def successful_payment(message: Message, state: FSMContext):
         add_period = 31 * add_period
         new_message = await message.answer(text="Оплата прошла успешно")
         extend_key_in_db(key_id=key_id, add_period=add_period)
-
         key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+        data = await state.get_data()
         await new_message.edit_text(
-            f'Ключ «{outline_processor.get_key_info(key_id).name}» действует до <b>{key.expiration_date.strftime("%d.%m.%y")}</b>',
+            f'Ключ «{data.get("key_name")}» действует до <b>{key.expiration_date.strftime("%d.%m.%y")}</b>',
             parse_mode="HTML",
             reply_markup=get_back_button(),
         )

@@ -49,9 +49,7 @@ class INFO(Enum):
     )
 
 
-
 INSTALL_INSTR = {
-
     "VLESS_MacOS": (
         "🔹 **Установка и настройка VLESS на MacOS**\n\n"
         "1️⃣ Установите **V2Ray** через Homebrew:\n"
@@ -101,8 +99,6 @@ INSTALL_INSTR = {
         "   - **Транспорт**: TCP / Reality\n"
         "4️⃣ Сохраните и нажмите **Start**."
     ),
-
-
     "Outline_MacOS": (
         "🔹 **Установка и настройка Outline VPN на MacOS**\n\n"
         "1️⃣ Установите **Outline VPN Client** из App Store: \n"
@@ -133,5 +129,24 @@ INSTALL_INSTR = {
         "3️⃣ Вставьте ключ подключения.\n"
         "4️⃣ Подключитесь и начните использовать VPN."
     ),
-
 }
+
+
+def get_plural_form(number, singular, few, many):
+    if 11 <= number % 100 <= 19:
+        return many
+    last_digit = number % 10
+    if last_digit == 1:
+        return singular
+    elif 2 <= last_digit <= 4:
+        return few
+    else:
+        return many
+
+
+def get_day_by_number(number):
+    return get_plural_form(number, "день", "дня", "дней")
+
+
+def get_month_by_number(number):
+    return get_plural_form(number, "месяц", "месяца", "месяцев")

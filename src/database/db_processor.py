@@ -3,12 +3,13 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, create_engine
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from outline_vpn.outline_vpn import OutlineServerErrorException
 
 from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.utils.send_message import send_message_subscription_expired
+
 from logger.logging_config import setup_logger
-from outline_vpn.outline_vpn import OutlineServerErrorException
 
 logger = setup_logger()
 Base = declarative_base()
@@ -28,6 +29,17 @@ class DbProcessor:
     def get_session(self):
         """Создает и возвращает новую сессию."""
         return self.Session()
+
+    def get_vpn_type_by_key_id(self, kei_id: str) -> str:
+        session = self.get_session()
+        try:
+            key = session.query(DbProcessor.Key).filter_by(key_id=kei_id).first()
+            return key.protocol_type
+        except Exception as e:
+            logger.error(f"Ошибка при получении информации о ключе {kei_id}: {e}")
+            raise
+        finally:
+            session.close()
 
     def update_database_with_key(self, user_id, key, period, protocol_type="Outline"):
         """Обновляет БД по новому созданному ключу для пользователя"""
@@ -83,15 +95,21 @@ class DbProcessor:
                                 print(key_info)
 
                         except OutlineServerErrorException as e:
-                            logger.warning(f"Ключ {key.key_id} не найден: {e}, удаляю из БД")
+                            logger.warning(
+                                f"Ключ {key.key_id} не найден: {e}, удаляю из БД"
+                            )
                             session.delete(key)
                             session.commit()
                             continue
                         except Exception as e:
-                            logger.error(f"Ошибка при получении информации о ключе {key.key_id}: {e}")
+                            logger.error(
+                                f"Ошибка при получении информации о ключе {key.key_id}: {e}"
+                            )
                             continue
                         if key_info is None:
-                            logger.warning(f"Ключ {key.key_id} не найден или пустой, пропускаем")
+                            logger.warning(
+                                f"Ключ {key.key_id} не найден или пустой, пропускаем"
+                            )
                             continue
                         key_name = key_info.name
                         # ключ будет действовать меньше 3х дней

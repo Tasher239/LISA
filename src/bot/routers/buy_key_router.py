@@ -1,12 +1,12 @@
 import os
+from dotenv import load_dotenv
 
 from aiogram import F, Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, LabeledPrice
-from dotenv import load_dotenv
 
-from bot.fsm.states import GetKey, MainMenu, ManageKeys
+from bot.fsm.states import GetKey
 from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_keyboard
 from bot.initialization.bot_init import bot
 
@@ -16,13 +16,17 @@ router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(StateFilter(GetKey.get_trial_key), F.data == 'back_to_choice_period')
-@router.callback_query(StateFilter(GetKey.choosing_vpn_protocol_type),
-                       F.data.in_(["VPNtype_Outline", "VPNtype_VLESS"]))
+@router.callback_query(
+    StateFilter(GetKey.get_trial_key), F.data == "back_to_choice_period"
+)
+@router.callback_query(
+    StateFilter(GetKey.choosing_vpn_protocol_type),
+    F.data.in_(["VPNtype_Outline", "VPNtype_VLESS"]),
+)
 async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
     cur_state = await state.get_state()
     # если мы вернулись из запроса пробного ключа, то тип был выбран ранее
-    
+
     if cur_state == GetKey.choosing_vpn_protocol_type:
         await state.update_data(vpn_type=callback.data.split("_")[1])
 

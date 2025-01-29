@@ -1,11 +1,10 @@
-import json
-import time
 from dataclasses import dataclass
-
+import json
 import requests
 import uuid
 
 from bot.processors.base_processor import BaseProcessor
+
 from logger.logging_config import setup_logger
 
 logger = setup_logger()
@@ -22,6 +21,7 @@ class VlessKey:
 
     key_id: str
     name: str
+    email: str
     access_url: str
     used_bytes: int
     data_limit: int | None
@@ -274,7 +274,7 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка при генерации ссылки: {e}")
             return False
 
-    def create_vpn_key(self, expire_time = 0) -> str:
+    def create_vpn_key(self, expire_time=0) -> str:
         if not self.con:
             return False, "Нет подключения к серверу"
 
@@ -302,7 +302,7 @@ class VlessProcessor(BaseProcessor):
                             "tgId": "",
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
-                            "comment": "Имя вашего ключа",
+                            "comment": "Новый ключ",
                         }
                     ]
                 }
@@ -319,6 +319,7 @@ class VlessProcessor(BaseProcessor):
                 logger.debug(f"Добавили ключ {unique_id} на сервере {self.ip}")
                 return VlessKey(
                     key_id=unique_id,
+                    email=unique_id,
                     name=unique_id[:5],
                     access_url=self._get_link(unique_id),
                     used_bytes=0,
@@ -351,7 +352,7 @@ class VlessProcessor(BaseProcessor):
                     "clients": [
                         {
                             "id": key_id,  # должен быть уникальным, чтобы удалять нормально
-                            "alterId": new_key_name,  # тут будет имя ключа
+                            "alterId": "None",  # тут будет имя ключа
                             "email": key_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
                             "totalGB": 0,
@@ -360,6 +361,7 @@ class VlessProcessor(BaseProcessor):
                             "tgId": "",
                             "subId": key_id,
                             "flow": "xtls-rprx-vision",
+                            "comment": new_key_name,
                         }
                     ]
                 }
@@ -484,16 +486,49 @@ class VlessProcessor(BaseProcessor):
             return False, str(e)
 
     def get_key_info(self, key_id: str) -> VlessKey:
-        link = self._get_link(key_id)
-        if not link:
-            logger.warning(f"Не удалось получить ссылку для ключа {key_id}")
+        """
+        Выполняет GET-запрос на сервер, получает информацию о ключе key_id и
+        возвращает объект VlessKey.
+        """
+        if not self.con:
+            logger.warning(f"Нет подключения к серверу")
             return None
 
-        return VlessKey(
-            key_id=key_id,
-            name="test",
-            access_url=link,
-            used_bytes=0,
-            data_limit=None,
-        )
+        try:
+            response = self.ses.post(
+                f"{self.host}/panel/inbound/list", data=self.data
+            ).json()
+            if not response.get("success"):
+                logger.warning(
+                    f'🛑Ошибка при получении списка ключей: {response.get("msg")}'
+                )
+                return None
 
+            # Ищем ключ в списке inbound'ов
+            for inbound in response.get("obj", []):
+                clients = json.loads(inbound.get("settings", "{}")).get("clients", [])
+
+                for client in clients:
+                    if client.get("id") == key_id:
+                        return VlessKey(
+                            key_id=client.get("id"),
+                            name=client.get("comment", ""),
+                            email=client.get("email", ""),
+                            access_url=self._get_link(client.get("id")),
+                            used_bytes=client.get("up", 0) + client.get("down", 0),
+                            data_limit=(
+                                client.get("totalGB") * 1024 * 1024 * 1024
+                                if client.get("totalGB")
+                                else None
+                            ),
+                        )
+
+            logger.warning(f"Ключ {key_id} не найден на сервере")
+            return None
+
+        except requests.RequestException as e:
+            logger.error(f"Ошибка сети при получении информации о ключе {key_id}: {e}")
+            return None
+        except ValueError as e:
+            logger.error(f"Ошибка при декодировании JSON-ответа: {e}")
+            return None

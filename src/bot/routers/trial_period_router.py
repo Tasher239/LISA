@@ -7,26 +7,31 @@ from aiogram.types import CallbackQuery
 
 from bot.fsm.states import GetKey, ManageKeys
 from bot.initialization.db_processor_init import db_processor
-from bot.initialization.outline_processor_init import outline_processor
 from bot.keyboards.keyboards import get_already_have_trial_key_keyboard
 from bot.utils.send_message import send_key_to_user
 from database.db_processor import DbProcessor
+from bot.utils.get_processor import get_processor
 from logger.logging_config import setup_logger
-from bot.initialization.vless_processor_init import vless_processor
-from bot.keyboards.keyboards import get_choice_vpn_type_keyboard_for_trial_period, get_choice_vpn_type_keyboard
+from bot.keyboards.keyboards import get_choice_vpn_type_keyboard_for_no_key
 
 router = Router()
 logger = setup_logger()
 
 
-@router.callback_query(StateFilter(ManageKeys.no_active_keys), F.data == "trial_period")
+@router.callback_query(
+    StateFilter(ManageKeys.no_active_keys), F.data == "get_trial_period"
+)
 async def trial_key_protocol_type_choice(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         "Выберите тип подключения:",
-        reply_markup=get_choice_vpn_type_keyboard(),
+        reply_markup=get_choice_vpn_type_keyboard_for_no_key(),
     )
 
-@router.callback_query(StateFilter(ManageKeys.no_active_keys), F.data.in_(["VPNtype_Outline", "VPNtype_VLESS"]))
+
+@router.callback_query(
+    StateFilter(ManageKeys.no_active_keys),
+    F.data.in_(["VPNtype_Outline", "VPNtype_VLESS"]),
+)
 @router.callback_query(StateFilter(GetKey.buy_key), F.data == "trial_period")
 async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     """Если пользователь выбрал использовать пробный ключ
@@ -34,7 +39,6 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     Если использовал возвращаем сообщение, что пробный период уже заюзан
     И делаем 2 кнопки - назад и купить ключ"""
 
-    await state.set_state(GetKey.get_trial_key)
     cur_state = await state.get_state()
     match cur_state:
         case GetKey.buy_key:
@@ -42,6 +46,8 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
             vpn_type = data.get("vpn_type")
         case ManageKeys.no_active_keys:
             vpn_type = callback.data.split("_")[1]
+
+    await state.set_state(GetKey.get_trial_key)
 
     user_id = callback.from_user.id
     user_id_str = str(user_id)
@@ -65,11 +71,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         # генерируем и высылаем ключ
         user.use_trial_period = True
         session.commit()
-        match vpn_type:
-            case "Outline":
-                processor = outline_processor
-            case 'VLESS':
-                processor = vless_processor
+        processor = await get_processor(vpn_type)
 
         key = processor.create_vpn_key()
         start_date = datetime.now()
