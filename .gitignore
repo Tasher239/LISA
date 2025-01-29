@@ -22,4 +22,4 @@ __pycache__/
 *.pyo
 
 # Log files
-logger/bot.log
+*.log
