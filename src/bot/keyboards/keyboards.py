@@ -2,6 +2,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.vless_processor_init import vless_processor
+from bot.lexicon.lexicon import get_day_by_number
+
 from logger.log_sender import logger
 
 
@@ -37,41 +39,90 @@ def get_choice_vpn_type_keyboard():
     )
 
 
+def get_choice_vpn_type_keyboard_for_no_key():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
+                InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
+            ],
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад", callback_data="key_management_pressed"
+                )
+            ],
+        ]
+    )
+
+
 def get_device_vless_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🖥 MacOS", callback_data="device_MacOS",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Mac-01-29'),
-                InlineKeyboardButton(text="📱 iPhone", callback_data="device_iPhone",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-iPhone-01-29'),
+                InlineKeyboardButton(
+                    text="🖥 MacOS",
+                    callback_data="device_MacOS",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Mac-01-29",
+                ),
+                InlineKeyboardButton(
+                    text="📱 iPhone",
+                    callback_data="device_iPhone",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-iPhone-01-29",
+                ),
             ],
             [
-                InlineKeyboardButton(text="💻 Windows", callback_data="device_Windows",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Windows-01-29'),
-                InlineKeyboardButton(text="📲 Android", callback_data="device_Android",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Android-01-29'),
+                InlineKeyboardButton(
+                    text="💻 Windows",
+                    callback_data="device_Windows",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Windows-01-29",
+                ),
+                InlineKeyboardButton(
+                    text="📲 Android",
+                    callback_data="device_Android",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Android-01-29",
+                ),
             ],
-            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_choice_type_for_instruction")],
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад", callback_data="back_choice_type_for_instruction"
+                )
+            ],
         ]
     )
+
 
 def get_device_outline_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🖥 MacOS", callback_data="device_MacOS",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Otline-na-MacOS-01-29'),
-                InlineKeyboardButton(text="📱 iPhone", callback_data="device_iPhone",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-iPhone-01-29'),
+                InlineKeyboardButton(
+                    text="🖥 MacOS",
+                    callback_data="device_MacOS",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Otline-na-MacOS-01-29",
+                ),
+                InlineKeyboardButton(
+                    text="📱 iPhone",
+                    callback_data="device_iPhone",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-iPhone-01-29",
+                ),
             ],
             [
-                InlineKeyboardButton(text="💻 Windows", callback_data="device_Windows",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Windows-01-29'),
-                InlineKeyboardButton(text="📲 Android", callback_data="device_Android",
-                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Android-01-29'),
+                InlineKeyboardButton(
+                    text="💻 Windows",
+                    callback_data="device_Windows",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Windows-01-29",
+                ),
+                InlineKeyboardButton(
+                    text="📲 Android",
+                    callback_data="device_Android",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Android-01-29",
+                ),
             ],
-            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_choice_type_for_instruction")],
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад", callback_data="back_choice_type_for_instruction"
+                )
+            ],
         ]
     )
 
@@ -81,7 +132,9 @@ def get_choice_vpn_type_keyboard_for_trial_period():
         inline_keyboard=[
             [
                 InlineKeyboardButton(text="VLESS", callback_data="trial_period_vless"),
-                InlineKeyboardButton(text="OUTLINE", callback_data="trial_period_outline"),
+                InlineKeyboardButton(
+                    text="OUTLINE", callback_data="trial_period_outline"
+                ),
             ],
             [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")],
         ]
@@ -148,7 +201,7 @@ def get_installation_button():
 # это нужно переименовать тк юзается еще в менеджере когда нет активных ключей
 def get_buttons_for_trial_period():
     get_trial_key = InlineKeyboardButton(
-        text="Пробный ключ", callback_data="trial_period"
+        text="Пробный ключ", callback_data="get_trial_period"
     )
     buy_key_button = InlineKeyboardButton(
         text="Купить ключ", callback_data="get_keys_pressed"
@@ -236,8 +289,9 @@ def get_key_name_choosing_keyboard(keys: list):
 def get_key_name_extension_keyboard_with_names(keys: dict):
     keyboard_buttons = []
     for key_id in keys:
+        days = get_day_by_number(keys[key_id][1])
         button = InlineKeyboardButton(
-            text=f"🔑 {keys[key_id][0]} ({keys[key_id][1]} дней)",
+            text=f"🔑 {keys[key_id][0]} ({keys[key_id][1]} {days})",
             callback_data=f"extend_{key_id}",
         )
         keyboard_buttons.append([button])
@@ -296,7 +350,9 @@ def get_already_have_trial_key_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🔙 Назад", callback_data=f'back_to_choice_period'),
+                InlineKeyboardButton(
+                    text="🔙 Назад", callback_data=f"back_to_choice_period"
+                ),
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),

@@ -32,6 +32,5 @@ class ManageKeys(StatesGroup):
     get_instruction = State()
 
 
-
 class SubscriptionExtension(StatesGroup):
     extension = State()
