@@ -16,11 +16,17 @@ router = Router()
 logger = setup_logger()
 
 
+@router.callback_query(StateFilter(GetKey.get_trial_key), F.data == 'back_to_choice_period')
 @router.callback_query(StateFilter(GetKey.choosing_vpn_protocol_type),
                        F.data.in_(["VPNtype_Outline", "VPNtype_VLESS"]))
 async def buy_key_menu(callback: CallbackQuery, state: FSMContext):
+    cur_state = await state.get_state()
+    # если мы вернулись из запроса пробного ключа, то тип был выбран ранее
+    
+    if cur_state == GetKey.choosing_vpn_protocol_type:
+        await state.update_data(vpn_type=callback.data.split("_")[1])
+
     await state.set_state(GetKey.buy_key)
-    await state.update_data(vpn_type=callback.data.split("_")[1])
     await callback.message.edit_text(
         "Выберите период подписки:",
         reply_markup=get_period_keyboard(),

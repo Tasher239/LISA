@@ -24,7 +24,7 @@ from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
     get_back_button,
     get_back_button_to_buy_key,
-    get_already_have_trial_key,
+    get_already_have_trial_key_keyboard,
 )
 from bot.keyboards.keyboards import get_back_button
 from bot.utils.dicts import prices_dict
