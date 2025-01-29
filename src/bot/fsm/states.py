@@ -7,6 +7,7 @@ class MainMenu(StatesGroup):
 
 
 class GetKey(StatesGroup):
+    get_trial_key = State()
     choosing_vpn_protocol_type = State()
     choosing_period = State()
     waiting_for_payment = State()
@@ -28,6 +29,8 @@ class ManageKeys(StatesGroup):
     confirm_rename = State()
     key_management_pressed = State()
     no_active_keys = State()
+    get_instruction = State()
+
 
 
 class SubscriptionExtension(StatesGroup):

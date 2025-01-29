@@ -2,6 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.vless_processor_init import vless_processor
+from logger.log_sender import logger
 
 
 def get_main_menu_keyboard():
@@ -17,7 +18,7 @@ def get_main_menu_keyboard():
     about_us = InlineKeyboardButton(text="ℹ️ О нас", callback_data="about_us")
 
     get_instruction = InlineKeyboardButton(
-        text="📃 Инструкция по установке", callback_data="choose_connection"
+        text="📃 Инструкция по установке", callback_data="get_instruction"
     )
     return InlineKeyboardMarkup(
         inline_keyboard=[[get_key], [ket_management], [get_instruction], [about_us]]
@@ -35,20 +36,45 @@ def get_choice_vpn_type_keyboard():
         ]
     )
 
-def get_device_type_keyboard():
+
+def get_device_vless_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🖥 MacOS", callback_data="device_MacOS"),
-                InlineKeyboardButton(text="📱 iPhone", callback_data="device_iPhone"),
+                InlineKeyboardButton(text="🖥 MacOS", callback_data="device_MacOS",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Mac-01-29'),
+                InlineKeyboardButton(text="📱 iPhone", callback_data="device_iPhone",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-iPhone-01-29'),
             ],
             [
-                InlineKeyboardButton(text="💻 Windows", callback_data="device_Windows"),
-                InlineKeyboardButton(text="📲 Android", callback_data="device_Android"),
+                InlineKeyboardButton(text="💻 Windows", callback_data="device_Windows",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Windows-01-29'),
+                InlineKeyboardButton(text="📲 Android", callback_data="device_Android",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Android-01-29'),
             ],
-            [InlineKeyboardButton(text="🔙 Назад", callback_data="choose_connection")],
+            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_choice_type_for_instruction")],
         ]
     )
+
+def get_device_outline_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="🖥 MacOS", callback_data="device_MacOS",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Otline-na-MacOS-01-29'),
+                InlineKeyboardButton(text="📱 iPhone", callback_data="device_iPhone",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-iPhone-01-29'),
+            ],
+            [
+                InlineKeyboardButton(text="💻 Windows", callback_data="device_Windows",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Windows-01-29'),
+                InlineKeyboardButton(text="📲 Android", callback_data="device_Android",
+                                     url='https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Android-01-29'),
+            ],
+            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_choice_type_for_instruction")],
+        ]
+    )
+
 
 def get_choice_vpn_type_keyboard_for_trial_period():
     return InlineKeyboardMarkup(
@@ -60,7 +86,6 @@ def get_choice_vpn_type_keyboard_for_trial_period():
             [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")],
         ]
     )
-
 
 
 def get_about_us_keyboard():
@@ -189,10 +214,9 @@ def get_extension_periods_keyboard():
 
 def get_key_name_choosing_keyboard(keys: list):
     keyboard_buttons = []
-
     for key in keys:
-        match key.protocol_type:
-            case "Outline":
+        match key.protocol_type.lower():
+            case "outline":
                 key_info = outline_processor.get_key_info(key.key_id)
             case "vless":
                 key_info = vless_processor.get_key_info(key.key_id)
@@ -268,11 +292,11 @@ def get_confirmation_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
 
 
-def get_already_have_trial_key():
+def get_already_have_trial_key_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="🔙 Назад", callback_data="get_keys_pressed"),
+                InlineKeyboardButton(text="🔙 Назад", callback_data=f'back_to_choice_period'),
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),
