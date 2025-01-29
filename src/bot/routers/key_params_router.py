@@ -16,6 +16,7 @@ from bot.keyboards.keyboards import (
 from bot.utils.send_message import send_key_to_user_with_back_button
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger
+from src.bot.initialization.vless_processor_init import vless_processor
 
 router = Router()
 logger = setup_logger()
@@ -43,7 +44,10 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     # Получаем информацию о ключе
-    key_info = outline_processor.get_key_info(selected_key_id)
+    if str(selected_key_id)[0] == 's':
+        key_info = outline_processor.get_key_info(selected_key_id)
+    else:
+        key_info = vless_processor.get_key_info(selected_key_id)
 
     if not selected_key_id:
         await callback.message.answer(
@@ -80,7 +84,10 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("Ключ не найден.")
         return
 
-    key_info = outline_processor.get_key_info(key_id)
+    if str(key_id)[0] == 's':
+        key_info = outline_processor.get_key_info(key_id)
+    else:
+        key_info = vless_processor.get_key_info(key_id)
     used_bytes = 0
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
@@ -191,8 +198,10 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
     session.commit()
 
     # Переименовываем ключ через OutlineProcessor (если нужно)
-    outline_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
-
+    if key.protocol_type == "Outline":
+        outline_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
+    else:
+        vless_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
     # Отправляем сообщение пользователю
     await callback.message.edit_text(
         f"Ключ переименован в: {new_name}", reply_markup=get_back_button_to_key_params()
@@ -218,7 +227,10 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
     session = db_processor.get_session()
     key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
 
-    key_info = outline_processor.get_key_info(key_id)
+    if key.protocol_type == "Outline":
+        key_info = outline_processor.get_key_info(key_id)
+    else:
+        key_info = vless_processor.get_key_info(key_id)
 
     if not key:
         await callback.message.answer("Ключ не найден.")

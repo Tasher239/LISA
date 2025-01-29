@@ -10,8 +10,10 @@ from bot.keyboards.keyboards import (
     get_about_us_keyboard,
     get_back_button,
     get_main_menu_keyboard,
+    get_choice_vpn_type_keyboard,
+    get_device_type_keyboard,
 )
-from bot.lexicon.lexicon import INFO
+from bot.lexicon.lexicon import INFO, INSTALL_INSTR
 from bot.utils.string_makers import get_instruction_string
 from logger.logging_config import setup_logger
 
@@ -34,6 +36,42 @@ async def send_installation_instructions(callback: CallbackQuery, state: FSMCont
 
     await callback.answer()
     await state.set_state(default_state)
+
+@router.callback_query(F.data == "choose_connection")
+async def send_conntection_choose(callback: CallbackQuery):
+    await callback.message.edit_text(
+        text="🔍 **Выберите интересующий вас тип подключения:**",
+        parse_mode="Markdown",
+        reply_markup=get_choice_vpn_type_keyboard(),
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.in_(["VPNtype_VLESS_inst", "VPNtype_Outline_inst"]))
+async def send_conntection_choose(callback: CallbackQuery, state: FSMContext):
+    type_data = callback.data.split('_')[1]
+    await state.update_data(vpn_type=type_data)
+    await callback.message.edit_text(
+        text="💻📱 **Выберите ваше устройство:**",
+        parse_mode="Markdown",
+        reply_markup=get_device_type_keyboard(),
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.in_(["device_MacOS", "device_iPhone", "device_Windows", "device_Android"]))
+async def send_instruction_for_device(callback: CallbackQuery, state: FSMContext):
+    user_data = await state.get_data()
+    vpn_type = user_data.get("vpn_type", ["Unknown"])
+    device_type = callback.data.split("_")[1]
+    instruction = INSTALL_INSTR.get(f"{vpn_type}_{device_type}", "🚫 Инструкция не найдена.")
+    await callback.message.edit_text(
+        text=instruction,
+        parse_mode="Markdown",
+        disable_web_page_preview=True,  # Отключает предпросмотр ссылок
+    )
+    await callback.answer()
+
 
 
 # фильтр кнопки в главное меню из любого места
@@ -64,7 +102,7 @@ async def back_button(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "about_us")
 async def show_about_us(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
-        INFO.ABOUT_US, reply_markup=get_about_us_keyboard(), parse_mode="Markdown"
+        INFO.ABOUT_US, reply_markup=get_about_us_keyboard(), parse_mode="Markdown", disable_web_page_preview=True,
     )
 
 

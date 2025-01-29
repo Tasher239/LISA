@@ -8,6 +8,7 @@ from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.utils.send_message import send_message_subscription_expired
 from logger.logging_config import setup_logger
+from outline_vpn.outline_vpn import OutlineServerErrorException
 
 logger = setup_logger()
 Base = declarative_base()
@@ -16,6 +17,7 @@ Base = declarative_base()
 class DbProcessor:
     def __init__(self):
         # Создаем движок для подключения к базе данных
+
         self.engine = create_engine("sqlite:///database/vpn_users.db", echo=True)
         self.Session = sessionmaker(bind=self.engine)
 
@@ -72,10 +74,25 @@ class DbProcessor:
                 for user in users:
                     expiring_keys = {}  # {key_id: (key_name, expiration_time)}
                     for key in user.keys:
-                        if key.protocol_type == "Outline":
-                            key_info = outline_processor.get_key_info(key.key_id)
-                        else:
-                            key_info = vless_processor.get_key_info(key.key_id)
+                        key_info = None
+                        try:
+                            if key.protocol_type == "Outline":
+                                key_info = outline_processor.get_key_info(key.key_id)
+                            else:
+                                key_info = vless_processor.get_key_info(key.key_id)
+                                print(key_info)
+
+                        except OutlineServerErrorException as e:
+                            logger.warning(f"Ключ {key.key_id} не найден: {e}, удаляю из БД")
+                            session.delete(key)
+                            session.commit()
+                            continue
+                        except Exception as e:
+                            logger.error(f"Ошибка при получении информации о ключе {key.key_id}: {e}")
+                            continue
+                        if key_info is None:
+                            logger.warning(f"Ключ {key.key_id} не найден или пустой, пропускаем")
+                            continue
                         key_name = key_info.name
                         # ключ будет действовать меньше 3х дней
                         if (
