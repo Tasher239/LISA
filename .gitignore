@@ -26,3 +26,6 @@ logger/bot.log
 
 # Docker archive
 *.tar
+
+# Log-file
+*.log
