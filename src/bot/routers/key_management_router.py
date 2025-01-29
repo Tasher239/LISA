@@ -36,7 +36,6 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
             await state.set_state(ManageKeys.no_active_keys)
 
         else:
-            print("HEREEEE!!!!!!!!!")
             # user.keys - это список объектов алхимии Key
             await callback.message.edit_text(
                 "Выберите ключ для управления:",

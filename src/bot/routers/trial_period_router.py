@@ -12,6 +12,8 @@ from bot.keyboards.keyboards import get_already_have_trial_key
 from bot.utils.send_message import send_key_to_user
 from database.db_processor import DbProcessor
 from logger.logging_config import setup_logger
+from bot.initialization.vless_processor_init import vless_processor
+from bot.keyboards.keyboards import get_choice_vpn_type_keyboard_for_trial_period
 
 router = Router()
 logger = setup_logger()
@@ -19,6 +21,21 @@ logger = setup_logger()
 
 @router.callback_query(StateFilter(GetKey.buy_key), F.data == "trial_period")
 @router.callback_query(StateFilter(ManageKeys.no_active_keys), F.data == "trial_period")
+async def handle_trial_period(callback: CallbackQuery, state: FSMContext):
+    return await callback.message.edit_text(
+        "Выберите тип подключения:",
+        reply_markup=get_choice_vpn_type_keyboard_for_trial_period(),
+    )
+
+@router.callback_query(
+    StateFilter(GetKey.buy_key),
+    F.data.in_(["trial_period_outline", "trial_period_vless"])
+)
+@router.callback_query(
+    StateFilter(ManageKeys.no_active_keys),
+    F.data.in_(["trial_period_outline", "trial_period_vless"])
+)
+
 async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     """Если пользователь выбрал использовать пробный ключ
     Проверяем, что пользователь не использовал пробный период ранее
@@ -47,7 +64,13 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         # генерируем и высылаем ключ
         user.use_trial_period = True
         session.commit()
-        key = outline_processor.create_vpn_key()
+        protocol_type = ""
+        if callback.data == "trial_period_outline":
+            key = outline_processor.create_vpn_key()
+            protocol_type = "Outline"
+        elif callback.data == "trial_period_vless":
+            key = vless_processor.create_vpn_key()
+            protocol_type = "vless"
         start_date = datetime.now()
         await state.update_data(key_access_url=key.access_url)
         expiration_date = start_date + timedelta(days=2)
@@ -56,6 +79,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
             user_telegram_id=user_id_str,
             expiration_date=expiration_date,
             start_date=start_date,
+            protocol_type=protocol_type,
         )
         session.add(new_key)
         session.commit()

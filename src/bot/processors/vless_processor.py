@@ -27,7 +27,7 @@ class VlessKey:
     data_limit: int | None
 
 
-class VlessPocessor(BaseProcessor):
+class VlessProcessor(BaseProcessor):
     def __init__(self, ip, password):
         self.ip = ip
         # Порт сабскрипции может быть другим (2096). Если нужно, скорректируйте:
@@ -274,7 +274,7 @@ class VlessPocessor(BaseProcessor):
             logger.error(f"Ошибка при генерации ссылки: {e}")
             return False
 
-    def create_vpn_key(self) -> str:
+    def create_vpn_key(self, expire_time = 0) -> str:
         if not self.con:
             return False, "Нет подключения к серверу"
 
@@ -297,11 +297,12 @@ class VlessPocessor(BaseProcessor):
                             "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
                             "totalGB": 0,
-                            "expiryTime": 0,
+                            "expiryTime": expire_time,
                             "enable": "true",
                             "tgId": "",
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
+                            "comment": "Имя вашего ключа",
                         }
                     ]
                 }
@@ -482,11 +483,17 @@ class VlessPocessor(BaseProcessor):
             logger.error(f"Ошибка сети при удалении ключа: {e}")
             return False, str(e)
 
-    def get_key_info(self, key_id: str) -> str:
+    def get_key_info(self, key_id: str) -> VlessKey:
+        link = self._get_link(key_id)
+        if not link:
+            logger.warning(f"Не удалось получить ссылку для ключа {key_id}")
+            return None
+
         return VlessKey(
             key_id=key_id,
             name="test",
-            access_url=self._get_link(key_id),
+            access_url=link,
             used_bytes=0,
             data_limit=None,
         )
+
