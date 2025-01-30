@@ -302,7 +302,7 @@ class VlessProcessor(BaseProcessor):
                             "tgId": "",
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
-                            "comment": "Новый ключ",
+                            "comment": "Новый VLESS ключ",
                         }
                     ]
                 }
