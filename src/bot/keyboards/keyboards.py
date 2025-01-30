@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 
 from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.vless_processor_init import vless_processor
@@ -321,6 +321,11 @@ def get_key_action_keyboard(key_info):
     get_url_key_button = InlineKeyboardButton(
         text="🔑 Показать ключ", callback_data=f"access_url_{key_info.key_id}"
     )
+    launch_app_button = InlineKeyboardButton(
+        text="🚀 Запустить в приложении",
+        url=f"https://tasher239.github.io/outline_open/?access_url={key_info.access_url}"
+    )
+
     back_button = InlineKeyboardButton(
         text="🔙 Назад", callback_data="key_management_pressed"
     )
@@ -332,6 +337,7 @@ def get_key_action_keyboard(key_info):
             [extend_key_button],
             [rename_key_button],
             [get_url_key_button],
+            [launch_app_button],
             [back_button],
         ]
     )
