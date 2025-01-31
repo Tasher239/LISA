@@ -1,4 +1,6 @@
 from outline_vpn.outline_vpn import OutlineKey
+from coolname import generate_slug
+
 from bot.processors.base_processor import BaseProcessor
 
 
@@ -8,7 +10,7 @@ class OutlineProcessor(BaseProcessor):
 
     @staticmethod
     def gb_to_bytes(gb: float) -> int:
-        bytes_in_gb = 1024**3  # 1 ГБ = 1024^3 байт
+        bytes_in_gb = 1024 ** 3  # 1 ГБ = 1024^3 байт
         return int(gb * bytes_in_gb)
 
     def get_keys(self) -> list[OutlineKey]:
@@ -18,7 +20,7 @@ class OutlineProcessor(BaseProcessor):
         return self.client.get_key(key_id)
 
     def _create_new_key(
-        self, key_id: str = None, name: str = None, data_limit_gb: float = None
+            self, key_id: str = None, name: str = None, data_limit_gb: float = None
     ) -> str:
         """Создает новый ключ и возвращает строку информации о нем"""
         return self.client.create_key(
@@ -61,5 +63,5 @@ class OutlineProcessor(BaseProcessor):
         keys_lst = self.get_keys()
         max_id = max([int(key.key_id) for key in keys_lst])
         return self._create_new_key(
-            key_id=max_id + 1, name=f"VPN Key{len(keys_lst) + 1}", data_limit_gb=1
+            key_id=max_id + 1, name=generate_slug(2).replace('-', ' '), data_limit_gb=1
         )
