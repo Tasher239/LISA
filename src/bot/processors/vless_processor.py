@@ -135,14 +135,14 @@ class VlessProcessor(BaseProcessor):
             "enable": True,
             "expiryTime": 0,
             "listen": "",
-            "port": 443,
+            "port": 46408,
             "protocol": "vless",
             "settings": json.dumps(
                 {
                     "clients": [
                         {
                             "id": "test1",
-                            "flow": "",
+                            "flow": "xtls-rprx-vision",
                             "email": "test1",
                             "limitIp": 0,
                             "totalGB": 0,
@@ -163,13 +163,13 @@ class VlessProcessor(BaseProcessor):
                     "realitySettings": {
                         "show": False,
                         "xver": 0,
-                        "dest": "vk.com:443",
-                        "serverNames": ["vk.com", "www.vk.com"],
+                        "dest": "google.com:443",
+                        "serverNames": ["google.com", "www.google.com"],
                         "privateKey": private_key,
                         "minClient": "",
                         "maxClient": "",
                         "maxTimediff": 0,
-                        "shortIds": ["ffffffffff"],  # Короткий ID
+                        "shortIds": ["03b090ff397c50b9","7ea960","765c89c0ab102d","b5b79d7c18f0","1f52d659ec","4da9671e","45a0","d3"],  # Короткий ID
                         "settings": {
                             "publicKey": public_key,
                             "fingerprint": "chrome",
@@ -184,7 +184,7 @@ class VlessProcessor(BaseProcessor):
                 }
             ),
             "sniffing": json.dumps(
-                {"enabled": True, "destOverride": ["http", "tls", "quic", "fakedns"]}
+                {"enabled": False, "destOverride": []}
             ),
         }
 
@@ -249,13 +249,14 @@ class VlessProcessor(BaseProcessor):
                 return False
 
             stream_settings = json.loads(stream_settings_str)
+            port = inbound_obj.get("port", 443)
 
-            print(stream_settings)
 
             reality = stream_settings.get("realitySettings", {})
             sett = reality.get("settings", {})
             public_key = sett.get("publicKey", "")
-
+            sni = "www.google.com"
+            flow = stream_settings.get("flow", "xtls-rprx-vision")
             # Формируем ссылку
             if isIOS:
                 prev_text = f"http://{self.ip}/v?c=streisand://import/"
@@ -263,18 +264,19 @@ class VlessProcessor(BaseProcessor):
             else:
                 prev_text = ""
                 bottom_text = f"#{vpn_key}"
-
+            sid = "03b090ff397c50b9"
             # Здесь порт 443, fingerprint=chrome, sni=vk.com
+
             res = (
-                f"{prev_text}vless://{vpn_key}@{self.ip}:443?type=tcp&security=reality"
-                f"&fp=chrome&pbk={public_key}&sni=vk.com&sid=ffffffffff&spx=%2F{bottom_text}"
+                f"{prev_text}vless://{vpn_key}@{self.ip}:{port}/?type=tcp&security=reality&pbk={public_key}"
+                f"&fp=chrome&sni=www.google.com&sid={sid}&spx=%2F&flow={flow}{bottom_text}"
             )
             return res
         except (requests.RequestException, ValueError) as e:
             logger.error(f"Ошибка при генерации ссылки: {e}")
             return False
 
-    def create_vpn_key(self, expire_time=0) -> str:
+    def create_vpn_key(self, expire_time=0, sni="www.google.com", port=46408) -> str:
         if not self.con:
             return False, "Нет подключения к серверу"
 
@@ -292,13 +294,13 @@ class VlessProcessor(BaseProcessor):
                     "clients": [
                         {
                             "id": unique_id,  # должен быть уникальным, чтобы удалять нормально
-                            "alterId": unique_id,
+                            "alterId": 0,
                             # тут будет имя ключа, которое видит пользователь и которое надюсь можно менять
                             "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
                             "totalGB": 0,
                             "expiryTime": expire_time,
-                            "enable": "true",
+                            "enable": True,
                             "tgId": "",
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
@@ -352,7 +354,7 @@ class VlessProcessor(BaseProcessor):
                     "clients": [
                         {
                             "id": key_id,  # должен быть уникальным, чтобы удалять нормально
-                            "alterId": "None",  # тут будет имя ключа
+                            "alterId": 0,  # тут будет имя ключа
                             "email": key_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
                             "totalGB": 0,
@@ -418,7 +420,7 @@ class VlessProcessor(BaseProcessor):
                     "clients": [
                         {
                             "id": vpn_key,  # должен быть уникальным, чтобы удалять нормально
-                            "alterId": "aboba",  # тут будет имя ключа
+                            "alterId": 0,  # тут будет имя ключа
                             "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
                             "totalGB": 0,
@@ -496,7 +498,7 @@ class VlessProcessor(BaseProcessor):
 
         try:
             response = self.ses.post(
-                f"{self.host}/panel/inbound/list", data=self.data
+                f"{self.host}/panel/inbound/list/", data=self.data
             ).json()
             if not response.get("success"):
                 logger.warning(
