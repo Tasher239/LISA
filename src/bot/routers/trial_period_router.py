@@ -87,7 +87,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         session.add(new_key)
         session.commit()
 
-        text = "Ваш пробный ключ готов к использованию. Срок действия - 2 дня."
+        text = f"Ваш пробный ключ «{key.name}» готов к использованию. Срок действия - 2 дня."
         await send_key_to_user(callback.message, key, text)
     else:
         await callback.message.edit_text(

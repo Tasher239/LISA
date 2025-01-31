@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from coolname import generate_slug
 import json
 import requests
 import uuid
@@ -223,7 +224,7 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при запросе X25519Cert: {e}")
             return False, str(e)
 
-    def _get_link(self, vpn_key, isIOS=False):
+    def _get_link(self, key_id, isIOS=False):
         """
         Генерация ссылки для клиента (vless://...).
         """
@@ -260,15 +261,15 @@ class VlessProcessor(BaseProcessor):
             # Формируем ссылку
             if isIOS:
                 prev_text = f"http://{self.ip}/v?c=streisand://import/"
-                bottom_text = f"&name={vpn_key}"
+                bottom_text = f"&name={key_id}"
             else:
                 prev_text = ""
-                bottom_text = f"#{vpn_key}"
+                bottom_text = f"#{key_id}"
             sid = "03b090ff397c50b9"
             # Здесь порт 443, fingerprint=chrome, sni=vk.com
 
             res = (
-                f"{prev_text}vless://{vpn_key}@{self.ip}:{port}/?type=tcp&security=reality&pbk={public_key}"
+                f"{prev_text}vless://{key_id}@{self.ip}:{port}/?type=tcp&security=reality&pbk={public_key}"
                 f"&fp=chrome&sni=www.google.com&sid={sid}&spx=%2F&flow={flow}{bottom_text}"
             )
             return res
@@ -285,6 +286,8 @@ class VlessProcessor(BaseProcessor):
         # Сформируем тело запроса
         # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
         import json
+
+        key_name = generate_slug(2).replace('-', ' ')
 
         unique_id = str(uuid.uuid4())
         data = {
@@ -304,7 +307,7 @@ class VlessProcessor(BaseProcessor):
                             "tgId": "",
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
-                            "comment": "Новый VLESS ключ",
+                            "comment": key_name,
                         }
                     ]
                 }
@@ -322,7 +325,7 @@ class VlessProcessor(BaseProcessor):
                 return VlessKey(
                     key_id=unique_id,
                     email=unique_id,
-                    name=unique_id[:5],
+                    name=key_name,
                     access_url=self._get_link(unique_id),
                     used_bytes=0,
                     data_limit=None,
