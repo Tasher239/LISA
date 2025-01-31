@@ -4,3 +4,4 @@ sqlalchemy
 aiogram
 uuid
 python-dotenv
+coolname
