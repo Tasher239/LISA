@@ -170,7 +170,16 @@ class VlessProcessor(BaseProcessor):
                         "minClient": "",
                         "maxClient": "",
                         "maxTimediff": 0,
-                        "shortIds": ["03b090ff397c50b9","7ea960","765c89c0ab102d","b5b79d7c18f0","1f52d659ec","4da9671e","45a0","d3"],  # Короткий ID
+                        "shortIds": [
+                            "03b090ff397c50b9",
+                            "7ea960",
+                            "765c89c0ab102d",
+                            "b5b79d7c18f0",
+                            "1f52d659ec",
+                            "4da9671e",
+                            "45a0",
+                            "d3",
+                        ],  # Короткий ID
                         "settings": {
                             "publicKey": public_key,
                             "fingerprint": "chrome",
@@ -184,9 +193,7 @@ class VlessProcessor(BaseProcessor):
                     },
                 }
             ),
-            "sniffing": json.dumps(
-                {"enabled": False, "destOverride": []}
-            ),
+            "sniffing": json.dumps({"enabled": False, "destOverride": []}),
         }
 
         # Шаг 3: Добавляем inbound
@@ -224,7 +231,7 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при запросе X25519Cert: {e}")
             return False, str(e)
 
-    def _get_link(self, key_id, isIOS=False):
+    def _get_link(self, key_id, key_name, isIOS=False):
         """
         Генерация ссылки для клиента (vless://...).
         """
@@ -252,19 +259,19 @@ class VlessProcessor(BaseProcessor):
             stream_settings = json.loads(stream_settings_str)
             port = inbound_obj.get("port", 443)
 
-
             reality = stream_settings.get("realitySettings", {})
             sett = reality.get("settings", {})
             public_key = sett.get("publicKey", "")
             sni = "www.google.com"
             flow = stream_settings.get("flow", "xtls-rprx-vision")
             # Формируем ссылку
+
             if isIOS:
                 prev_text = f"http://{self.ip}/v?c=streisand://import/"
                 bottom_text = f"&name={key_id}"
             else:
                 prev_text = ""
-                bottom_text = f"#{key_id}"
+                bottom_text = f"#{key_name}"
             sid = "03b090ff397c50b9"
             # Здесь порт 443, fingerprint=chrome, sni=vk.com
 
@@ -287,7 +294,7 @@ class VlessProcessor(BaseProcessor):
         # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
         import json
 
-        key_name = generate_slug(2).replace('-', ' ')
+        key_name = generate_slug(2).replace("-", " ")
 
         unique_id = str(uuid.uuid4())
         data = {
@@ -316,6 +323,32 @@ class VlessProcessor(BaseProcessor):
 
         command = "/panel/inbound/addClient"
 
+        resource = self.ses.post(
+            f"{self.host}/panel/inbound/list/", data=self.data
+        ).json()
+
+        inbound_obj = resource["obj"][0] if resource["obj"] else None
+
+        stream_settings_str = inbound_obj.get("streamSettings")
+        stream_settings = json.loads(stream_settings_str)
+
+        reality = stream_settings.get("realitySettings", {})
+        sett = reality.get("settings", {})
+        public_key = sett.get("publicKey", "")
+        sni = "www.google.com"
+        flow = stream_settings.get("flow", "xtls-rprx-vision")
+        # Формируем ссылку
+
+        prev_text = ""
+        bottom_text = f"#{key_name}"
+        sid = "03b090ff397c50b9"
+        # Здесь порт 443, fingerprint=chrome, sni=vk.com
+
+        access_url = (
+            f"{prev_text}vless://{unique_id}@{self.ip}:{port}/?type=tcp&security=reality&pbk={public_key}"
+            f"&fp=chrome&sni=www.google.com&sid={sid}&spx=%2F&flow={flow}{bottom_text}"
+        )
+
         try:
             resource = self.ses.post(
                 f"{self.host}{command}", headers=header, json=data
@@ -326,7 +359,7 @@ class VlessProcessor(BaseProcessor):
                     key_id=unique_id,
                     email=unique_id,
                     name=key_name,
-                    access_url=self._get_link(unique_id),
+                    access_url=access_url,
                     used_bytes=0,
                     data_limit=None,
                 )
@@ -391,79 +424,79 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-    def add_or_update_key(self, vpn_key, is_update=False, is_activ=True):
-        """
-        Добавляет (isUpdate=False) или обновляет (isUpdate=True) клиента с нужным id (vpn_key).
-        Параметр isActiv=True/False включает или выключает клиента.
-        """
-        if not self.con:
-            return False, "Нет подключения к серверу"
-
-        if not is_update:
-            logger.debug(f"Добавляем новый ключ {vpn_key} на сервере {self.ip}...")
-        else:
-            logger.debug(f"Обновляем ключ {vpn_key} на сервере {self.ip}...")
-
-        header = {"Accept": "application/json"}
-
-        if is_activ:
-            is_activ_str = "true"
-        else:
-            is_activ_str = "false"
-
-        # Сформируем тело запроса
-        # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
-        import json
-
-        unique_id = str(uuid.uuid4())
-        data = {
-            "id": 1,
-            "settings": json.dumps(
-                {
-                    "clients": [
-                        {
-                            "id": vpn_key,  # должен быть уникальным, чтобы удалять нормально
-                            "alterId": 0,  # тут будет имя ключа
-                            "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
-                            "limitIp": 1,
-                            "totalGB": 0,
-                            "expiryTime": 0,
-                            "enable": is_activ_str,
-                            "tgId": "",
-                            "subId": vpn_key,
-                            "flow": "xtls-rprx-vision",
-                        }
-                    ]
-                }
-            ),
-        }
-
-        # Выбираем конечную точку
-        if not is_update:
-            command = "/panel/inbound/addClient"
-        else:
-            command = f"/panel/inbound/updateClient/{vpn_key}"
-
-        try:
-            resource = self.ses.post(
-                f"{self.host}{command}", headers=header, json=data
-            ).json()
-            if resource.get("success"):
-                if not is_update:
-                    logger.debug(f"Добавили ключ {vpn_key} на сервере {self.ip}")
-                else:
-                    logger.debug(f"Обновили ключ {vpn_key} на сервере {self.ip}")
-                return True, self._get_link(vpn_key, isIOS)
-            else:
-                msg = resource.get("msg", "Неизвестная ошибка")
-                if not is_update:
-                    logger.warning(f"🛑Ошибка при добавлении ключа {vpn_key}: {msg}")
-                else:
-                    logger.warning(f"🛑Ошибка при обновлении ключа {vpn_key}: {msg}")
-                return False, msg
-        except requests.RequestException as e:
-            logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
-            return False, str(e)
+    # def add_or_update_key(self, vpn_key, is_update=False, is_activ=True):
+    #     """
+    #     Добавляет (isUpdate=False) или обновляет (isUpdate=True) клиента с нужным id (vpn_key).
+    #     Параметр isActiv=True/False включает или выключает клиента.
+    #     """
+    #     if not self.con:
+    #         return False, "Нет подключения к серверу"
+    #
+    #     if not is_update:
+    #         logger.debug(f"Добавляем новый ключ {vpn_key} на сервере {self.ip}...")
+    #     else:
+    #         logger.debug(f"Обновляем ключ {vpn_key} на сервере {self.ip}...")
+    #
+    #     header = {"Accept": "application/json"}
+    #
+    #     if is_activ:
+    #         is_activ_str = "true"
+    #     else:
+    #         is_activ_str = "false"
+    #
+    #     # Сформируем тело запроса
+    #     # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
+    #     import json
+    #
+    #     unique_id = str(uuid.uuid4())
+    #     data = {
+    #         "id": 1,
+    #         "settings": json.dumps(
+    #             {
+    #                 "clients": [
+    #                     {
+    #                         "id": vpn_key,  # должен быть уникальным, чтобы удалять нормально
+    #                         "alterId": 0,  # тут будет имя ключа
+    #                         "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
+    #                         "limitIp": 1,
+    #                         "totalGB": 0,
+    #                         "expiryTime": 0,
+    #                         "enable": is_activ_str,
+    #                         "tgId": "",
+    #                         "subId": vpn_key,
+    #                         "flow": "xtls-rprx-vision",
+    #                     }
+    #                 ]
+    #             }
+    #         ),
+    #     }
+    #
+    #     # Выбираем конечную точку
+    #     if not is_update:
+    #         command = "/panel/inbound/addClient"
+    #     else:
+    #         command = f"/panel/inbound/updateClient/{vpn_key}"
+    #
+    #     try:
+    #         resource = self.ses.post(
+    #             f"{self.host}{command}", headers=header, json=data
+    #         ).json()
+    #         if resource.get("success"):
+    #             if not is_update:
+    #                 logger.debug(f"Добавили ключ {vpn_key} на сервере {self.ip}")
+    #             else:
+    #                 logger.debug(f"Обновили ключ {vpn_key} на сервере {self.ip}")
+    #             return True, self._get_link(vpn_key, isIOS)
+    #         else:
+    #             msg = resource.get("msg", "Неизвестная ошибка")
+    #             if not is_update:
+    #                 logger.warning(f"🛑Ошибка при добавлении ключа {vpn_key}: {msg}")
+    #             else:
+    #                 logger.warning(f"🛑Ошибка при обновлении ключа {vpn_key}: {msg}")
+    #             return False, msg
+    #     except requests.RequestException as e:
+    #         logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
+    #         return False, str(e)
 
     def delete_key(self, vpn_key):
         """
@@ -519,7 +552,9 @@ class VlessProcessor(BaseProcessor):
                             key_id=client.get("id"),
                             name=client.get("comment", ""),
                             email=client.get("email", ""),
-                            access_url=self._get_link(client.get("id")),
+                            access_url=self._get_link(
+                                client.get("id"), client.get("comment", "")
+                            ),
                             used_bytes=client.get("up", 0) + client.get("down", 0),
                             data_limit=(
                                 client.get("totalGB") * 1024 * 1024 * 1024
