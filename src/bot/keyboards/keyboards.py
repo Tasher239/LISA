@@ -265,16 +265,11 @@ def get_extension_periods_keyboard():
     )
 
 
-def get_key_name_choosing_keyboard(keys: list):
+async def get_key_name_choosing_keyboard(keys: list):
     keyboard_buttons = []
     for key in keys:
-        match key.protocol_type.lower():
-            case "outline":
-                key_info = outline_processor.get_key_info(key.key_id)
-            case "vless":
-                key_info = vless_processor.get_key_info(key.key_id)
         button = InlineKeyboardButton(
-            text=f"🔑 {key_info.name}", callback_data=f"key_{key.key_id}"
+            text=f"🔑 {key.name}", callback_data=f"key_{key.key_id}"
         )
         keyboard_buttons.append([button])
 
@@ -304,26 +299,26 @@ def get_key_name_extension_keyboard_with_names(keys: dict):
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def get_key_action_keyboard(key_info):
+def get_key_action_keyboard(key_id):
     view_traffic_button = InlineKeyboardButton(
-        text="📊 Посмотреть объем трафика", callback_data=f"traffic_{key_info.key_id}"
+        text="📊 Посмотреть объем трафика", callback_data=f"traffic_{key_id}"
     )
     end_data_button = InlineKeyboardButton(
         text="📅 Посмотреть дату конца активации",
-        callback_data=f"expiration_{key_info.key_id}",
+        callback_data=f"expiration_{key_id}",
     )
     extend_key_button = InlineKeyboardButton(
-        text="⏳ Продлить действие ключа", callback_data=f"extend_{key_info.key_id}"
+        text="⏳ Продлить действие ключа", callback_data=f"extend_{key_id}"
     )
     rename_key_button = InlineKeyboardButton(
-        text="✏️ Переименовать ключ", callback_data=f"rename_{key_info.key_id}"
+        text="✏️ Переименовать ключ", callback_data=f"rename_{key_id}"
     )
     get_url_key_button = InlineKeyboardButton(
-        text="🔑 Показать ключ", callback_data=f"access_url_{key_info.key_id}"
+        text="🔑 Показать ключ", callback_data=f"access_url_{key_id}"
     )
     launch_app_button = InlineKeyboardButton(
         text="🚀 Запустить в приложении",
-        url=f"https://tasher239.github.io/outline_open/?access_url={key_info.access_url}"
+        url=f"https://tasher239.github.io/outline_open/?access_url={key_id}",
     )
 
     back_button = InlineKeyboardButton(

@@ -4,7 +4,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
-from bot.initialization.bot_init import bot  # инициализируем бота
+from bot.initialization.bot_init import bot
+from bot.initialization.async_outline_processor_init import init_outline_processor
 from bot.initialization.db_processor_init import db_processor
 from bot.routers import (
     admins_router,
@@ -53,7 +54,7 @@ async def set_main_menu(bot: Bot):
 async def main() -> None:
     logger.info("Регистрация main menu команд...")
     await set_main_menu(bot)  # Вызываем set_main_menu напрямую до запуска polling
-
+    await init_outline_processor()
     logger.info("Запуск polling...")
     asyncio.create_task(
         db_processor.check_db(dp)

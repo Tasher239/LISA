@@ -69,6 +69,7 @@ class DbProcessor:
                 expiration_date=expiration_date,
                 start_date=start_date,
                 protocol_type=protocol_type,
+                name=key.name
             )
             session.add(new_key)
             session.commit()
@@ -84,16 +85,14 @@ class DbProcessor:
             try:
                 users = session.query(DbProcessor.User).all()
                 for user in users:
+                    print(f"Проверка пользователя: {user.user_telegram_id}")
                     expiring_keys = {}  # {key_id: (key_name, expiration_time)}
                     for key in user.keys:
-                        key_info = None
                         try:
                             if key.protocol_type == "Outline":
                                 key_info = outline_processor.get_key_info(key.key_id)
                             else:
                                 key_info = vless_processor.get_key_info(key.key_id)
-                                print(key_info)
-
                         except OutlineServerErrorException as e:
                             logger.warning(
                                 f"Ключ {key.key_id} не найден: {e}, удаляю из БД"
@@ -161,6 +160,7 @@ class DbProcessor:
         start_date = Column(DateTime)  # Дата начала подписки
         user = relationship("User", back_populates="keys")
         protocol_type = Column(String, default="Outline")
+        name = Column(String, default=None)
         remembering_before_exp = Column(
             Boolean, default=False
         )  # напомнить о продлении 1 раз

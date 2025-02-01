@@ -17,7 +17,7 @@ from aiogram.types import (
 from bot.fsm.states import GetKey
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
-from bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import get_back_button_to_buy_key
 from bot.keyboards.keyboards import get_back_button
@@ -25,7 +25,7 @@ from bot.utils.dicts import prices_dict
 from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
 from bot.utils.get_processor import get_processor
-from bot.lexicon.lexicon import get_day_by_number, get_month_by_number
+from bot.lexicon.lexicon import get_month_by_number
 
 from database.db_processor import DbProcessor
 
@@ -139,13 +139,13 @@ async def successful_payment(message: Message, state: FSMContext):
         print(data.get("vpn_type"))
         match data.get("vpn_type"):
             case "Outline":
-                processor = outline_processor
+                processor = async_outline_processor
                 protocol_type = "Outline"
+                key = await processor.create_vpn_key()
             case "VLESS":
                 processor = vless_processor
                 protocol_type = "VLESS"
-
-        key = processor.create_vpn_key()
+                key = processor.create_vpn_key()
 
         logger.info(f"Key created: {key} for user {message.from_user.id}")
 

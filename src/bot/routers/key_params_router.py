@@ -5,13 +5,13 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-
 from bot.utils.get_processor import get_processor
 from bot.utils.send_message import send_key_to_user_with_back_button
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.outline_processor_init import outline_processor
+from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
     get_back_button_to_key_params,
@@ -22,7 +22,6 @@ from bot.keyboards.keyboards import (
 from database.db_processor import DbProcessor
 
 from logger.logging_config import setup_logger
-
 
 router = Router()
 logger = setup_logger()
@@ -49,11 +48,6 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer("ID ключа не найден.")
         return
 
-    vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
-
-    # Получаем информацию о ключе
-    processor = await get_processor(vpn_type)
-    key_info = processor.get_key_info(selected_key_id)
     if not selected_key_id:
         await callback.message.answer(
             "Ключ не выбран. Пожалуйста, вернитесь назад и выберите ключ."
@@ -69,8 +63,8 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     await callback.message.edit_text(
-        f"Выберите действие для ключа: «{key_info.name}»",
-        reply_markup=get_key_action_keyboard(key_info),
+        f"Выберите действие для ключа: «{key.name}»",
+        reply_markup=get_key_action_keyboard(key.key_id),
     )
     await state.set_state(ManageKeys.choose_key_action)
 
@@ -85,18 +79,20 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
     session = db_processor.get_session()
     key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
 
-    if not key:
+    if key is None:
         await callback.message.answer("Ключ не найден.")
         return
 
-    if str(key_id)[0] == "s":
-        key_info = outline_processor.get_key_info(key_id)
-    else:
-        key_info = vless_processor.get_key_info(key_id)
+    match key.protocol_type.lower():
+        case 'outline':
+            key_info = await async_outline_processor.get_key_info(key_id)
+        case 'vless':
+            key_info = vless_processor.get_key_info(key_id)
     used_bytes = 0
+
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
-    total_traffic = used_bytes / (1024**3)
+    total_traffic = used_bytes / (1024 ** 3)
 
     response = f"""
     Суммарный трафик: {total_traffic:.2f} Гб
@@ -244,5 +240,5 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
 
     # Отправляем ключ пользователю
     await send_key_to_user_with_back_button(
-        callback.message, key_info, f"Ваш ключ «{key_info.name}»"
+        callback.message, key_info, f"Ваш ключ «{key.name}»"
     )
