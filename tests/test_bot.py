@@ -8,9 +8,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import SAWarning
 from sqlalchemy.orm import sessionmaker
 
-from LISA.src.bot.utils.outline_processor import OutlineProcessor
-from LISA.src.database.db_processor import Base, DbProcessor
-from LISA.src.logger.logging_config import setup_logger
+from src.bot.utils.outline_processor import OutlineProcessor
+from src.database.db_processor import Base, DbProcessor
+from src.logger.logging_config import setup_logger
 
 
 @pytest.fixture(scope="session", autouse=True)

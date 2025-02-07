@@ -1,12 +1,21 @@
 from outline_vpn.outline_vpn import OutlineKey
 from coolname import generate_slug
+# from bot.initialization.db_processor_init import db_processor
+from outline_vpn.outline_vpn import OutlineVPN
 
 from bot.processors.base_processor import BaseProcessor
 
-
 class OutlineProcessor(BaseProcessor):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self):
+        self.client = None
+        self.server_id = None
+
+    def create_server_session(self):
+        """обход таблицы серверов в бд и выбор с наименьшим числом юзеров"""
+        from bot.initialization.db_processor_init import db_processor
+        server = db_processor.get_server_with_min_users('outline')
+        self.server_id = server.id
+        self.client = OutlineVPN(api_url=server.api_url, cert_sha256=server.cert_sha256)
 
     @staticmethod
     def gb_to_bytes(gb: float) -> int:
@@ -60,8 +69,10 @@ class OutlineProcessor(BaseProcessor):
 
     def create_vpn_key(self) -> str:
         """Создает новый VPN-ключ."""
+        self.create_server_session()
         keys_lst = self.get_keys()
-        max_id = max([int(key.key_id) for key in keys_lst])
-        return self._create_new_key(
-            key_id=max_id + 1, name=generate_slug(2).replace("-", " "), data_limit_gb=1
+        max_id = max([int(key.key_id) for key in keys_lst], default=0)
+        key = self._create_new_key(
+            key_id=max_id + 1, name=generate_slug(2).replace("-", " "), data_limit_gb=200
         )
+        return key, self.server_id
