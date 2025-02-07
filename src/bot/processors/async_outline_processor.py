@@ -6,6 +6,9 @@ import aiohttp
 
 from bot.processors.structs import OutlineKey
 from bot.processors.base_processor import BaseProcessor
+from logger.logging_config import setup_logger
+
+logger = setup_logger()
 
 
 class OutlineServerErrorException(Exception):
@@ -23,14 +26,40 @@ class OutlineProcessor(BaseProcessor):
     An Outline VPN connection
     """
 
-    def __init__(self, api_url: str, cert_sha256: str):
-        self.api_url = api_url
-        self.cert_sha256 = cert_sha256
+    def __init__(self):
+        self.api_url = None
+        self.cert_sha256 = None
         self.session: aiohttp.ClientSession | None = None
+        self.server_id = None
 
-    async def init(self):
+    def create_session(func):
+        async def wrapper(self, *args, **kwargs):
+            if self.session is None:
+                await self.create_server_session_for_server_id(kwargs.get('server_id'))
+            return await func(self, *args, **kwargs)
+
+        return wrapper
+
+    async def create_server_session(self):
+        from bot.initialization.db_processor_init import db_processor
+        server = await db_processor.get_server_with_min_users('outline')
+
+        self.api_url = server.api_url
+        self.server_id = server.id
         connector = aiohttp.TCPConnector(
-            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=self.cert_sha256)
+            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
+        )
+        session = aiohttp.ClientSession(connector=connector)
+        self.session = session
+
+    async def create_server_session_for_server_id(self, server_id):
+        from bot.initialization.db_processor_init import db_processor
+        logger.info(f'SERVER ID: {server_id}')
+        server = db_processor.get_server_by_id(server_id)
+        self.api_url = server.api_url
+        self.server_id = server_id
+        connector = aiohttp.TCPConnector(
+            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
         )
         session = aiohttp.ClientSession(connector=connector)
         self.session = session
@@ -58,6 +87,7 @@ class OutlineProcessor(BaseProcessor):
 
     async def create_vpn_key(self) -> OutlineKey:
         """Create a new key"""
+        await self.create_server_session()
         async with self.session.post(url=f"{self.api_url}/access-keys/") as resp:
             if resp.status != 201:
                 raise OutlineServerErrorException("Unable to create key")
@@ -68,9 +98,10 @@ class OutlineProcessor(BaseProcessor):
             key['name'] = generate_slug(2).replace('-', ' ')
 
         outline_key = OutlineKey.from_key_json(key)
-        return outline_key
+        return outline_key, self.server_id
 
-    async def get_key_info(self, key_id: int) -> OutlineKey:
+    @create_session
+    async def get_key_info(self, key_id: int, server_id=None) -> OutlineKey:
         async with self.session.get(url=f"{self.api_url}/access-keys/{key_id}") as resp:
             if resp.status != 200:
                 raise OutlineServerErrorException("Unable to retrieve keys")
@@ -89,7 +120,8 @@ class OutlineProcessor(BaseProcessor):
         ) as resp:
             return resp.status == 204
 
-    async def rename_key(self, key_id: int, new_key_name: str) -> bool:
+    @create_session
+    async def rename_key(self, key_id, new_key_name, server_id=None) -> bool:
         """Rename a key"""
         async with self.session.put(
                 url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
@@ -244,5 +276,3 @@ class OutlineProcessor(BaseProcessor):
     async def close(self):
         if self.session:
             await self.session.close()
-
-

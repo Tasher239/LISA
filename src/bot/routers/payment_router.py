@@ -86,7 +86,8 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
             vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
             await state.update_data(vpn_type=vpn_type)
             processor = await get_processor(vpn_type)
-            key_info = processor.get_key_info(selected_key_id)
+            server_id = db_processor.get_server_id_by_key_id(selected_key_id)
+            key_info = await processor.get_key_info(selected_key_id, server_id=server_id)
             await state.update_data(key_name=key_info.name)
             title = "Продление ключа"
             description = f"Продление ключа {key_info.name} от VPN {vpn_type} на {selected_period} {moths}"
@@ -139,13 +140,11 @@ async def successful_payment(message: Message, state: FSMContext):
         print(data.get("vpn_type"))
         match data.get("vpn_type"):
             case "Outline":
-                processor = async_outline_processor
                 protocol_type = "Outline"
-                key = await processor.create_vpn_key()
+                key, server_id = await async_outline_processor.create_vpn_key()
             case "VLESS":
-                processor = vless_processor
                 protocol_type = "VLESS"
-                key = processor.create_vpn_key()
+                key = vless_processor.create_vpn_key()
 
         logger.info(f"Key created: {key} for user {message.from_user.id}")
 
@@ -158,7 +157,7 @@ async def successful_payment(message: Message, state: FSMContext):
         data = await state.get_data()
         period = data.get("selected_period")
         db_processor.update_database_with_key(
-            message.from_user.id, key, period, protocol_type
+            message.from_user.id, key, period, server_id, protocol_type
         )
 
         # Отправка инструкций по установке

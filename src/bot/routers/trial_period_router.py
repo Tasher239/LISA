@@ -10,7 +10,7 @@ from bot.initialization.db_processor_init import db_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import get_already_have_trial_key_keyboard, get_choice_vpn_type_keyboard_for_no_key
 from bot.utils.send_message import send_key_to_user
-# from bot.initialization.async_outline_processor_init import async_outline_processor
+from bot.initialization.async_outline_processor_init import async_outline_processor
 # from bot.utils.get_processor import get_processor
 
 from database.db_processor import DbProcessor

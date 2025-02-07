@@ -13,7 +13,7 @@ class BaseProcessor(ABC):
         pass
 
     @abstractmethod
-    def rename_key(self, key_id: str, new_key_name: str) -> bool:
+    def rename_key(self, key_id: str, server_id: str, new_key_name: str) -> bool:
         pass
 
     @abstractmethod

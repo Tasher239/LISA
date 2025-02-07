@@ -10,7 +10,7 @@ api_url = os.getenv("API_URL")
 cert_sha256 = os.getenv("CERT_SHA")
 
 
-async_outline_processor = OutlineProcessor(api_url=api_url, cert_sha256=cert_sha256)
+async_outline_processor = OutlineProcessor()
 
 async def init_outline_processor():
-    await async_outline_processor.init()
+    pass
