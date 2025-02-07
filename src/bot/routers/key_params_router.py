@@ -10,7 +10,6 @@ from bot.utils.send_message import send_key_to_user_with_back_button
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import ManageKeys
 from bot.initialization.db_processor_init import db_processor
-from bot.initialization.outline_processor_init import outline_processor
 from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
@@ -85,7 +84,7 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
 
     match key.protocol_type.lower():
         case 'outline':
-            key_info = await async_outline_processor.get_key_info(key_id)
+            key_info = await async_outline_processor.get_key_info(key_id, server_id=key.server_id)
         case 'vless':
             key_info = vless_processor.get_key_info(key_id)
     used_bytes = 0
@@ -201,7 +200,7 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
 
     # Переименовываем ключ через OutlineProcessor (если нужно)
     if key.protocol_type == "Outline":
-        outline_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
+        await async_outline_processor.rename_key(key.key_id, new_name, server_id=key.server_id)
     else:
         vless_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
     # Отправляем сообщение пользователю
@@ -230,7 +229,7 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
     key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
 
     if key.protocol_type == "Outline":
-        key_info = outline_processor.get_key_info(key_id)
+        key_info = await async_outline_processor.get_key_info(key_id)
     else:
         key_info = vless_processor.get_key_info(key_id)
 

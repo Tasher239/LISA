@@ -1,21 +1,18 @@
 import aiohttp
 import asyncio
 
-# URL API VDSina
-BASE_URL = "https://userapi.vdsina.ru/v1"
-
-# Данные для авторизации
-EMAIL = "your-email@example.com"
-PASSWORD = "your-secure-password"
 
 class VDSinaAPI:
-    def __init__(self):
+    def __init__(self, email, password):
         self.token = None
+        self.email = email
+        self.password = password
+        self.base_url = "https://userapi.vdsina.ru/v1"
 
     async def authenticate(self):
         """Получение токена для авторизации"""
-        url = f"{BASE_URL}/auth"
-        payload = {"email": EMAIL, "password": PASSWORD}
+        url = f"{self.base_url}/auth"
+        payload = {"email": self.email, "password": self.password}
         headers = {"Content-Type": "application/json"}
 
         async with aiohttp.ClientSession() as session:
@@ -31,7 +28,7 @@ class VDSinaAPI:
         if not self.token:
             await self.authenticate()
 
-        url = f"{BASE_URL}{endpoint}"
+        url = f"{self.base_url}{endpoint}"
         headers = {"Authorization": self.token, "Content-Type": "application/json"}
         async with aiohttp.ClientSession() as session:
             async with session.request(method, url, json=data, headers=headers) as response:
@@ -63,3 +60,5 @@ class VDSinaAPI:
     async def get_server_status(self, server_id):
         """Получение информации о сервере"""
         return await self.request("GET", f"/server/{server_id}")
+
+    async def create_new_server(self):
