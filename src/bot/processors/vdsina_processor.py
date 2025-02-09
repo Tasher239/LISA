@@ -3,13 +3,13 @@ import asyncio
 
 
 class VDSinaAPI:
-    def __init__(self, email, password):
+    def __init__(self):
         self.token = None
-        self.email = email
-        self.password = password
+        self.email = None
+        self.password = None
         self.base_url = "https://userapi.vdsina.ru/v1"
 
-    async def authenticate(self):
+    async def authenticate(self, email, password):
         """Получение токена для авторизации"""
         url = f"{self.base_url}/auth"
         payload = {"email": self.email, "password": self.password}
@@ -21,7 +21,10 @@ class VDSinaAPI:
                 if response_data.get("status") == "ok":
                     self.token = response_data["data"]["token"]
                 else:
-                    raise Exception("Ошибка авторизации: " + response_data.get("status_msg", "Неизвестная ошибка"))
+                    raise Exception(
+                        "Ошибка авторизации: "
+                        + response_data.get("status_msg", "Неизвестная ошибка")
+                    )
 
     async def request(self, method, endpoint, data=None):
         """Универсальный метод для запросов к API"""
@@ -31,7 +34,9 @@ class VDSinaAPI:
         url = f"{self.base_url}{endpoint}"
         headers = {"Authorization": self.token, "Content-Type": "application/json"}
         async with aiohttp.ClientSession() as session:
-            async with session.request(method, url, json=data, headers=headers) as response:
+            async with session.request(
+                method, url, json=data, headers=headers
+            ) as response:
                 return await response.json()
 
     async def get_datacenters(self):
@@ -46,14 +51,16 @@ class VDSinaAPI:
         """Получение списка доступных ОС"""
         return await self.request("GET", "/template")
 
-    async def deploy_server(self, datacenter_id, server_plan_id, template_id, name="MyServer"):
+    async def deploy_server(
+        self, datacenter_id, server_plan_id, template_id, name="MyServer"
+    ):
         """Разворачивание нового сервера"""
         payload = {
             "datacenter": datacenter_id,
             "server-plan": server_plan_id,
             "template": template_id,
             "name": name,
-            "ip4": 1  # Подключение IPv4
+            "ip4": 1,  # Подключение IPv4
         }
         return await self.request("POST", "/server", payload)
 
@@ -62,3 +69,4 @@ class VDSinaAPI:
         return await self.request("GET", f"/server/{server_id}")
 
     async def create_new_server(self):
+        pass

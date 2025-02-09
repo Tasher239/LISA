@@ -32,32 +32,39 @@ class OutlineProcessor(BaseProcessor):
         self.session: aiohttp.ClientSession | None = None
         self.server_id = None
 
-    def create_session(func):
+    def create_server_session_by_id(func):
         async def wrapper(self, *args, **kwargs):
             if self.session is None:
-                await self.create_server_session_for_server_id(kwargs.get('server_id'))
+                if kwargs.get("server_id") is None:
+                    raise ValueError(
+                        "!!!server_id must be passed as a keyword argument!!!"
+                    )
+
+                server_id = kwargs.get("server_id")
+                from bot.initialization.db_processor_init import db_processor
+
+                server = db_processor.get_server_by_id(server_id)
+                self.api_url = server.api_url
+                self.server_id = server_id
+                connector = aiohttp.TCPConnector(
+                    ssl=get_aiohttp_fingerprint(
+                        ssl_assert_fingerprint=server.cert_sha256
+                    )
+                )
+                session = aiohttp.ClientSession(connector=connector)
+                self.session = session
+
             return await func(self, *args, **kwargs)
 
         return wrapper
 
-    async def create_server_session(self):
+    async def create_server_session(self) -> None:
         from bot.initialization.db_processor_init import db_processor
-        server = await db_processor.get_server_with_min_users('outline')
+
+        server = await db_processor.get_server_with_min_users("outline")
 
         self.api_url = server.api_url
         self.server_id = server.id
-        connector = aiohttp.TCPConnector(
-            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
-        )
-        session = aiohttp.ClientSession(connector=connector)
-        self.session = session
-
-    async def create_server_session_for_server_id(self, server_id):
-        from bot.initialization.db_processor_init import db_processor
-        logger.info(f'SERVER ID: {server_id}')
-        server = db_processor.get_server_by_id(server_id)
-        self.api_url = server.api_url
-        self.server_id = server_id
         connector = aiohttp.TCPConnector(
             ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
         )
@@ -74,7 +81,7 @@ class OutlineProcessor(BaseProcessor):
 
     async def _get_raw_keys(self) -> list[OutlineKey]:
         async with self.session.get(
-                url=f"{self.api_url}/access-keys/",
+            url=f"{self.api_url}/access-keys/",
         ) as resp:
             response_data = await resp.json()
             if resp.status != 200 or "accessKeys" not in response_data:
@@ -85,23 +92,35 @@ class OutlineProcessor(BaseProcessor):
             for key_data in response_data.get("accessKeys", [])
         ]
 
-    async def create_vpn_key(self) -> OutlineKey:
+    async def create_vpn_key(self) -> tuple[OutlineKey, int]:
         """Create a new key"""
         await self.create_server_session()
         async with self.session.post(url=f"{self.api_url}/access-keys/") as resp:
             if resp.status != 201:
                 raise OutlineServerErrorException("Unable to create key")
             key = await resp.json()
+            tmp_key = OutlineKey.from_key_json(key)
+            logger.info(tmp_key)
 
+            key_name = generate_slug(2).replace("-", " ")
+            data_limit = 200
+
+            await self.rename_key(tmp_key.key_id, key_name)
+            await self.add_data_limit(tmp_key.key_id, data_limit)
+
+            key["name"] = key_name
             key["used_bytes"] = 0
             key["data_limit"] = 100
-            key['name'] = generate_slug(2).replace('-', ' ')
 
         outline_key = OutlineKey.from_key_json(key)
         return outline_key, self.server_id
 
-    @create_session
+    @create_server_session_by_id
     async def get_key_info(self, key_id: int, server_id=None) -> OutlineKey:
+        """!!!!!!server_id нужно передавать как ключевой аргумент!!!!!!!!
+        т.е. нельзя вызывать эту функцию как get_key_info(my_key_id, my_server_id)
+        дожно быть  get_key_info(my_key_id, server_id=my_server_id)
+        """
         async with self.session.get(url=f"{self.api_url}/access-keys/{key_id}") as resp:
             if resp.status != 200:
                 raise OutlineServerErrorException("Unable to retrieve keys")
@@ -116,20 +135,20 @@ class OutlineProcessor(BaseProcessor):
     async def delete_key(self, key_id: int) -> bool:
         """Delete a key"""
         async with self.session.delete(
-                url=f"{self.api_url}/access-keys/{key_id}"
+            url=f"{self.api_url}/access-keys/{key_id}"
         ) as resp:
             return resp.status == 204
 
-    @create_session
+    @create_server_session_by_id
     async def rename_key(self, key_id, new_key_name, server_id=None) -> bool:
         """Rename a key"""
         async with self.session.put(
-                url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
+            url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
         ) as resp:
             return resp.status == 204
 
     async def _fulfill_keys_with_metrics(
-            self, keys: list[OutlineKey]
+        self, keys: list[OutlineKey]
     ) -> list[OutlineKey]:
         current_metrics = await self._get_metrics()
 
@@ -152,14 +171,14 @@ class OutlineProcessor(BaseProcessor):
         data = {"limit": {"bytes": limit_bytes}}
 
         async with self.session.put(
-                url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
+            url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
         ) as resp:
             return resp.status == 204
 
     async def delete_data_limit(self, key_id: int) -> bool:
         """Removes data limit for a key"""
         async with self.session.delete(
-                url=f"{self.api_url}/access-keys/{key_id}/data-limit"
+            url=f"{self.api_url}/access-keys/{key_id}/data-limit"
         ) as resp:
             return resp.status == 204
 
@@ -210,7 +229,7 @@ class OutlineProcessor(BaseProcessor):
         Must be a valid hostname or IP address."""
         data = {"hostname": hostname}
         async with self.session.put(
-                url=f"{self.api_url}/server/hostname-for-access-keys", json=data
+            url=f"{self.api_url}/server/hostname-for-access-keys", json=data
         ) as resp:
             return resp.status == 204
 
@@ -224,7 +243,7 @@ class OutlineProcessor(BaseProcessor):
         """Enables or disables sharing of metrics"""
         data = {"metricsEnabled": status}
         async with self.session.put(
-                url=f"{self.api_url}/metrics/enabled", json=data
+            url=f"{self.api_url}/metrics/enabled", json=data
         ) as resp:
             return resp.status == 204
 
@@ -233,7 +252,7 @@ class OutlineProcessor(BaseProcessor):
         This can be a port already used for access keys."""
         data = {"port": port}
         async with self.session.put(
-                url=f"{self.api_url}/server/port-for-new-access-keys", json=data
+            url=f"{self.api_url}/server/port-for-new-access-keys", json=data
         ) as resp:
             if resp.status == 400:
                 raise OutlineServerErrorException(
@@ -249,14 +268,14 @@ class OutlineProcessor(BaseProcessor):
         """Sets a data transfer limit for all access keys."""
         data = {"limit": {"bytes": limit_bytes}}
         async with self.session.put(
-                url=f"{self.api_url}/server/access-key-data-limit", json=data
+            url=f"{self.api_url}/server/access-key-data-limit", json=data
         ) as resp:
             return resp.status == 204
 
     async def delete_data_limit_for_all_keys(self) -> bool:
         """Removes the access key data limit, lifting data transfer restrictions on all access keys."""
         async with self.session.delete(
-                url=f"{self.api_url}/server/access-key-data-limit"
+            url=f"{self.api_url}/server/access-key-data-limit"
         ) as resp:
             return resp.status == 204
 
