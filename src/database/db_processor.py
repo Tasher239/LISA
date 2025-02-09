@@ -3,7 +3,15 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from sqlalchemy import func
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, create_engine, Integer
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    create_engine,
+    Integer,
+)
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 from bot.initialization.async_outline_processor_init import async_outline_processor
@@ -16,6 +24,7 @@ from logger.logging_config import setup_logger
 
 logger = setup_logger()
 Base = declarative_base()
+
 
 class DbProcessor:
     def __init__(self):
@@ -31,6 +40,16 @@ class DbProcessor:
         """Создает и возвращает новую сессию."""
         return self.Session()
 
+    def get_key_by_id(self, key_id: str):
+        session = self.get_session()
+        try:
+            return session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+        except Exception as e:
+            logger.error(f"Ошибка при получении ключа {key_id}: {e}")
+            return None
+        finally:
+            session.close()
+
     def get_vpn_type_by_key_id(self, key_id: str) -> str:
         session = self.get_session()
         try:
@@ -42,7 +61,9 @@ class DbProcessor:
         finally:
             session.close()
 
-    def update_database_with_key(self, user_id, key, period, server_id, protocol_type="Outline"):
+    def update_database_with_key(
+        self, user_id, key, period, server_id, protocol_type="Outline"
+    ):
         """Обновляет БД по новому созданному ключу для пользователя"""
         session = self.get_session()
         try:
@@ -94,7 +115,9 @@ class DbProcessor:
                     for key in user.keys:
                         try:
                             if key.protocol_type == "Outline":
-                                key_info = await async_outline_processor.get_key_info(key.key_id)
+                                key_info = await async_outline_processor.get_key_info(
+                                    key.key_id
+                                )
                             else:
                                 key_info = vless_processor.get_key_info(key.key_id)
                         except Exception as e:
@@ -141,7 +164,10 @@ class DbProcessor:
         try:
             server = (
                 session.query(DbProcessor.Server)
-                .filter(func.lower(DbProcessor.Server.protocol_type) == protocol_type.lower())
+                .filter(
+                    func.lower(DbProcessor.Server.protocol_type)
+                    == protocol_type.lower()
+                )
                 .filter(DbProcessor.Server.cnt_users < 160)
                 .order_by(DbProcessor.Server.cnt_users.asc())
                 .with_for_update()  # Блокируем строку для изменения
@@ -189,6 +215,23 @@ class DbProcessor:
             logger.error(f"Ошибка при получении сервера {server_id}: {e}")
             return None
 
+    def rename_key(self, key_id: str, new_name: str) -> bool:
+        with self.get_session() as session:
+            try:
+                key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+                if not key:
+                    logger.warning(f"Ключ с ID {key_id} не найден.")
+                    return False
+
+                key.name = new_name
+                session.commit()
+                logger.info(f"Имя ключа с ID {key_id} изменено на {new_name}")
+                return True
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Ошибка при изменении имени ключа {key_id}: {e}")
+                return False
+
     # Определение таблицы Users
     class User(Base):
         __tablename__ = "users"
@@ -227,4 +270,3 @@ class DbProcessor:
         cnt_users = Column(Integer, default=0)
         protocol_type = Column(String, default="Outline")
         keys = relationship("Key", back_populates="server")
-

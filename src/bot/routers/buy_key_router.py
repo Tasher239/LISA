@@ -6,7 +6,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, LabeledPrice
 
-from bot.fsm.states import GetKey
+from bot.fsm.states import GetKey, ManageKeys
 from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_keyboard
 from bot.initialization.bot_init import bot
 
@@ -48,7 +48,7 @@ async def back_buy_key_menu(callback: CallbackQuery, state: FSMContext):
     payment_message_id = data.get("payment_message_id")
 
     await bot.edit_message_text(
-        text="Выберите тип ключа:",
+        text="Выберите период продления:",
         chat_id=callback.message.chat.id,
         message_id=payment_message_id,
         reply_markup=get_period_keyboard(),
@@ -56,13 +56,32 @@ async def back_buy_key_menu(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("extend_"))
+@router.callback_query(F.data == "back_to_choice_extension_period")
 async def extension_period_key_menu(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(GetKey.choice_extension_period)
     data = await state.get_data()
     selected_key_id = data.get("selected_key_id", None)
     if not selected_key_id:
         await state.update_data(selected_key_id=callback.data.split("_")[1])
-    await callback.message.edit_text(
-        "Выберите период продления:",
-        reply_markup=get_extension_periods_keyboard(),
-    )
+
+    current_state = await state.get_state()
+    match current_state:
+        case GetKey.waiting_for_extension_payment:
+            await callback.message.delete()
+
+            data = await state.get_data()
+            payment_message_id = data.get("payment_message_id")
+
+            await bot.edit_message_text(
+                text="Выберите период продления:",
+                chat_id=callback.message.chat.id,
+                message_id=payment_message_id,
+                reply_markup=get_extension_periods_keyboard(),
+            )
+
+        case ManageKeys.choose_key_action:
+            await callback.message.edit_text(
+                "Выберите период продления:",
+                reply_markup=get_extension_periods_keyboard(),
+            )
+
+    await state.set_state(GetKey.choice_extension_period)
