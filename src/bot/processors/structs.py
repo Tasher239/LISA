@@ -43,3 +43,29 @@ class OutlineKey:
             f"  used_bytes={self.used_bytes}\n"
             f")"
         )
+
+
+@dataclass
+class VlessKey:
+    """
+    Describes a key in the VLESS server
+    """
+
+    key_id: str
+    name: str
+    email: str
+    access_url: str
+    used_bytes: int
+    data_limit: int | None
+
+    def __str__(self):
+        return (
+            f"VLESSKey(\n"
+            f"  id={self.key_id},\n"
+            f"  name={self.name},\n"
+            f"  email={self.email},\n"
+            f"  access_url={self.access_url},\n"
+            f"  data_limit={self.data_limit},\n"
+            f"  used_bytes={self.used_bytes}\n"
+            f")"
+        )

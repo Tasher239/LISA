@@ -46,10 +46,9 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
             )
 
         else:
-            # ids_key = [key.id for key in user.keys]
-            keyboard = await get_key_name_choosing_keyboard(user.keys)
-
+            await state.clear()
             # user.keys - это список объектов алхимии Key
+            keyboard = await get_key_name_choosing_keyboard(user.keys)
             await callback.message.edit_text(
                 "Выберите ключ для управления:",
                 reply_markup=keyboard,

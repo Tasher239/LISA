@@ -8,6 +8,7 @@ logger = setup_logger()
 
 
 # add_period: в днях
+# возвращает новую дату конца активации ключа
 def extend_key_in_db(key_id: str, add_period: int):
     session = db_processor.get_session()
     try:
@@ -28,7 +29,7 @@ def extend_key_in_db(key_id: str, add_period: int):
         logger.info(
             f"Ключ с ID {key_id} успешно продлён на {add_period} дней. Новая дата окончания: {key.expiration_date}"
         )
-        return True  # Возвращаем True при успешном завершении
+        return key.expiration_date  # Возвращаем True при успешном завершении
 
     except Exception as e:
         logger.error(f"Ошибка при продлении ключа с ID {key_id}: {e}")

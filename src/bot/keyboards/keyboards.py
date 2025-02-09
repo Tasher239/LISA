@@ -1,10 +1,8 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from aiogram.fsm.context import FSMContext
 
-from bot.initialization.outline_processor_init import outline_processor
-from bot.initialization.vless_processor_init import vless_processor
 from bot.lexicon.lexicon import get_day_by_number
-
-from logger.log_sender import logger
+from bot.fsm.states import GetKey
 
 
 def get_main_menu_keyboard():
@@ -115,7 +113,7 @@ def get_device_outline_keyboard():
                 InlineKeyboardButton(
                     text="📲 Android",
                     callback_data="device_Android",
-                    url="https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Android-01-29",
+                    url="https://telegra.ph/Podklyuchenie-Outline-na-Android-02-09",
                 ),
             ],
             [
@@ -265,18 +263,48 @@ def get_extension_periods_keyboard():
     )
 
 
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+
 async def get_key_name_choosing_keyboard(keys: list):
     keyboard_buttons = []
-    for key in keys:
-        button = InlineKeyboardButton(
-            text=f"🔑 {key.name}", callback_data=f"key_{key.key_id}"
-        )
-        keyboard_buttons.append([button])
 
-    back_button = [
-        InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")
-    ]
-    keyboard_buttons.append(back_button)
+    outline_keys = [key for key in keys if key.protocol_type == "Outline"]
+    vless_keys = [key for key in keys if key.protocol_type == "VLESS"]
+
+    if outline_keys:
+        # f"OUTLINE 🔽 {' ' * 30}"
+        # длина клавы 37 символов
+        keyboard_buttons.append(
+            [InlineKeyboardButton(text=f"OUTLINE 🔽{' ' * 34}", callback_data="none")]
+        )
+        for key in outline_keys:
+            keyboard_buttons.append(
+                [
+                    InlineKeyboardButton(
+                        text=f"{' ' * (26-len(key.name))}🔑 {key.name}",
+                        callback_data=f"key_{key.key_id}",
+                    )
+                ]
+            )
+
+    if vless_keys:
+        keyboard_buttons.append(
+            [InlineKeyboardButton(text=f"VLESS 🔽{' ' * 30}", callback_data="none")]
+        )
+        for key in vless_keys:
+            keyboard_buttons.append(
+                [
+                    InlineKeyboardButton(
+                        text=f"{' ' * (26-len(key.name))}🔑 {key.name}",
+                        callback_data=f"key_{key.key_id}",
+                    )
+                ]
+            )
+
+    keyboard_buttons.append(
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")]
+    )
 
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
@@ -375,12 +403,21 @@ def get_back_button_to_key_params():
     )
 
 
-def get_back_button_to_buy_key(price):
+def get_back_button_to_buy_key(price, state: FSMContext):
+    match state:
+        case GetKey.waiting_for_payment:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="back_to_buy_key"
+            )
+        case GetKey.waiting_for_extension_payment:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="back_to_choice_extension_period"
+            )
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=f"Оплатить {price}₽", pay=True)],
             [
-                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_buy_key"),
+                back_button,
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),

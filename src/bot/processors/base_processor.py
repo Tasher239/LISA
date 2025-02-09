@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
 
+from bot.processors.structs import OutlineKey, VlessKey
+
 
 class BaseProcessor(ABC):
     @abstractmethod
-    def create_vpn_key(self) -> str:
+    def create_server_session(self):
+        pass
+
+    @abstractmethod
+    def create_vpn_key(self) -> tuple[OutlineKey | VlessKey, int]:
         """Создает ключ на сервере и возвращает строку ключа"""
         pass
 
@@ -17,5 +23,5 @@ class BaseProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_key_info(self, key_id: str) -> str:
+    def get_key_info(self, key_id: str, server_id: int = None) -> OutlineKey | VlessKey:
         pass

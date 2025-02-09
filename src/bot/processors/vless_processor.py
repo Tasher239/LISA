@@ -5,6 +5,7 @@ import requests
 import uuid
 
 from bot.processors.base_processor import BaseProcessor
+from bot.processors.structs import VlessKey
 
 from logger.logging_config import setup_logger
 
@@ -14,51 +15,83 @@ logger = setup_logger()
 NAME_VPN_CONFIG = "MyNewInbound"
 
 
-@dataclass
-class VlessKey:
-    """
-    Describes a key in the VLESS server
-    """
-
-    key_id: str
-    name: str
-    email: str
-    access_url: str
-    used_bytes: int
-    data_limit: int | None
-
-
 class VlessProcessor(BaseProcessor):
     def __init__(self, ip, password):
-        self.ip = ip
-        # Порт сабскрипции может быть другим (2096). Если нужно, скорректируйте:
+        # self.ip = ip
+        # # Порт сабскрипции может быть другим (2096). Если нужно, скорректируйте:
+        # self.sub_port = 2096
+        #
+        # # Порт панели 3x-ui (или вашей панели)
+        # self.port_panel = 2053
+        #
+        # self.host = f"http://{self.ip}:{self.port_panel}/mypanel"
+        #
+        # # Пользователь admin (или root), пароль из примера
+        # self.data = {"username": "admin", "password": password}
+        #
+        # self.ses = requests.Session()
+        #
+        # # Отключаем проверку сертификата (не рекомендуется для боевого окружения)
+        # self.ses.verify = False
+        #
+        # # Подключаемся к панели
+        # self.con = self._connect()
+        #
+        # # Если подключились, проверяем, есть ли уже нужный inbound;
+        # # Если нет - пытаемся добавить.
+        # if self.con:
+        #     if not self._check_connect():
+        #         self._add_new_connect()
+        # else:
+        #     logger.warning(
+        #         f"🛑Подключение к панели 3x-ui {self.ip} не произошло (авторизация неуспешна)."
+        #     )
+        self.ip = None
+        self.sub_port = None
+        self.port_panel = None
+        self.host = None
+        self.data = None
+        self.ses = None
+        self.con = None
+        self.server_id = None
+
+    def create_server_session_by_id(func):
+        def wrapper(self, *args, **kwargs):
+            if self.ses is None:
+                if kwargs.get("server_id") is None:
+                    raise ValueError(
+                        "!!!server_id must be passed as a keyword argument!!!"
+                    )
+                from bot.initialization.db_processor_init import db_processor
+
+                server_id = kwargs.get("server_id")
+                server = db_processor.get_server_by_id(server_id)
+                self.ip = server.ip
+                self.sub_port = 2096
+                self.port_panel = 2053
+                self.host = f"http://{self.ip}:{self.port_panel}/mypanel"
+                self.data = {"username": "admin", "password": server.password}
+                self.ses = requests.Session()
+                self.ses.verify = False
+                self.con = self._connect()
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    async def create_server_session(self):
+        from bot.initialization.db_processor_init import db_processor
+
+        server = await db_processor.get_server_with_min_users("vless")
+
+        self.ip = server.ip
         self.sub_port = 2096
-
-        # Порт панели 3x-ui (или вашей панели)
         self.port_panel = 2053
-
         self.host = f"http://{self.ip}:{self.port_panel}/mypanel"
-
-        # Пользователь admin (или root), пароль из примера
-        self.data = {"username": "admin", "password": password}
-
+        self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
-
-        # Отключаем проверку сертификата (не рекомендуется для боевого окружения)
         self.ses.verify = False
-
-        # Подключаемся к панели
         self.con = self._connect()
-
-        # Если подключились, проверяем, есть ли уже нужный inbound;
-        # Если нет - пытаемся добавить.
-        if self.con:
-            if not self._check_connect():
-                self._add_new_connect()
-        else:
-            logger.warning(
-                f"🛑Подключение к панели 3x-ui {self.ip} не произошло (авторизация неуспешна)."
-            )
+        self.server_id = server.id
 
     def _connect(self) -> bool:
         """
@@ -284,7 +317,10 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка при генерации ссылки: {e}")
             return False
 
-    def create_vpn_key(self, expire_time=0, sni="www.google.com", port=46408) -> str:
+    async def create_vpn_key(
+        self, expire_time=0, sni="www.google.com", port=46408
+    ) -> tuple[VlessKey, int]:
+        await self.create_server_session()
         if not self.con:
             return False, "Нет подключения к серверу"
 
@@ -305,7 +341,6 @@ class VlessProcessor(BaseProcessor):
                         {
                             "id": unique_id,  # должен быть уникальным, чтобы удалять нормально
                             "alterId": 0,
-                            # тут будет имя ключа, которое видит пользователь и которое надюсь можно менять
                             "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
                             "totalGB": 0,
@@ -314,7 +349,7 @@ class VlessProcessor(BaseProcessor):
                             "tgId": "",
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
-                            "comment": key_name,
+                            "comment": key_name,  # имя ключа, которое видит пользователь
                         }
                     ]
                 }
@@ -355,13 +390,16 @@ class VlessProcessor(BaseProcessor):
             ).json()
             if resource.get("success"):
                 logger.debug(f"Добавили ключ {unique_id} на сервере {self.ip}")
-                return VlessKey(
-                    key_id=unique_id,
-                    email=unique_id,
-                    name=key_name,
-                    access_url=access_url,
-                    used_bytes=0,
-                    data_limit=None,
+                return (
+                    VlessKey(
+                        key_id=unique_id,
+                        email=unique_id,
+                        name=key_name,
+                        access_url=access_url,
+                        used_bytes=0,
+                        data_limit=None,
+                    ),
+                    self.server_id,
                 )
             else:
                 msg = resource.get("msg", "Неизвестная ошибка")
@@ -371,7 +409,7 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-    def rename_key(self, key_id: str, new_key_name: str) -> bool:
+    def rename_key(self, key_id: str, server_id, new_key_name: str) -> bool:
         if not self.con:
             return False, "Нет подключения к серверу"
 
@@ -523,7 +561,8 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при удалении ключа: {e}")
             return False, str(e)
 
-    def get_key_info(self, key_id: str) -> VlessKey:
+    @create_server_session_by_id
+    async def get_key_info(self, key_id: str, server_id: int = None) -> VlessKey:
         """
         Выполняет GET-запрос на сервер, получает информацию о ключе key_id и
         возвращает объект VlessKey.

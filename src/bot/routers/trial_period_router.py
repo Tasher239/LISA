@@ -8,9 +8,13 @@ from aiogram.types import CallbackQuery
 from bot.fsm.states import GetKey, ManageKeys
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.vless_processor_init import vless_processor
-from bot.keyboards.keyboards import get_already_have_trial_key_keyboard, get_choice_vpn_type_keyboard_for_no_key
+from bot.keyboards.keyboards import (
+    get_already_have_trial_key_keyboard,
+    get_choice_vpn_type_keyboard_for_no_key,
+)
 from bot.utils.send_message import send_key_to_user
 from bot.initialization.async_outline_processor_init import async_outline_processor
+
 # from bot.utils.get_processor import get_processor
 
 from database.db_processor import DbProcessor
@@ -78,10 +82,10 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         # processor = await get_processor(vpn_type)
 
         match vpn_type.lower():
-            case 'outline':
+            case "outline":
                 processor = async_outline_processor
-                key = await processor.create_vpn_key()
-            case 'vless':
+                key, server_id = await processor.create_vpn_key()
+            case "vless":
                 processor = vless_processor
                 key = processor.create_vpn_key()
 
@@ -90,11 +94,12 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         expiration_date = start_date + timedelta(days=2)
         new_key = DbProcessor.Key(
             key_id=key.key_id,
+            name=key.name,
             user_telegram_id=user_id_str,
             expiration_date=expiration_date,
             start_date=start_date,
             protocol_type=vpn_type,
-            name=key.name
+            server_id=server_id,
         )
         session.add(new_key)
         session.commit()

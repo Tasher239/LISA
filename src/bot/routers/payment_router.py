@@ -24,7 +24,6 @@ from bot.keyboards.keyboards import get_back_button
 from bot.utils.dicts import prices_dict
 from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
-from bot.utils.get_processor import get_processor
 from bot.lexicon.lexicon import get_month_by_number
 
 from database.db_processor import DbProcessor
@@ -81,31 +80,28 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
             vpn_type = data.get("vpn_type")
             description = f"Ключ от VPN {vpn_type} на {selected_period} {moths}"
             title = "Покупка ключа"
+
+            await state.set_state(GetKey.waiting_for_payment)
         case GetKey.choice_extension_period:
             selected_key_id = data.get("selected_key_id")
             vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
             await state.update_data(vpn_type=vpn_type)
-            processor = await get_processor(vpn_type)
-            server_id = db_processor.get_server_id_by_key_id(selected_key_id)
-            key_info = await processor.get_key_info(selected_key_id, server_id=server_id)
-            await state.update_data(key_name=key_info.name)
+            key = db_processor.get_key_by_id(selected_key_id)
+            await state.update_data(key_name=key.name)
             title = "Продление ключа"
-            description = f"Продление ключа {key_info.name} от VPN {vpn_type} на {selected_period} {moths}"
+            description = f"Продление ключа «{key.name}» от VPN {vpn_type} на {selected_period} {moths}"
+
+            await state.set_state(GetKey.waiting_for_extension_payment)
+            await state.update_data(selected_period=selected_period)
 
     # Сохранение выбранного периода в состоянии
     await state.update_data(selected_period=selected_period)
-
-    current_state = await state.get_state()
-    if current_state == GetKey.buy_key:
-        await state.set_state(GetKey.waiting_for_payment)
-    else:
-        await state.set_state(GetKey.waiting_for_extension_payment)
-        await state.update_data(selected_period=selected_period)
 
     logger.info(f"Sending invoice with currency=RUB, amount={prices}")
     payment_message = await callback.message.edit_text(text="Оплата")
     await state.update_data(payment_message_id=payment_message.message_id)
 
+    current_state = await state.get_state()
     await bot.send_invoice(
         chat_id=callback.message.chat.id,
         title=title,
@@ -115,7 +111,7 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
         start_parameter=str(uuid.uuid4()),
         currency="rub",
         prices=prices,
-        reply_markup=get_back_button_to_buy_key(amount / 100),
+        reply_markup=get_back_button_to_buy_key(amount / 100, current_state),
     )
 
     await callback.answer()
@@ -144,13 +140,15 @@ async def successful_payment(message: Message, state: FSMContext):
                 key, server_id = await async_outline_processor.create_vpn_key()
             case "VLESS":
                 protocol_type = "VLESS"
-                key = vless_processor.create_vpn_key()
+                key, server_id = await vless_processor.create_vpn_key()
 
         logger.info(f"Key created: {key} for user {message.from_user.id}")
 
         new_message = await message.answer(text="Оплата прошла успешно")
         await send_key_to_user(
-            new_message, key, text=f"Ваш ключ «{key.name}» добавлен в менеджер ключей"
+            new_message,
+            key,
+            text=f"Ваш ключ «{key.name}» добавлен в менеджер ключей (в нем можно его переименовать)",
         )
 
         # Обновление базы данных
@@ -180,18 +178,18 @@ async def successful_extension_payment(message: Message, state: FSMContext):
     try:
         # Логирование успешного платежа
         LogSender.log_payment_details(message)
-        session = db_processor.get_session()
         # Находим ключ по его ID
         data = await state.get_data()
         key_id = data.get("selected_key_id")
         add_period = int(data.get("selected_period").split()[0])
         add_period = 31 * add_period
+
         new_message = await message.answer(text="Оплата прошла успешно")
-        extend_key_in_db(key_id=key_id, add_period=add_period)
-        key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+        expiration_date = extend_key_in_db(key_id=key_id, add_period=add_period)
+
         data = await state.get_data()
         await new_message.edit_text(
-            f'Ключ «{data.get("key_name")}» действует до <b>{key.expiration_date.strftime("%d.%m.%y")}</b>',
+            f'Ключ «{data.get("key_name")}» действует до <b>{expiration_date.strftime("%d.%m.%Y")}</b>',
             parse_mode="HTML",
             reply_markup=get_back_button(),
         )

@@ -9,7 +9,7 @@ from bot.utils.get_processor import get_processor
 from bot.utils.send_message import send_key_to_user_with_back_button
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import ManageKeys
-from bot.initialization.db_processor_init import db_processor
+from bot.initialization.db_processor_init import db_processor, session
 from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
@@ -18,7 +18,6 @@ from bot.keyboards.keyboards import (
     get_key_action_keyboard,
 )
 
-from database.db_processor import DbProcessor
 
 from logger.logging_config import setup_logger
 
@@ -28,7 +27,7 @@ logger = setup_logger()
 
 @router.callback_query(F.data == "to_key_params")
 @router.callback_query(
-    StateFilter(ManageKeys.get_key_params), ~F.data.in_(["back_to_main_menu"])
+    StateFilter(ManageKeys.get_key_params), ~F.data.in_(["back_to_main_menu", "none"])
 )
 async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     # Проверяем, начинается ли callback.data с "key_"
@@ -54,17 +53,26 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         return
 
     # Получаем информацию о ключе из базы данных
-    session = db_processor.get_session()
-    key = session.query(DbProcessor.Key).filter_by(key_id=selected_key_id).first()
+    key = db_processor.get_key_by_id(selected_key_id)
 
     if not key:
-        await callback.message.answer("Ключ не найден.")
+        # await callback.message.answer("Ключ не найден.")
         return
 
     await callback.message.edit_text(
         f"Выберите действие для ключа: «{key.name}»",
         reply_markup=get_key_action_keyboard(key.key_id),
     )
+    #
+    # data = await state.get_data()
+    # if data.get("key_info") is None:
+    #     processor = await get_processor(key.protocol_type)
+    #     key_info = await processor.get_key_info(key.key_id, server_id=key.server_id)
+    #     logger.info(f"Key info: {key_info}")
+    #
+    #     # заносим всю инфу о ключе в дату, чтобы оперативно доставать её в других обработчиках
+    #     await state.update_data(key_info=key_info)
+
     await state.set_state(ManageKeys.choose_key_action)
 
 
@@ -72,26 +80,22 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("traffic")
 )
 async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
-    key_id = callback.data.split("_")[1]  # Извлекаем ID ключа из callback_data
+    data = await state.get_data()
 
-    # Получаем информацию о ключе из базы данных
-    session = db_processor.get_session()
-    key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+    key_info = data.get("key_info")
+    if key_info is None:
+        key = db_processor.get_key_by_id(data.get("selected_key_id"))
+        processor = await get_processor(key.protocol_type)
+        key_info = await processor.get_key_info(key.key_id, server_id=key.server_id)
+        logger.info(f"Key info: {key_info}")
+        # заносим всю инфу о ключе в дату, чтобы оперативно доставать её в других обработчиках
+        await state.update_data(key_info=key_info)
 
-    if key is None:
-        await callback.message.answer("Ключ не найден.")
-        return
-
-    match key.protocol_type.lower():
-        case 'outline':
-            key_info = await async_outline_processor.get_key_info(key_id, server_id=key.server_id)
-        case 'vless':
-            key_info = vless_processor.get_key_info(key_id)
     used_bytes = 0
 
     if key_info.used_bytes is not None:
         used_bytes = key_info.used_bytes
-    total_traffic = used_bytes / (1024 ** 3)
+    total_traffic = used_bytes / (1024**3)
 
     response = f"""
     Суммарный трафик: {total_traffic:.2f} Гб
@@ -106,19 +110,11 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("expiration")
 )
 async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
-    key_id = callback.data.split("_")[1]  # Извлекаем ID ключа
-
-    # Получаем информацию о ключе из базы данных
-    session = db_processor.get_session()
-    key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
-
-    if not key:
-        await callback.message.answer("Ключ не найден.")
-        return
+    data = await state.get_data()
+    key = db_processor.get_key_by_id(data["selected_key_id"])
 
     expiration_date = key.expiration_date
     if expiration_date:
-        # Вычисляем количество оставшихся дней
         remaining_days = (expiration_date - datetime.now() + timedelta(days=1)).days
     else:
         remaining_days = None
@@ -139,14 +135,8 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("rename")
 )
 async def ask_new_name_handler(callback: CallbackQuery, state: FSMContext):
-    key_id = callback.data.split("_")[1]  # Извлекаем ID ключа
-
-    # Сохраняем key_id в состоянии FSMContext
-    await state.update_data(selected_key_id=key_id)
-
     # Запрашиваем у пользователя новое имя для ключа
     await callback.message.edit_text("Введите новое имя для ключа:")
-
     # Переходим к следующему состоянию
     await state.set_state(ManageKeys.wait_for_new_name)
 
@@ -159,10 +149,6 @@ async def receive_new_name_handler(message: Message, state: FSMContext):
     if not new_name:
         await message.answer("Имя не может быть пустым. Пожалуйста, введите новое имя.")
         return
-
-    # Получаем ID ключа из состояния
-    user_data = await state.get_data()
-    key_id = user_data["selected_key_id"]
 
     # Сохраняем новое имя в состояние
     await state.update_data(new_name=new_name)
@@ -182,25 +168,19 @@ async def receive_new_name_handler(message: Message, state: FSMContext):
 )
 async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
     # Получаем данные из состояния
-    user_data = await state.get_data()
-    key_id = user_data["selected_key_id"]
-    new_name = user_data["new_name"]
+    data = await state.get_data()
+    key_id = data["selected_key_id"]
+    new_name = data["new_name"]
 
     # Получаем информацию о ключе из базы данных
-    session = db_processor.get_session()
-    key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
-
-    if not key:
-        await callback.message.answer("Ключ не найден.")
-        return
-
-    # Переименовываем ключ в базе данных
-    key.name = new_name
-    session.commit()
+    db_processor.rename_key(key_id, new_name)
+    key = db_processor.get_key_by_id(key_id)
 
     # Переименовываем ключ через OutlineProcessor (если нужно)
     if key.protocol_type == "Outline":
-        await async_outline_processor.rename_key(key.key_id, new_name, server_id=key.server_id)
+        await async_outline_processor.rename_key(
+            key.key_id, new_name, server_id=key.server_id
+        )
     else:
         vless_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
     # Отправляем сообщение пользователю
@@ -212,7 +192,7 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(
     StateFilter(ManageKeys.confirm_rename), F.data == "cancel_rename"
 )
-async def cancel_rename_handler(callback: CallbackQuery, state: FSMContext):
+async def cancel_rename_handler(callback: CallbackQuery):
     await callback.message.edit_text(
         "Переименование отменено.", reply_markup=get_back_button_to_key_params()
     )
@@ -222,22 +202,18 @@ async def cancel_rename_handler(callback: CallbackQuery, state: FSMContext):
     StateFilter(ManageKeys.choose_key_action), F.data.startswith("access_url")
 )
 async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
-    key_id = callback.data.split("_")[2]  # Извлекаем ID ключа
+    data = await state.get_data()
 
-    # Получаем информацию о ключе из базы данных
-    session = db_processor.get_session()
-    key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
-
-    if key.protocol_type == "Outline":
-        key_info = await async_outline_processor.get_key_info(key_id)
-    else:
-        key_info = vless_processor.get_key_info(key_id)
-
-    if not key:
-        await callback.message.answer("Ключ не найден.")
-        return
+    key_info = data.get("key_info")
+    if key_info is None:
+        key = db_processor.get_key_by_id(data.get("selected_key_id"))
+        processor = await get_processor(key.protocol_type)
+        key_info = await processor.get_key_info(key.key_id, server_id=key.server_id)
+        logger.info(f"Key info: {key_info}")
+        # заносим всю инфу о ключе в дату, чтобы оперативно доставать её в других обработчиках
+        await state.update_data(key_info=key_info)
 
     # Отправляем ключ пользователю
     await send_key_to_user_with_back_button(
-        callback.message, key_info, f"Ваш ключ «{key.name}»"
+        callback.message, key_info, f"Ваш ключ «{key_info.name}»"
     )
