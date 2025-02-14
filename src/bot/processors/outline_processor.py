@@ -6,6 +6,11 @@ from outline_vpn.outline_vpn import OutlineVPN
 
 from bot.processors.base_processor import BaseProcessor
 
+from logger.logging_config import setup_logger
+import asyncssh
+import asyncio
+
+logger = setup_logger()
 
 class OutlineProcessor(BaseProcessor):
     def __init__(self):
@@ -81,3 +86,4 @@ class OutlineProcessor(BaseProcessor):
             data_limit_gb=200,
         )
         return key, self.server_id
+
