@@ -14,13 +14,17 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
-from bot.fsm.states import GetKey
+from bot.fsm.states import GetKey, SubscriptionExtension
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vless_processor_init import vless_processor
-from bot.keyboards.keyboards import get_back_button_to_buy_key
-from bot.keyboards.keyboards import get_back_button_to_key_params
+from bot.keyboards.keyboards import (
+    get_back_button_to_key_params,
+    get_after_payment_expired_key_keyboard,
+    get_back_button_to_buy_key,
+)
+
 from bot.utils.dicts import prices_dict
 from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
@@ -45,6 +49,10 @@ logger = setup_logger()
 """
 
 
+@router.callback_query(
+    StateFilter(SubscriptionExtension.choose_extension_period),
+    ~F.data.in_(["back_to_expired_keys"]),
+)
 @router.callback_query(
     StateFilter(GetKey.buy_key),
     ~F.data.in_(
@@ -90,8 +98,18 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
             await state.update_data(key_name=key.name)
             title = "Продление ключа"
             description = f"Продление ключа «{key.name}» от VPN {vpn_type} на {selected_period} {moths}"
-
             await state.set_state(GetKey.waiting_for_extension_payment)
+            await state.update_data(selected_period=selected_period)
+
+        case SubscriptionExtension.choose_extension_period:
+            selected_key_id = data.get("selected_key_id")
+            vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
+            await state.update_data(vpn_type=vpn_type)
+            key = db_processor.get_key_by_id(selected_key_id)
+            await state.update_data(key_name=key.name)
+            title = "Продление ключа"
+            description = f"Продление ключа «{key.name}» от VPN {vpn_type} на {selected_period} {moths}"
+            await state.set_state(SubscriptionExtension.waiting_for_extension_payment)
             await state.update_data(selected_period=selected_period)
 
     # Сохранение выбранного периода в состоянии
@@ -174,6 +192,10 @@ async def successful_payment(message: Message, state: FSMContext):
     StateFilter(GetKey.waiting_for_extension_payment),
     lambda message: message.successful_payment,
 )
+@router.message(
+    StateFilter(SubscriptionExtension.waiting_for_extension_payment),
+    lambda message: message.successful_payment,
+)
 async def successful_extension_payment(message: Message, state: FSMContext):
     try:
         # Логирование успешного платежа
@@ -188,10 +210,16 @@ async def successful_extension_payment(message: Message, state: FSMContext):
         expiration_date = extend_key_in_db(key_id=key_id, add_period=add_period)
 
         data = await state.get_data()
+        current_state = await state.get_state()
+        match current_state:
+            case GetKey.waiting_for_extension_payment:
+                keyboard = get_back_button_to_key_params()
+            case SubscriptionExtension.waiting_for_extension_payment:
+                keyboard = get_after_payment_expired_key_keyboard()
         await new_message.edit_text(
             f'Действие ключа «{data.get("key_name")}» продлено до <b>{expiration_date.strftime("%d.%m.%Y")}</b>',
             parse_mode="HTML",
-            reply_markup=get_back_button_to_key_params(),
+            reply_markup=keyboard,
         )
         await state.set_state(GetKey.sending_key)
     except Exception as e:
