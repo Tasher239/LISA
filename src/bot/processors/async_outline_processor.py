@@ -3,6 +3,9 @@ from coolname import generate_slug
 import asyncio
 import base64
 import aiohttp
+import asyncssh
+import json
+import re
 
 from bot.processors.structs import OutlineKey
 from bot.processors.base_processor import BaseProcessor
@@ -63,6 +66,15 @@ class OutlineProcessor(BaseProcessor):
 
         server = await db_processor.get_server_with_min_users("outline")
 
+        self.api_url = server.api_url
+        self.server_id = server.id
+        connector = aiohttp.TCPConnector(
+            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
+        )
+        session = aiohttp.ClientSession(connector=connector)
+        self.session = session
+
+    async def create_server_session_for_server(self, server) -> None:
         self.api_url = server.api_url
         self.server_id = server.id
         connector = aiohttp.TCPConnector(
@@ -295,3 +307,45 @@ class OutlineProcessor(BaseProcessor):
     async def close(self):
         if self.session:
             await self.session.close()
+
+    def extract_outline_config(output: str) -> dict | None:
+        match = re.search(r"(\{[^}]+\})", output)
+        if match:
+            json_str = match.group(1)
+            try:
+                config = json.loads(json_str)
+                if "apiUrl" in config and "certSha256" in config:
+                    return config
+            except json.JSONDecodeError:
+                pass
+        return None
+
+    async def setup_server_outline(self, server):
+        await self.create_server_session_for_server(server)
+        install_cmd = [
+            "sudo apt update && sudo apt install -y docker.io",
+            'sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/server_manager/install_scripts/install_server.sh)',
+        ]
+        try:
+            async with asyncssh.connect(
+                host=server.ip,
+                username="root",
+                password=server.password,
+                known_hosts=None,
+            ) as conn:
+                for cmd in install_cmd:
+                    result = await asyncio.wait_for(conn.run(cmd, input="y\n"), timeout=300)
+                    print(result.stdout)
+                    if result.exit_status != 0:
+                        raise Exception(f"Error executing command: {cmd}")
+                config = self.extract_outline_config(result.stdout)
+                if config is None:
+                    raise Exception("Error while extracting config")
+                server.api_url = config["apiUrl"]
+                server.cert_sha256 = config["certSha256"]
+                server.save()
+        except Exception as e:
+            logger.error(f"Error while setting up Outline server: {e}")
+            return False
+
+

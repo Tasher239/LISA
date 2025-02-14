@@ -1,6 +1,8 @@
 import asyncio
 from collections import defaultdict
 from datetime import datetime, timedelta
+from tempfile import template
+
 from sqlalchemy import func
 
 from sqlalchemy import (
@@ -175,13 +177,33 @@ class DbProcessor:
             )
 
             if not server:
+                print("Сервера нет")
                 # если сервера нет, нужно подянть новый
                 # идем в вдсина процессор и запрашиваем новый сервер
-                await vdsina_processor.create_new_server(protocol_type)
+                template_id = 0
+                match protocol_type.lower():
+                    case "outline":
+                        template_id = 31
+                    case "vless":
+                        template_id = 22
+                new_server = await vdsina_processor.create_new_server(
+                    datacenter_id=1,
+                    server_plan_id=1,
+                    template_id=template_id,
+                    ip4=1,
+                    email="asadullinam@yandex.ru",
+                    password="piDhij-tevtat-9rokgy"
+                )
 
-                # !!!!! ДОПИСАТЬ !!!!!
+                if not new_server:
+                    logger.error("Ошибка при создании нового сервера")
+                    return None
+                new_server_db = self.add_server(new_server, protocol_type)
+                # !!!!! написать поднятие на bash
+                match protocol_type.lower():
+                    case "outline":
+                        await async_outline_processor.setup_server_outline(new_server_db)
 
-                return None
 
             server.cnt_users += 1
             session.commit()
@@ -193,6 +215,46 @@ class DbProcessor:
             return None
         finally:
             session.close()
+
+    def add_server(self, server_data: dict, protocol_type: str):
+        """
+            Добавляет информацию о сервере в базу данных.
+            :param server_data: Словарь с данными сервера, полученными от API.
+                Ожидаются следующие поля:
+                    - "id": идентификатор сервера;
+                    - "ip": список IP-объектов, где берется первый IP (например, ip[0]["ip"]);
+                    - "password": пароль (обычно его нужно получать отдельно, здесь может быть пустой строкой);
+                    - "cnt_users": количество подключенных пользователей (обычно 0);
+                    - "protocol_type": тип протокола (например, "Outline").
+                Остальные поля можно задавать вручную или по умолчанию.
+            :return: Объект добавленного сервера или выбрасывается исключение.
+        """
+        session = self.get_session()
+        try:
+            ip_list = server_data.get("ip")
+            primary_ip = None
+            if ip_list and isinstance(ip_list, list) and len(ip_list) > 0:
+                primary_ip = ip_list[0].get("ip")
+            new_server = DbProcessor.Server(
+                ip=primary_ip,
+                password=server_data.get("password", ""),  # Пароль, если доступен (иначе пустая строка)
+                api_url="https://userapi.vdsina.ru",  # URL можно задать статически
+                cert_sha256=server_data.get("cert_sha256", ""),  # Это поле не возвращается API, задаем по умолчанию
+                cnt_users=server_data.get("cnt_users", 0),  # Обычно сервер создается с 0 пользователями
+                protocol_type=server_data.get("protocol_type", "Outline")
+            )
+            session.add(new_server)
+            session.commit()
+            session.refresh(new_server)  # Обновляем объект после коммита
+            logger.info(f"Сервер {new_server.id} успешно добавлен в БД.")
+            return new_server
+
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Ошибка при добавлении сервера: {e}")
+        finally:
+            session.close()
+
 
     def get_server_id_by_key_id(self, key_id):
         session = self.get_session()
@@ -262,7 +324,7 @@ class DbProcessor:
 
     class Server(Base):
         __tablename__ = "servers"
-        id = Column(String, primary_key=True)
+        id = Column(Integer, primary_key=True, autoincrement=True)
         ip = Column(String, default=None)
         password = Column(String, default=None)
         api_url = Column(String, default=None)
