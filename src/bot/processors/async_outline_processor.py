@@ -334,7 +334,9 @@ class OutlineProcessor(BaseProcessor):
                 known_hosts=None,
             ) as conn:
                 for cmd in install_cmd:
-                    result = await asyncio.wait_for(conn.run(cmd, input="y\n"), timeout=300)
+                    result = await asyncio.wait_for(
+                        conn.run(cmd, input="y\n"), timeout=300
+                    )
                     print(result.stdout)
                     if result.exit_status != 0:
                         raise Exception(f"Error executing command: {cmd}")
@@ -347,5 +349,3 @@ class OutlineProcessor(BaseProcessor):
         except Exception as e:
             logger.error(f"Error while setting up Outline server: {e}")
             return False
-
-
