@@ -273,16 +273,15 @@ async def get_key_name_choosing_keyboard(keys: list):
     vless_keys = [key for key in keys if key.protocol_type == "VLESS"]
 
     if outline_keys:
-        # f"OUTLINE 🔽 {' ' * 30}"
-        # длина клавы 37 символов
         keyboard_buttons.append(
-            [InlineKeyboardButton(text=f"OUTLINE 🔽{' ' * 34}", callback_data="none")]
+            [InlineKeyboardButton(text=f"OUTLINE 🔽{' ' * 43}", callback_data="none")]
         )
         for key in outline_keys:
+            padded_name = f"🔑 {key.name}".ljust(30, ' ')
             keyboard_buttons.append(
                 [
                     InlineKeyboardButton(
-                        text=f"{' ' * (26-len(key.name))}🔑 {key.name}",
+                        text=f"{' ' * 10}{padded_name}",
                         callback_data=f"key_{key.key_id}",
                     )
                 ]
@@ -290,13 +289,14 @@ async def get_key_name_choosing_keyboard(keys: list):
 
     if vless_keys:
         keyboard_buttons.append(
-            [InlineKeyboardButton(text=f"VLESS 🔽{' ' * 30}", callback_data="none")]
+            [InlineKeyboardButton(text=f"VLESS 🔽{' ' * 40}", callback_data="none")]
         )
         for key in vless_keys:
+            padded_name = f"🔑 {key.name}".ljust(30, ' ')
             keyboard_buttons.append(
                 [
                     InlineKeyboardButton(
-                        text=f"{' ' * (26-len(key.name))}🔑 {key.name}",
+                        text=f"{' ' * 10}{padded_name}",  # Отступ 10 пробелов + фиксированная длина
                         callback_data=f"key_{key.key_id}",
                     )
                 ]

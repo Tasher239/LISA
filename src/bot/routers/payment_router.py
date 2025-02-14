@@ -20,7 +20,7 @@ from bot.initialization.db_processor_init import db_processor
 from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import get_back_button_to_buy_key
-from bot.keyboards.keyboards import get_back_button
+from bot.keyboards.keyboards import get_back_button_to_key_params
 from bot.utils.dicts import prices_dict
 from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
@@ -189,9 +189,9 @@ async def successful_extension_payment(message: Message, state: FSMContext):
 
         data = await state.get_data()
         await new_message.edit_text(
-            f'Ключ «{data.get("key_name")}» действует до <b>{expiration_date.strftime("%d.%m.%Y")}</b>',
+            f'Действие ключа «{data.get("key_name")}» продлено до <b>{expiration_date.strftime("%d.%m.%Y")}</b>',
             parse_mode="HTML",
-            reply_markup=get_back_button(),
+            reply_markup=get_back_button_to_key_params(),
         )
         await state.set_state(GetKey.sending_key)
     except Exception as e:

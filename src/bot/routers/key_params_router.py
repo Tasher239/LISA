@@ -182,10 +182,10 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
             key.key_id, new_name, server_id=key.server_id
         )
     else:
-        vless_processor.rename_key(key_id=key.key_id, new_key_name=new_name)
+        await vless_processor.rename_key(key_id=key.key_id, server_id=key.server_id, new_key_name=new_name)
     # Отправляем сообщение пользователю
     await callback.message.edit_text(
-        f"Ключ переименован в: {new_name}", reply_markup=get_back_button_to_key_params()
+        f"Ключ переименован в: «{new_name}»", reply_markup=get_back_button_to_key_params()
     )
 
 
