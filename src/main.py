@@ -1,9 +1,8 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
-
+from bot.initialization.bot_init import dp
 from bot.initialization.bot_init import bot
 from bot.initialization.async_outline_processor_init import init_outline_processor
 from bot.initialization.db_processor_init import db_processor
@@ -22,10 +21,6 @@ from logger.logging_config import setup_logger
 
 logger = setup_logger()
 
-logger.info("Инициализация хранилища состояний (MemoryStorage)...")
-storage = MemoryStorage()
-logger.info("Инициализация диспетчера...")
-dp = Dispatcher(storage=storage)
 logger.info("Регистрация обработчиков...")
 
 dp.include_router(main_menu_router.router)

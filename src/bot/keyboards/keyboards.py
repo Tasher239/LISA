@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.fsm.context import FSMContext
 
 from bot.lexicon.lexicon import get_day_by_number
-from bot.fsm.states import GetKey
+from bot.fsm.states import GetKey, SubscriptionExtension
 
 
 def get_main_menu_keyboard():
@@ -263,9 +263,6 @@ def get_extension_periods_keyboard():
     )
 
 
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-
 async def get_key_name_choosing_keyboard(keys: list):
     keyboard_buttons = []
 
@@ -277,7 +274,7 @@ async def get_key_name_choosing_keyboard(keys: list):
             [InlineKeyboardButton(text=f"OUTLINE 🔽{' ' * 43}", callback_data="none")]
         )
         for key in outline_keys:
-            padded_name = f"🔑 {key.name}".ljust(30, ' ')
+            padded_name = f"🔑 {key.name}".ljust(30, " ")
             keyboard_buttons.append(
                 [
                     InlineKeyboardButton(
@@ -292,7 +289,7 @@ async def get_key_name_choosing_keyboard(keys: list):
             [InlineKeyboardButton(text=f"VLESS 🔽{' ' * 40}", callback_data="none")]
         )
         for key in vless_keys:
-            padded_name = f"🔑 {key.name}".ljust(30, ' ')
+            padded_name = f"🔑 {key.name}".ljust(30, " ")
             keyboard_buttons.append(
                 [
                     InlineKeyboardButton(
@@ -320,7 +317,9 @@ def get_key_name_extension_keyboard_with_names(keys: dict):
         keyboard_buttons.append([button])
 
     back_button = [
-        InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")
+        InlineKeyboardButton(
+            text="🔙 В главное меню", callback_data="back_to_main_menu"
+        )
     ]
     keyboard_buttons.append(back_button)
 
@@ -413,6 +412,11 @@ def get_back_button_to_buy_key(price, state: FSMContext):
             back_button = InlineKeyboardButton(
                 text="🔙 Назад", callback_data="back_to_choice_extension_period"
             )
+        case SubscriptionExtension.waiting_for_extension_payment:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад",
+                callback_data="back_to_choice_extension_period_for_expired_key",
+            )
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text=f"Оплатить {price}₽", pay=True)],
@@ -422,5 +426,46 @@ def get_back_button_to_buy_key(price, state: FSMContext):
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),
             ],
+        ]
+    )
+
+
+def get_notification_extension_periods_keyboard():
+    # Кнопки для выбора периода
+    month_button = InlineKeyboardButton(text="1 Месяц (90₽)", callback_data="1_month")
+    three_month_button = InlineKeyboardButton(
+        text="3 Месяца (240₽)", callback_data="3_months"
+    )
+    six_month_button = InlineKeyboardButton(
+        text="6 Месяцев (390₽)", callback_data="6_months"
+    )
+    year_button = InlineKeyboardButton(
+        text="12 Месяцев (690₽)", callback_data="12_months"
+    )
+    back_button = InlineKeyboardButton(
+        text="🔙 Назад", callback_data="back_to_expired_keys"
+    )
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [month_button],
+            [three_month_button],
+            [six_month_button],
+            [year_button],
+            [back_button],
+        ]
+    )
+
+
+def get_after_payment_expired_key_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🔙 Продлить еще", callback_data="another_expired_keys"
+                ),
+                InlineKeyboardButton(
+                    text="🔙 В главное меню", callback_data="back_to_main_menu"
+                ),
+            ]
         ]
     )

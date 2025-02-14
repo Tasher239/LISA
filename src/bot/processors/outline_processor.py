@@ -12,6 +12,7 @@ import asyncio
 
 logger = setup_logger()
 
+
 class OutlineProcessor(BaseProcessor):
     def __init__(self):
         self.client = None
@@ -86,4 +87,3 @@ class OutlineProcessor(BaseProcessor):
             data_limit_gb=200,
         )
         return key, self.server_id
-
