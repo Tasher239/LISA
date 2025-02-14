@@ -409,7 +409,7 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-    def rename_key(self, key_id: str, server_id, new_key_name: str) -> bool:
+    async def rename_key(self, key_id: str, server_id, new_key_name: str) -> bool:
         if not self.con:
             return False, "Нет подключения к серверу"
 
