@@ -129,9 +129,6 @@ async def show_about_us(callback: CallbackQuery, state: FSMContext):
     )
 
 
-@router.callback_query(F.data == "installation_instructions")
-def foo():
-    # await callback.message.edit_text(
-    #     INFO.
-    # )
-    pass
+@router.callback_query(F.data == "none")
+async def foo(callback: CallbackQuery):
+    await callback.answer()
