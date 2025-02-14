@@ -87,7 +87,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
                 key, server_id = await processor.create_vpn_key()
             case "vless":
                 processor = vless_processor
-                key = processor.create_vpn_key()
+                key, server_id = await processor.create_vpn_key()
 
         start_date = datetime.now()
         await state.update_data(key_access_url=key.access_url)
