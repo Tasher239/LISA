@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import aiohttp
 import asyncio
 import ssl
@@ -124,3 +126,18 @@ class VDSinaAPI:
             await self.authenticate(email, password)
         # После успешной авторизации пробуем создать сервер
         return await self.deploy_server(datacenter_id, server_plan_id, template_id, ip4)
+
+    async def get_servers(self):
+        return await self.request("GET", "/server")
+
+    async def get_server_statistics(self, server_id, from_date=None, to_date=None):
+        if not from_date and to_date:
+            endpoint = f"/server.stat/{server_id}?to={to_date}"
+        elif from_date and not to_date:
+            endpoint = f"/server.stat/{server_id}?from={from_date}"
+        elif from_date and to_date:
+            endpoint = f"/server.stat/{server_id}?from={from_date}&to={to_date}"
+        else:
+            endpoint = f"/server.stat/{server_id}"
+
+        return await self.request("GET", endpoint)

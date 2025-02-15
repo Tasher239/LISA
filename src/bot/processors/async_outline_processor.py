@@ -209,7 +209,7 @@ class OutlineProcessor(BaseProcessor):
                 raise OutlineServerErrorException("Unable to get metrics")
         return resp_json
 
-    async def get_server_information(self) -> dict:
+    async def get_server_info(self, server) -> dict:
         """Get information about the server
         {
             "name":"My Server",
@@ -222,7 +222,14 @@ class OutlineProcessor(BaseProcessor):
             "hostnameForAccessKeys":"example.com"
         }
         """
-        async with self.session.get(url=f"{self.api_url}/server") as resp:
+
+        connector = aiohttp.TCPConnector(
+            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
+        )
+        session = aiohttp.ClientSession(connector=connector)
+        self.session = session
+
+        async with self.session.get(url=f"{server.api_url}/server") as resp:
             resp_json = await resp.json()
             if resp.status != 200:
                 raise OutlineServerErrorException(
