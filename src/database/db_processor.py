@@ -106,6 +106,19 @@ class DbProcessor:
         finally:
             session.close()
 
+    async def get_expired_keys_by_user_id(self, user_id):
+        session = self.get_session()
+        keys = session.query(DbProcessor.Key).filter_by(user_telegram_id=user_id).all()
+
+        expired_keys = {}
+        for key in keys:
+            if key.expiration_date - datetime.now() < timedelta(days=4):
+                expired_keys[key.key_id] = (
+                    key.name,
+                    (key.expiration_date - datetime.now()).days + 1,
+                )
+        return expired_keys
+
     async def check_db(self, dp):
         while True:
             session = self.get_session()
@@ -115,24 +128,6 @@ class DbProcessor:
                     print(f"Проверка пользователя: {user.user_telegram_id}")
                     expiring_keys = {}  # {key_id: (key_name, expiration_time)}
                     for key in user.keys:
-                        try:
-                            if key.protocol_type == "Outline":
-                                key_info = await async_outline_processor.get_key_info(
-                                    key.key_id
-                                )
-                            else:
-                                key_info = vless_processor.get_key_info(key.key_id)
-                        except Exception as e:
-                            logger.error(
-                                f"Ошибка при получении информации о ключе {key.key_id}: {e}"
-                            )
-                            continue
-                        if key_info is None:
-                            logger.warning(
-                                f"Ключ {key.key_id} не найден или пустой, пропускаем"
-                            )
-                            continue
-                        key_name = key_info.name
                         # ключ будет действовать меньше 3х дней
                         if (
                             timedelta(days=0)
@@ -141,19 +136,21 @@ class DbProcessor:
                         ):
                             key.remembering = True
                             expiring_keys[key.key_id] = (
-                                key_name,
+                                key.name,
                                 (key.expiration_date - datetime.now()).days + 1,
                             )
                         # ключ больше не работает
                         elif key.expiration_date < datetime.now():
                             # Устанавливаем состояние "extension"
-                            expiring_keys[key.key_id] = (key_name, 0)
+                            expiring_keys[key.key_id] = (key.name, 0)
                         # тухлый ключ лежит в бд 1 день - удаляем из бд
                         elif datetime.now() > key.expiration_date + timedelta(days=1):
                             session.delete(key)
                             session.commit()
                     if expiring_keys:
-                        await send_message_subscription_expired(user, expiring_keys)
+                        await send_message_subscription_expired(
+                            user.user_telegram_id, expiring_keys
+                        )
             except Exception as e:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise
@@ -192,14 +189,13 @@ class DbProcessor:
                     template_id=template_id,
                     ip4=1,
                     email="asadullinam@yandex.ru",
-                    password="piDhij-tevtat-9rokgy"
+                    password="piDhij-tevtat-9rokgy",
                 )
 
                 if not new_server:
                     logger.error("Ошибка при создании нового сервера")
                     return None
                 new_server_db = self.add_server(new_server, protocol_type)
-                # !!!!! написать поднятие на bash
                 match protocol_type.lower():
                     case "outline":
                         await async_outline_processor.setup_server_outline(new_server_db)
@@ -221,16 +217,16 @@ class DbProcessor:
 
     def add_server(self, server_data: dict, protocol_type: str):
         """
-            Добавляет информацию о сервере в базу данных.
-            :param server_data: Словарь с данными сервера, полученными от API.
-                Ожидаются следующие поля:
-                    - "id": идентификатор сервера;
-                    - "ip": список IP-объектов, где берется первый IP (например, ip[0]["ip"]);
-                    - "password": пароль (обычно его нужно получать отдельно, здесь может быть пустой строкой);
-                    - "cnt_users": количество подключенных пользователей (обычно 0);
-                    - "protocol_type": тип протокола (например, "Outline").
-                Остальные поля можно задавать вручную или по умолчанию.
-            :return: Объект добавленного сервера или выбрасывается исключение.
+        Добавляет информацию о сервере в базу данных.
+        :param server_data: Словарь с данными сервера, полученными от API.
+            Ожидаются следующие поля:
+                - "id": идентификатор сервера;
+                - "ip": список IP-объектов, где берется первый IP (например, ip[0]["ip"]);
+                - "password": пароль (обычно его нужно получать отдельно, здесь может быть пустой строкой);
+                - "cnt_users": количество подключенных пользователей (обычно 0);
+                - "protocol_type": тип протокола (например, "Outline").
+            Остальные поля можно задавать вручную или по умолчанию.
+        :return: Объект добавленного сервера или выбрасывается исключение.
         """
         session = self.get_session()
         try:
@@ -240,11 +236,17 @@ class DbProcessor:
                 primary_ip = ip_list[0].get("ip")
             new_server = DbProcessor.Server(
                 ip=primary_ip,
-                password=server_data.get("password", ""),  # Пароль, если доступен (иначе пустая строка)
+                password=server_data.get(
+                    "password", ""
+                ),  # Пароль, если доступен (иначе пустая строка)
                 api_url="https://userapi.vdsina.ru",  # URL можно задать статически
-                cert_sha256=server_data.get("cert_sha256", ""),  # Это поле не возвращается API, задаем по умолчанию
-                cnt_users=server_data.get("cnt_users", 0),  # Обычно сервер создается с 0 пользователями
-                protocol_type=server_data.get("protocol_type", "Outline")
+                cert_sha256=server_data.get(
+                    "cert_sha256", ""
+                ),  # Это поле не возвращается API, задаем по умолчанию
+                cnt_users=server_data.get(
+                    "cnt_users", 0
+                ),  # Обычно сервер создается с 0 пользователями
+                protocol_type=server_data.get("protocol_type", "Outline"),
             )
             session.add(new_server)
             session.commit()
@@ -257,7 +259,6 @@ class DbProcessor:
             logger.error(f"Ошибка при добавлении сервера: {e}")
         finally:
             session.close()
-
 
     def get_server_id_by_key_id(self, key_id):
         session = self.get_session()

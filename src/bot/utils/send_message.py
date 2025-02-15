@@ -1,7 +1,9 @@
-from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from outline_vpn.outline_vpn import OutlineKey
+from bot.initialization.bot_init import dp
+from aiogram.fsm.storage.base import StorageKey
 
+from bot.fsm.states import SubscriptionExtension
 from src.bot.lexicon.lexicon import Notification
 from src.bot.utils.string_makers import get_your_key_string
 from src.logger.logging_config import setup_logger
@@ -37,20 +39,19 @@ async def send_key_to_user_with_back_button(message: Message, key_info, text: st
     )
 
 
-async def send_message_subscription_expired(user, keys):
-    # Клавиатура для продления подписки
+async def send_message_subscription_expired(user_tg_id, keys):
     await bot.send_message(
-        user.user_telegram_id,
+        user_tg_id,
         Notification.SUBSCRIPTION_EXPIRING.value,
         parse_mode="HTML",
         reply_markup=get_key_name_extension_keyboard_with_names(keys),
     )
 
 
-async def send_message_subscription_ends(user):
-    await bot.send_message(
-        user.user_telegram_id,
-        Notification.SUBSCRIPTION_REMINDER.value,
-        parse_mode="HTML",
-        reply_markup=get_extension_keyboard(),
-    )
+# async def send_message_subscription_ends(user):
+#     await bot.send_message(
+#         user.user_telegram_id,
+#         Notification.SUBSCRIPTION_REMINDER.value,
+#         parse_mode="HTML",
+#         reply_markup=get_extension_keyboard(),
+#     )
