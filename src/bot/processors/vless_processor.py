@@ -3,55 +3,34 @@ from coolname import generate_slug
 import json
 import requests
 import uuid
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import asyncssh
+import os
 
 from bot.processors.base_processor import BaseProcessor
 from bot.processors.structs import VlessKey
+from dotenv import load_dotenv
 
 from logger.logging_config import setup_logger
 
 logger = setup_logger()
 
-# Константы (при необходимости отредактируйте)
+load_dotenv()
+
 NAME_VPN_CONFIG = "MyNewInbound"
+
 
 
 class VlessProcessor(BaseProcessor):
     def __init__(self, ip, password):
-        # self.ip = ip
-        # # Порт сабскрипции может быть другим (2096). Если нужно, скорректируйте:
-        # self.sub_port = 2096
-        #
-        # # Порт панели 3x-ui (или вашей панели)
-        # self.port_panel = 2053
-        #
-        # self.host = f"http://{self.ip}:{self.port_panel}/mypanel"
-        #
-        # # Пользователь admin (или root), пароль из примера
-        # self.data = {"username": "admin", "password": password}
-        #
-        # self.ses = requests.Session()
-        #
-        # # Отключаем проверку сертификата (не рекомендуется для боевого окружения)
-        # self.ses.verify = False
-        #
-        # # Подключаемся к панели
-        # self.con = self._connect()
-        #
-        # # Если подключились, проверяем, есть ли уже нужный inbound;
-        # # Если нет - пытаемся добавить.
-        # if self.con:
-        #     if not self._check_connect():
-        #         self._add_new_connect()
-        # else:
-        #     logger.warning(
-        #         f"🛑Подключение к панели 3x-ui {self.ip} не произошло (авторизация неуспешна)."
-        #     )
         self.ip = None
         self.sub_port = None
         self.port_panel = None
         self.host = None
         self.data = None
         self.ses = None
+        self.ses.verify = False
         self.con = None
         self.server_id = None
 
@@ -68,8 +47,8 @@ class VlessProcessor(BaseProcessor):
                 server = db_processor.get_server_by_id(server_id)
                 self.ip = server.ip
                 self.sub_port = 2096
-                self.port_panel = 2053
-                self.host = f"http://{self.ip}:{self.port_panel}/mypanel"
+                self.port_panel = 2052
+                self.host = f"https://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
                 self.ses = requests.Session()
                 self.ses.verify = False
@@ -85,8 +64,8 @@ class VlessProcessor(BaseProcessor):
 
         self.ip = server.ip
         self.sub_port = 2096
-        self.port_panel = 2053
-        self.host = f"http://{self.ip}:{self.port_panel}/mypanel"
+        self.port_panel = 2052
+        self.host = f"https://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
@@ -300,7 +279,7 @@ class VlessProcessor(BaseProcessor):
             # Формируем ссылку
 
             if isIOS:
-                prev_text = f"http://{self.ip}/v?c=streisand://import/"
+                prev_text = f"https://{self.ip}/v?c=streisand://import/"
                 bottom_text = f"&name={key_id}"
             else:
                 prev_text = ""
@@ -318,7 +297,7 @@ class VlessProcessor(BaseProcessor):
             return False
 
     async def create_vpn_key(
-        self, expire_time=0, sni="www.google.com", port=46408
+        self, expire_time=0, sni="dl.google.com", port=46408
     ) -> tuple[VlessKey, int]:
         await self.create_server_session()
         if not self.con:
@@ -370,7 +349,7 @@ class VlessProcessor(BaseProcessor):
         reality = stream_settings.get("realitySettings", {})
         sett = reality.get("settings", {})
         public_key = sett.get("publicKey", "")
-        sni = "www.google.com"
+        sni = "dl.google.com"
         flow = stream_settings.get("flow", "xtls-rprx-vision")
         # Формируем ссылку
 
@@ -611,3 +590,123 @@ class VlessProcessor(BaseProcessor):
         except ValueError as e:
             logger.error(f"Ошибка при декодировании JSON-ответа: {e}")
             return None
+
+    async def setup_server_vless(self, server):
+        """Автоматическая установка 3X-UI с вводом данных"""
+
+        # Команды для остановки Docker-сервисов
+        stop_docker_cmds = [
+            "sudo systemctl stop docker",
+            "sudo systemctl stop docker.socket",
+            "sudo systemctl stop containerd",
+            "sudo systemctl stop containerd.socket",
+            "sudo killall -9 dockerd containerd",
+            "sudo apt remove --purge -y docker docker.io containerd runc",
+            "sudo umount /var/run/docker/netns/default || true",
+            "sudo rm -rf /var/lib/docker /etc/docker /var/run/docker*"
+        ]
+
+        # Команды для удаления старого Docker (включая удаление файла репозитория)
+        remove_docker_cmds = [
+            "sudo apt update",
+            "sudo apt install -y ca-certificates curl gnupg lsb-release",
+            "sudo install -m 0755 -d /etc/apt/keyrings",
+            "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null",
+            "sudo chmod a+r /etc/apt/keyrings/docker.asc",
+            # Удаляем старый файл репозитория (если существует)
+            "sudo rm -f /etc/apt/sources.list.d/docker.list",
+            "apt remove --purge -y docker docker-engine docker.io containerd runc",
+            "rm -rf /var/lib/docker /etc/docker /var/run/docker*"
+        ]
+
+        # Команды для установки Docker и Docker Compose
+        install_docker_cmds = [
+            "sudo apt update",
+            "apt install -y apt-transport-https ca-certificates curl software-properties-common",
+            # Добавляем ключ и репозиторий Docker для Ubuntu 22.04 (jammy)
+            'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null',
+            "sudo chmod a+r /etc/apt/keyrings/docker.asc",
+            # Удаляем старый репозиторий, если он есть, и создаём новый
+            "sudo rm -f /etc/apt/sources.list.d/docker.list",
+            "echo 'deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable' | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+            "sudo apt update",
+            "apt install -y docker-ce docker-ce-cli containerd.io",
+            'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose',
+            "sudo chmod +x /usr/local/bin/docker-compose"
+        ]
+
+        # Команда для скачивания setup.sh
+        setup_script = (
+            "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
+        )
+        vless_password = os.getenv("VLESS_PASSWORD")
+        vless_email = os.getenv("VLESS_EMAIL")
+        vless_bot_token = os.getenv("VLESS_BOT_TOKEN")
+        # Данные для автоматического ввода в setup.sh (каждая строка — ответ на соответствующий вопрос)
+        setup_answers = "\n".join([
+            "admin",  # Логин
+            vless_password,  # Пароль
+            "2052",  # Порт 3X-UI
+            server.ip,  # IP/домен
+            vless_email,  # Email
+            vless_bot_token,  # Telegram Bot Token
+            "lisa_helper",  # Telegram admin profile
+            "y",  # Автоматическое подтверждение перезаписи конфига
+        ]) + "\n"
+
+        try:
+            async with asyncssh.connect(
+                    host=server.ip,
+                    username="root",
+                    password=server.password,
+                    known_hosts=None,
+            ) as conn:
+                logger.info(f"🔗 Подключение к серверу {server['ip']} установлено!")
+
+                # Остановка и удаление старого Docker
+                logger.info("🛑 Останавливаем старый Docker...")
+                for cmd in stop_docker_cmds:
+                    logger.info(f"➡ Выполняем: {cmd}")
+                    result = await conn.run(cmd, check=False)
+                    if result.exit_status != 0:
+                        logger.warning(f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}")
+
+                logger.info("🗑️ Удаляем старый Docker (очистка)...")
+                for cmd in remove_docker_cmds:
+                    logger.info(f"➡ Выполняем: {cmd}")
+                    result = await conn.run(cmd, check=False)
+                    if result.exit_status != 0:
+                        logger.warning(f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}")
+                    else:
+                        logger.info(result.stdout)
+
+                # Установка нового Docker
+                logger.info("⬇ Устанавливаем Docker и Docker Compose...")
+                for cmd in install_docker_cmds:
+                    logger.info(f"➡ Выполняем: {cmd}")
+                    result = await conn.run(cmd, check=False)
+                    if result.exit_status != 0:
+                        raise Exception(f"Ошибка при установке Docker: {cmd}\n{result.stderr.strip()}")
+                    logger.info(result.stdout)
+
+                # Скачивание setup.sh
+                logger.info("📥 Загружаем setup.sh...")
+                result = await conn.run(setup_script)
+                if result.exit_status != 0:
+                    raise Exception(f"Ошибка при загрузке setup.sh: {result.stderr.strip()}")
+                logger.info(result.stdout)
+
+                # Запуск setup.sh с автоматическим вводом ответов
+                logger.info("⚙️ Запускаем setup.sh с автоматическим вводом данных...")
+                result = await conn.run('bash -c "./setup.sh"', input=setup_answers)
+                if result.exit_status != 0:
+                    raise Exception(f"Ошибка при установке 3X-UI: {result.stderr.strip()}")
+                logger.info(result.stdout)
+
+                logger.success(f"🎉 3X-UI успешно установлена! Теперь панель доступна на {server['ip']}:2052")
+
+        except Exception as e:
+            logger.error(f"❌ Ошибка при настройке сервера {server['ip']}: {e}")
+            return False
+
+        return True

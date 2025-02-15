@@ -185,7 +185,7 @@ class DbProcessor:
                     case "outline":
                         template_id = 31
                     case "vless":
-                        template_id = 22
+                        template_id = 31
                 new_server = await vdsina_processor.create_new_server(
                     datacenter_id=1,
                     server_plan_id=1,
@@ -203,7 +203,10 @@ class DbProcessor:
                 match protocol_type.lower():
                     case "outline":
                         await async_outline_processor.setup_server_outline(new_server_db)
+                    case "vless":
+                        await vless_processor.setup_server_vless(new_server_db)
 
+                server = new_server_db
 
             server.cnt_users += 1
             session.commit()
