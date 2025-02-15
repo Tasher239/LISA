@@ -4,8 +4,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery
 
-from bot.fsm.states import MainMenu, GetKey, ManageKeys
+from bot.fsm.states import MainMenu, GetKey, ManageKeys, SubscriptionExtension
 from bot.initialization.bot_init import bot
+from bot.initialization.db_processor_init import db_processor
 from bot.keyboards.keyboards import (
     get_about_us_keyboard,
     get_back_button,
@@ -13,8 +14,10 @@ from bot.keyboards.keyboards import (
     get_choice_vpn_type_keyboard,
     get_device_vless_keyboard,
     get_device_outline_keyboard,
+    get_key_name_extension_keyboard_with_names,
 )
 from bot.lexicon.lexicon import INFO
+from bot.utils.send_message import send_message_subscription_expired
 from bot.utils.string_makers import get_instruction_string
 from logger.logging_config import setup_logger
 
@@ -132,3 +135,24 @@ async def show_about_us(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "none")
 async def foo(callback: CallbackQuery):
     await callback.answer()
+
+
+@router.callback_query(F.data == "another_expired_keys")
+@router.callback_query(
+    StateFilter(SubscriptionExtension.choose_extension_period),
+    F.data == "back_to_expired_keys",
+)
+async def send_expired_keys(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(SubscriptionExtension.choose_key_for_extension)
+    user_tg_id = callback.from_user.id
+    expired_keys = await db_processor.get_expired_keys_by_user_id(user_tg_id)
+    if expired_keys:
+        await callback.message.edit_text(
+            text="Ваши просроченные ключи:",
+            reply_markup=get_key_name_extension_keyboard_with_names(expired_keys),
+        )
+    else:
+        await callback.message.edit_text(
+            text=f"Все ключи будут действовать еще минимум 3 дня!\nВы можете продлить ключ, выбрав его в менеджере ключей",
+            reply_markup=get_back_button(),
+        )

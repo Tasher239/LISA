@@ -1,4 +1,6 @@
 import os
+from time import process_time_ns
+
 from dotenv import load_dotenv
 
 from aiogram import F, Router
@@ -6,8 +8,12 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, LabeledPrice
 
-from bot.fsm.states import GetKey, ManageKeys
-from bot.keyboards.keyboards import get_extension_periods_keyboard, get_period_keyboard
+from bot.fsm.states import GetKey, ManageKeys, SubscriptionExtension
+from bot.keyboards.keyboards import (
+    get_extension_periods_keyboard,
+    get_period_keyboard,
+    get_notification_extension_periods_keyboard,
+)
 from bot.initialization.bot_init import bot
 
 from logger.logging_config import setup_logger
@@ -56,32 +62,60 @@ async def back_buy_key_menu(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("extend_"))
-@router.callback_query(F.data == "back_to_choice_extension_period")
+@router.callback_query(
+    F.data.in_(
+        [
+            "back_to_choice_extension_period",
+            "back_to_choice_extension_period_for_expired_key",
+        ]
+    )
+)
 async def extension_period_key_menu(callback: CallbackQuery, state: FSMContext):
-    data = await state.get_data()
-    selected_key_id = data.get("selected_key_id", None)
-    if not selected_key_id:
+    if callback.data.startswith("extend_"):
         await state.update_data(selected_key_id=callback.data.split("_")[1])
+        await callback.message.edit_text(
+            "Выберите период продления:",
+            reply_markup=get_notification_extension_periods_keyboard(),
+        )
+        await state.set_state(SubscriptionExtension.choose_extension_period)
+    else:
+        data = await state.get_data()
+        selected_key_id = data.get("selected_key_id", None)
+        if not selected_key_id:
+            await state.update_data(selected_key_id=callback.data.split("_")[1])
+        current_state = await state.get_state()
+        match current_state:
+            case GetKey.waiting_for_extension_payment:
+                await callback.message.delete()
 
-    current_state = await state.get_state()
-    match current_state:
-        case GetKey.waiting_for_extension_payment:
-            await callback.message.delete()
+                data = await state.get_data()
+                payment_message_id = data.get("payment_message_id")
 
-            data = await state.get_data()
-            payment_message_id = data.get("payment_message_id")
+                await bot.edit_message_text(
+                    text="Выберите период продления:",
+                    chat_id=callback.message.chat.id,
+                    message_id=payment_message_id,
+                    reply_markup=get_extension_periods_keyboard(),
+                )
+                await state.set_state(GetKey.choice_extension_period)
 
-            await bot.edit_message_text(
-                text="Выберите период продления:",
-                chat_id=callback.message.chat.id,
-                message_id=payment_message_id,
-                reply_markup=get_extension_periods_keyboard(),
-            )
+            case ManageKeys.choose_key_action:
+                await callback.message.edit_text(
+                    "Выберите период продления:",
+                    reply_markup=get_extension_periods_keyboard(),
+                )
+                await state.set_state(GetKey.choice_extension_period)
 
-        case ManageKeys.choose_key_action:
-            await callback.message.edit_text(
-                "Выберите период продления:",
-                reply_markup=get_extension_periods_keyboard(),
-            )
+            case SubscriptionExtension.waiting_for_extension_payment:
+                await callback.message.delete()
 
-    await state.set_state(GetKey.choice_extension_period)
+                data = await state.get_data()
+                payment_message_id = data.get("payment_message_id")
+
+                await bot.edit_message_text(
+                    text="Выберите период продления:",
+                    chat_id=callback.message.chat.id,
+                    message_id=payment_message_id,
+                    reply_markup=get_notification_extension_periods_keyboard(),
+                )
+                await state.set_state(SubscriptionExtension.choose_extension_period)
