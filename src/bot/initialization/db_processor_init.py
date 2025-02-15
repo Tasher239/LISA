@@ -13,14 +13,12 @@ with db_processor.get_session() as session:
     if session.query(DbProcessor.Server).count() == 0:
         servers = [
             DbProcessor.Server(
-                id=1,
                 api_url=os.getenv("API_URL"),
                 cert_sha256=os.getenv("CERT_SHA"),
                 cnt_users=161,
                 protocol_type="Outline",
             ),
             DbProcessor.Server(
-                id=2,
                 ip=os.getenv("VLESS_IP"),
                 password=os.getenv("VLESS_PASSWORD"),
                 cnt_users=0,
