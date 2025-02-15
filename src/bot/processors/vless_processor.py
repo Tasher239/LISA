@@ -4,6 +4,7 @@ import json
 import requests
 import uuid
 import urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import asyncssh
 import os
@@ -21,7 +22,6 @@ load_dotenv()
 NAME_VPN_CONFIG = "MyNewInbound"
 
 
-
 class VlessProcessor(BaseProcessor):
     def __init__(self, ip, password):
         self.ip = None
@@ -30,7 +30,6 @@ class VlessProcessor(BaseProcessor):
         self.host = None
         self.data = None
         self.ses = None
-        self.ses.verify = False
         self.con = None
         self.server_id = None
 
@@ -64,8 +63,8 @@ class VlessProcessor(BaseProcessor):
 
         self.ip = server.ip
         self.sub_port = 2096
-        self.port_panel = 2052
-        self.host = f"https://{self.ip}:{self.port_panel}"
+        self.port_panel = 2053
+        self.host = f"http://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
@@ -603,7 +602,7 @@ class VlessProcessor(BaseProcessor):
             "sudo killall -9 dockerd containerd",
             "sudo apt remove --purge -y docker docker.io containerd runc",
             "sudo umount /var/run/docker/netns/default || true",
-            "sudo rm -rf /var/lib/docker /etc/docker /var/run/docker*"
+            "sudo rm -rf /var/lib/docker /etc/docker /var/run/docker*",
         ]
 
         # Команды для удаления старого Docker (включая удаление файла репозитория)
@@ -616,7 +615,7 @@ class VlessProcessor(BaseProcessor):
             # Удаляем старый файл репозитория (если существует)
             "sudo rm -f /etc/apt/sources.list.d/docker.list",
             "apt remove --purge -y docker docker-engine docker.io containerd runc",
-            "rm -rf /var/lib/docker /etc/docker /var/run/docker*"
+            "rm -rf /var/lib/docker /etc/docker /var/run/docker*",
         ]
 
         # Команды для установки Docker и Docker Compose
@@ -624,7 +623,7 @@ class VlessProcessor(BaseProcessor):
             "sudo apt update",
             "apt install -y apt-transport-https ca-certificates curl software-properties-common",
             # Добавляем ключ и репозиторий Docker для Ubuntu 22.04 (jammy)
-            'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null',
+            "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
             # Удаляем старый репозиторий, если он есть, и создаём новый
             "sudo rm -f /etc/apt/sources.list.d/docker.list",
@@ -632,34 +631,37 @@ class VlessProcessor(BaseProcessor):
             "sudo apt update",
             "apt install -y docker-ce docker-ce-cli containerd.io",
             'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose',
-            "sudo chmod +x /usr/local/bin/docker-compose"
+            "sudo chmod +x /usr/local/bin/docker-compose",
         ]
 
         # Команда для скачивания setup.sh
-        setup_script = (
-            "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
-        )
+        setup_script = "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
         vless_password = os.getenv("VLESS_PASSWORD")
         vless_email = os.getenv("VLESS_EMAIL")
         vless_bot_token = os.getenv("VLESS_BOT_TOKEN")
         # Данные для автоматического ввода в setup.sh (каждая строка — ответ на соответствующий вопрос)
-        setup_answers = "\n".join([
-            "admin",  # Логин
-            vless_password,  # Пароль
-            "2052",  # Порт 3X-UI
-            server.ip,  # IP/домен
-            vless_email,  # Email
-            vless_bot_token,  # Telegram Bot Token
-            "lisa_helper",  # Telegram admin profile
-            "y",  # Автоматическое подтверждение перезаписи конфига
-        ]) + "\n"
+        setup_answers = (
+            "\n".join(
+                [
+                    "admin",  # Логин
+                    vless_password,  # Пароль
+                    "2052",  # Порт 3X-UI
+                    server.ip,  # IP/домен
+                    vless_email,  # Email
+                    vless_bot_token,  # Telegram Bot Token
+                    "lisa_helper",  # Telegram admin profile
+                    "y",  # Автоматическое подтверждение перезаписи конфига
+                ]
+            )
+            + "\n"
+        )
 
         try:
             async with asyncssh.connect(
-                    host=server.ip,
-                    username="root",
-                    password=server.password,
-                    known_hosts=None,
+                host=server.ip,
+                username="root",
+                password=server.password,
+                known_hosts=None,
             ) as conn:
                 logger.info(f"🔗 Подключение к серверу {server['ip']} установлено!")
 
@@ -669,14 +671,18 @@ class VlessProcessor(BaseProcessor):
                     logger.info(f"➡ Выполняем: {cmd}")
                     result = await conn.run(cmd, check=False)
                     if result.exit_status != 0:
-                        logger.warning(f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}")
+                        logger.warning(
+                            f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}"
+                        )
 
                 logger.info("🗑️ Удаляем старый Docker (очистка)...")
                 for cmd in remove_docker_cmds:
                     logger.info(f"➡ Выполняем: {cmd}")
                     result = await conn.run(cmd, check=False)
                     if result.exit_status != 0:
-                        logger.warning(f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}")
+                        logger.warning(
+                            f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}"
+                        )
                     else:
                         logger.info(result.stdout)
 
@@ -686,27 +692,73 @@ class VlessProcessor(BaseProcessor):
                     logger.info(f"➡ Выполняем: {cmd}")
                     result = await conn.run(cmd, check=False)
                     if result.exit_status != 0:
-                        raise Exception(f"Ошибка при установке Docker: {cmd}\n{result.stderr.strip()}")
+                        raise Exception(
+                            f"Ошибка при установке Docker: {cmd}\n{result.stderr.strip()}"
+                        )
                     logger.info(result.stdout)
 
                 # Скачивание setup.sh
                 logger.info("📥 Загружаем setup.sh...")
                 result = await conn.run(setup_script)
                 if result.exit_status != 0:
-                    raise Exception(f"Ошибка при загрузке setup.sh: {result.stderr.strip()}")
+                    raise Exception(
+                        f"Ошибка при загрузке setup.sh: {result.stderr.strip()}"
+                    )
                 logger.info(result.stdout)
 
                 # Запуск setup.sh с автоматическим вводом ответов
                 logger.info("⚙️ Запускаем setup.sh с автоматическим вводом данных...")
                 result = await conn.run('bash -c "./setup.sh"', input=setup_answers)
                 if result.exit_status != 0:
-                    raise Exception(f"Ошибка при установке 3X-UI: {result.stderr.strip()}")
+                    raise Exception(
+                        f"Ошибка при установке 3X-UI: {result.stderr.strip()}"
+                    )
                 logger.info(result.stdout)
 
-                logger.success(f"🎉 3X-UI успешно установлена! Теперь панель доступна на {server['ip']}:2052")
+                logger.success(
+                    f"🎉 3X-UI успешно установлена! Теперь панель доступна на {server['ip']}:2052"
+                )
 
         except Exception as e:
             logger.error(f"❌ Ошибка при настройке сервера {server['ip']}: {e}")
             return False
 
         return True
+
+    def get_server_info(self, server) -> dict:
+        """
+        Получение информации о сервере
+        Возвращает данные в виде:
+        {
+            "name": "My Server",
+            "serverId": "7fda0079-5317-4e5a-bb41-5a431dddae21",
+            "metricsEnabled": true,
+            "createdTimestampMs": 1536613192052,
+            "version": "1.0.0",
+            "accessKeyDataLimit": {"bytes": 8589934592},
+            "portForNewAccessKeys": 1234,
+            "hostnameForAccessKeys": "example.com"
+        }
+        """
+        # Инициализация соединения с сервером панели
+        self.ip = server.ip
+        self.port_panel = 2052
+        self.host = f"https://{self.ip}:{self.port_panel}"
+        self.data = {"username": "admin", "password": server.password}
+        self.ses = requests.Session()
+        self.ses.verify = False
+
+        if not self._connect():
+            raise Exception("Не удалось подключиться к панели сервера")
+
+        try:
+            # Предполагается, что сервер предоставляет информацию по данному эндпоинту
+            response = self.ses.post(f"{self.host}/server/info", data=self.data).json()
+            if response.get("success"):
+                return response.get("obj", {})
+            else:
+                raise Exception(
+                    response.get("msg", "Ошибка получения информации о сервере")
+                )
+        except requests.RequestException as e:
+            raise Exception(f"Ошибка сети: {e}")

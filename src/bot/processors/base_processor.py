@@ -25,3 +25,7 @@ class BaseProcessor(ABC):
     @abstractmethod
     def get_key_info(self, key_id: str, server_id: int = None) -> OutlineKey | VlessKey:
         pass
+
+    @abstractmethod
+    def get_server_info(self, server) -> dict:
+        pass

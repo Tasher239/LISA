@@ -14,7 +14,7 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
-from bot.fsm.states import GetKey, SubscriptionExtension
+from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess
 from bot.initialization.bot_init import bot
 from bot.initialization.db_processor_init import db_processor
 from bot.initialization.async_outline_processor_init import async_outline_processor

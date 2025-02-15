@@ -36,3 +36,9 @@ class SubscriptionExtension(StatesGroup):
     choose_extension_period = State()
     choose_key_for_extension = State()
     waiting_for_extension_payment = State()
+
+
+class AdminAccess(StatesGroup):
+    wait_password_enter = State()
+    correct_password = State()
+    admin_choosing_vpn_protocol_type = State()

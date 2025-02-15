@@ -114,10 +114,11 @@ async def back_button(callback: CallbackQuery, state: FSMContext):
         await state.set_state(MainMenu.waiting_for_action)
         await callback.answer()
     else:
-        await callback.message.edit_text(
+        prompt = await callback.message.edit_text(
             "Вы вернулись в главное меню. Выберите, что вы хотите сделать",
             reply_markup=get_main_menu_keyboard(),
         )
+        await state.update_data(prompt_msg_id=prompt.message_id)
         await state.set_state(MainMenu.waiting_for_action)
         await callback.answer()
 

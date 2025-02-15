@@ -198,7 +198,9 @@ class DbProcessor:
                 new_server_db = self.add_server(new_server, protocol_type)
                 match protocol_type.lower():
                     case "outline":
-                        await async_outline_processor.setup_server_outline(new_server_db)
+                        await async_outline_processor.setup_server_outline(
+                            new_server_db
+                        )
                     case "vless":
                         await vless_processor.setup_server_vless(new_server_db)
 

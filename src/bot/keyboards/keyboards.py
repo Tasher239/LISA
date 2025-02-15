@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.fsm.context import FSMContext
 
 from bot.lexicon.lexicon import get_day_by_number
-from bot.fsm.states import GetKey, SubscriptionExtension
+from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess
 
 
 def get_main_menu_keyboard():
@@ -25,14 +25,24 @@ def get_main_menu_keyboard():
     )
 
 
-def get_choice_vpn_type_keyboard():
+def get_choice_vpn_type_keyboard(state: FSMContext = None):
+    print("HERERERRERE")
+    print(state)
+    if state == AdminAccess.admin_choosing_vpn_protocol_type:
+        back_button = InlineKeyboardButton(
+            text="🔙 Назад", callback_data="back_to_admin_panel"
+        )
+    else:
+        back_button = InlineKeyboardButton(
+            text="🔙 Назад", callback_data="back_to_main_menu"
+        )
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
                 InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
             ],
-            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")],
+            [back_button],
         ]
     )
 
@@ -469,3 +479,28 @@ def get_after_payment_expired_key_keyboard():
             ]
         ]
     )
+
+
+def get_admin_keyboard():
+    get_key = InlineKeyboardButton(
+        text="🆕 Получить ключ", callback_data="admin_choice_vpn_type"
+    )
+
+    servers_info = InlineKeyboardButton(
+        text="📊 Информация о серверах", callback_data="get_servers_info"
+    )
+
+    back_to_main_menu = InlineKeyboardButton(
+        text="🔙 В меню", callback_data="back_to_main_menu"
+    )
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[[get_key], [servers_info], [back_to_main_menu]]
+    )
+
+
+def get_back_admin_panel_keyboard():
+    back_button = InlineKeyboardButton(
+        text="🔙 Назад", callback_data="back_to_admin_panel"
+    )
+    return InlineKeyboardMarkup(inline_keyboard=[[back_button]])
