@@ -1,7 +1,5 @@
-import json
-import time
-
 import requests
+import json
 import uuid
 
 from logger.logging_config import setup_logger

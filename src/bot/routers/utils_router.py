@@ -1,12 +1,14 @@
-from aiogram import F, Router
-from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery
+from aiogram.filters import StateFilter
+from aiogram import F, Router
 
 from bot.fsm.states import MainMenu, GetKey, ManageKeys, SubscriptionExtension
-from bot.initialization.bot_init import bot
+from bot.utils.string_makers import get_instruction_string
 from bot.initialization.db_processor_init import db_processor
+from bot.initialization.bot_init import bot
+from bot.lexicon.lexicon import INFO
 from bot.keyboards.keyboards import (
     get_about_us_keyboard,
     get_back_button,
@@ -16,9 +18,7 @@ from bot.keyboards.keyboards import (
     get_device_outline_keyboard,
     get_key_name_extension_keyboard_with_names,
 )
-from bot.lexicon.lexicon import INFO
-from bot.utils.send_message import send_message_subscription_expired
-from bot.utils.string_makers import get_instruction_string
+
 from logger.logging_config import setup_logger
 
 router = Router()
