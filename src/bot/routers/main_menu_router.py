@@ -1,7 +1,7 @@
-from aiogram import F, Router
-from aiogram.filters import CommandStart, StateFilter
+from aiogram import Router
+from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import Message
 
 from bot.fsm.states import MainMenu
 from bot.keyboards.keyboards import get_main_menu_keyboard

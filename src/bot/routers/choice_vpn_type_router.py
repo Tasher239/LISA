@@ -1,12 +1,11 @@
-import os
-
-from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, LabeledPrice
+from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
+from aiogram import F, Router
 
-from bot.fsm.states import GetKey, ManageKeys, AdminAccess
 from bot.keyboards.keyboards import get_choice_vpn_type_keyboard
+from bot.fsm.states import GetKey, ManageKeys, AdminAccess
+
 from logger.logging_config import setup_logger
 
 router = Router()

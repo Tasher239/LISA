@@ -29,3 +29,6 @@ logger/bot.log
 
 # Log-file
 *.log
+
+# Ignore system files
+.DS_Store

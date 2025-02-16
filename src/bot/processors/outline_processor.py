@@ -1,14 +1,10 @@
 from outline_vpn.outline_vpn import OutlineKey
-from coolname import generate_slug
-
-# from bot.initialization.db_processor_init import db_processor
 from outline_vpn.outline_vpn import OutlineVPN
+from coolname import generate_slug
 
 from bot.processors.base_processor import BaseProcessor
 
 from logger.logging_config import setup_logger
-import asyncssh
-import asyncio
 
 logger = setup_logger()
 

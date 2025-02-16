@@ -1,17 +1,17 @@
-from dataclasses import dataclass
 from coolname import generate_slug
-import json
+from dotenv import load_dotenv
 import requests
-import uuid
+import asyncssh
 import urllib3
+import json
+import uuid
+import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import asyncssh
-import os
 
 from bot.processors.base_processor import BaseProcessor
 from bot.processors.structs import VlessKey
-from dotenv import load_dotenv
+
 
 from logger.logging_config import setup_logger
 
@@ -46,8 +46,8 @@ class VlessProcessor(BaseProcessor):
                 server = db_processor.get_server_by_id(server_id)
                 self.ip = server.ip
                 self.sub_port = 2096
-                self.port_panel = 2052
-                self.host = f"https://{self.ip}:{self.port_panel}"
+                self.port_panel = 2053
+                self.host = f"http://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
                 self.ses = requests.Session()
                 self.ses.verify = False
