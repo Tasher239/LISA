@@ -53,8 +53,6 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         case ManageKeys.no_active_keys:
             vpn_type = callback.data.split("_")[1]
 
-    await state.set_state(GetKey.get_trial_key)
-
     user_id = callback.from_user.id
     user_id_str = str(user_id)
     session = db_processor.get_session()
@@ -106,8 +104,10 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         text = f"Ваш пробный ключ «{key.name}» готов к использованию. Срок действия - 2 дня."
         await send_key_to_user(callback.message, key, text)
     else:
+        current_state = await state.get_state()
         await callback.message.edit_text(
             "Вы уже использовали пробный период. "
             "Вы можете купить ключ или вернуться в главное меню",
-            reply_markup=get_already_have_trial_key_keyboard(),
+            reply_markup=get_already_have_trial_key_keyboard(current_state),
         )
+    await state.set_state(GetKey.get_trial_key)

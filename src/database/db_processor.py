@@ -1,10 +1,11 @@
-import asyncio
-from collections import defaultdict
+from aiogram.fsm.storage.base import StorageKey
 from datetime import datetime, timedelta
-from tempfile import template
+from aiogram.fsm.context import FSMContext
+import asyncio
+import aiocron
 
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from sqlalchemy import func
-
 from sqlalchemy import (
     Boolean,
     Column,
@@ -14,11 +15,12 @@ from sqlalchemy import (
     create_engine,
     Integer,
 )
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.vless_processor_init import vless_processor
 from bot.initialization.vdsina_processor_init import vdsina_processor
+from bot.initialization.vless_processor_init import vless_processor
+from bot.fsm.states import SubscriptionExtension
+from bot.initialization.bot_init import dp, bot
 
 from bot.utils.send_message import send_message_subscription_expired
 
@@ -85,8 +87,10 @@ class DbProcessor:
                 session.commit()
 
             period_months = int(period.split()[0])
-            start_date = datetime.now()
-            expiration_date = start_date + timedelta(days=30 * period_months)
+            start_date = datetime.now().replace(minute=0, second=0, microsecond=0)
+            expiration_date = (start_date + timedelta(days=30 * period_months)).replace(
+                minute=0, second=0, microsecond=0
+            )
 
             new_key = DbProcessor.Key(
                 key_id=key.key_id,
@@ -119,7 +123,7 @@ class DbProcessor:
                 )
         return expired_keys
 
-    async def check_db(self, dp):
+    async def check_db(self):
         while True:
             session = self.get_session()
             try:
@@ -139,14 +143,25 @@ class DbProcessor:
                                 key.name,
                                 (key.expiration_date - datetime.now()).days + 1,
                             )
+                        # тухлый ключ лежит в бд 1 день - удаляем из бд
+                        # !!!! дописать вызов процессора соответствующего типа для удаления с сервера
+                        if key.expiration_date + timedelta(days=1) < datetime.now():
+                            match key.protocol_type.lower():
+                                case "outline":
+                                    await async_outline_processor.delete_key(
+                                        key.key_id, server_id=key.server_id
+                                    )
+                                case "vless":
+                                    await vless_processor.delete_key(
+                                        key.key_id, server_id=key.server_id
+                                    )
+                            session.delete(key)
+                            session.commit()
                         # ключ больше не работает
                         elif key.expiration_date < datetime.now():
                             # Устанавливаем состояние "extension"
                             expiring_keys[key.key_id] = (key.name, 0)
-                        # тухлый ключ лежит в бд 1 день - удаляем из бд
-                        elif datetime.now() > key.expiration_date + timedelta(days=1):
-                            session.delete(key)
-                            session.commit()
+
                     if expiring_keys:
                         await send_message_subscription_expired(
                             user.user_telegram_id, expiring_keys
@@ -157,6 +172,20 @@ class DbProcessor:
             await asyncio.sleep(
                 60 * 60 * 24
             )  # каждые 24 ч перенесена в конец чтобы 1 раз пробегаться при запуске бота
+
+    @aiocron.crontab("0 10,21 * * *")
+    async def scheduled_check_db(self):
+        session = self.get_session()
+        try:
+            users = session.query(DbProcessor.User).all()
+            for user in users:
+                print(f"Проверка пользователя: {user.user_telegram_id}")
+                # ... остальной код проверки ...
+        except Exception as e:
+            logger.error(f"Ошибка проверки базы данных: {e}")
+            raise
+        finally:
+            session.close()
 
     async def get_server_with_min_users(self, protocol_type: str):
         session = self.get_session()
