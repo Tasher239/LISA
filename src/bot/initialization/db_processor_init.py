@@ -15,7 +15,7 @@ with db_processor.get_session() as session:
             DbProcessor.Server(
                 api_url=os.getenv("API_URL"),
                 cert_sha256=os.getenv("CERT_SHA"),
-                cnt_users=161,
+                cnt_users=0,
                 protocol_type="Outline",
             ),
             DbProcessor.Server(

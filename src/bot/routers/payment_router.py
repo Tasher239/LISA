@@ -28,8 +28,6 @@ from bot.utils.extend_key_in_db import extend_key_in_db
 from bot.utils.send_message import send_key_to_user
 from bot.lexicon.lexicon import get_month_by_number
 
-from database.db_processor import DbProcessor
-
 from logger.log_sender import LogSender
 from logger.logging_config import setup_logger
 

@@ -115,7 +115,7 @@ class OutlineProcessor(BaseProcessor):
             logger.info(tmp_key)
 
             key_name = generate_slug(2).replace("-", " ")
-            data_limit = 200
+            data_limit = 200 * (10**9)
 
             await self.rename_key(tmp_key.key_id, key_name)
             await self.add_data_limit(tmp_key.key_id, data_limit)
@@ -144,7 +144,8 @@ class OutlineProcessor(BaseProcessor):
         )
         return client_data
 
-    async def delete_key(self, key_id: int) -> bool:
+    @create_server_session_by_id
+    async def delete_key(self, key_id: int, server_id=None) -> bool:
         """Delete a key"""
         async with self.session.delete(
             url=f"{self.api_url}/access-keys/{key_id}"

@@ -33,6 +33,7 @@ class ManageKeys(StatesGroup):
 
 
 class SubscriptionExtension(StatesGroup):
+    have_extension_key = State()
     choose_extension_period = State()
     choose_key_for_extension = State()
     waiting_for_extension_payment = State()

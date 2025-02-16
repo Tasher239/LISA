@@ -34,9 +34,7 @@ dp.include_router(admin_router.router)
 async def main() -> None:
     logger.info("Регистрация main menu команд...")
     logger.info("Запуск polling...")
-    asyncio.create_task(
-        db_processor.check_db(dp)
-    )  # Запуск фоновой проверки базы данных
+    asyncio.create_task(db_processor.check_db())  # Запуск фоновой проверки базы данных
     await dp.start_polling(bot)
 
 
