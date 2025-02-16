@@ -1,8 +1,7 @@
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 import os
 import json
-from datetime import datetime, timedelta
-
-from dotenv import load_dotenv
 
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery

@@ -1,20 +1,15 @@
-import os
-from time import process_time_ns
-
-from dotenv import load_dotenv
-
-from aiogram import F, Router
-from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, LabeledPrice
+from aiogram.types import CallbackQuery
+from aiogram.filters import StateFilter
+from aiogram import F, Router
 
 from bot.fsm.states import GetKey, ManageKeys, SubscriptionExtension
+from bot.initialization.bot_init import bot
 from bot.keyboards.keyboards import (
     get_extension_periods_keyboard,
     get_period_keyboard,
     get_notification_extension_periods_keyboard,
 )
-from bot.initialization.bot_init import bot
 
 from logger.logging_config import setup_logger
 

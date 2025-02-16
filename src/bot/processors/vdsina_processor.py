@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta
-
 import aiohttp
-import asyncio
-import ssl
 import certifi
+import ssl
 import os
+
 from dotenv import load_dotenv
+
 from logger.logging_config import setup_logger
 
 logger = setup_logger()

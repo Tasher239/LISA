@@ -2,7 +2,6 @@ import asyncio
 
 from bot.initialization.bot_init import dp
 from bot.initialization.bot_init import bot
-from bot.initialization.async_outline_processor_init import init_outline_processor
 from bot.initialization.db_processor_init import db_processor
 from bot.routers import (
     admin_router,
@@ -34,7 +33,6 @@ dp.include_router(admin_router.router)
 
 async def main() -> None:
     logger.info("Регистрация main menu команд...")
-    await init_outline_processor()
     logger.info("Запуск polling...")
     asyncio.create_task(
         db_processor.check_db(dp)
