@@ -5,13 +5,12 @@ from aiogram import F, Router
 
 from bot.initialization.db_processor_init import db_processor
 from database.db_processor import DbProcessor
-from bot.fsm.states import ManageKeys, MainMenu
+from bot.fsm.states import ManageKeys, MainMenu, GetKey
 
 from bot.keyboards.keyboards import (
     get_buttons_for_trial_period,
     get_key_name_choosing_keyboard,
 )
-
 
 from logger.logging_config import setup_logger
 
@@ -24,6 +23,8 @@ logger = setup_logger()
         ManageKeys.no_active_keys,
         MainMenu.waiting_for_action,
         ManageKeys.choose_key_action,
+        GetKey.get_trial_key,
+        GetKey.choosing_vpn_protocol_type,
     ),
     F.data == "key_management_pressed",
 )

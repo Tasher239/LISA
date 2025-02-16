@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.fsm.context import FSMContext
 
 from bot.lexicon.lexicon import get_day_by_number
-from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess
+from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess, ManageKeys
 
 
 def get_main_menu_keyboard():
@@ -26,16 +26,19 @@ def get_main_menu_keyboard():
 
 
 def get_choice_vpn_type_keyboard(state: FSMContext = None):
-    print("HERERERRERE")
-    print(state)
-    if state == AdminAccess.admin_choosing_vpn_protocol_type:
-        back_button = InlineKeyboardButton(
-            text="🔙 Назад", callback_data="back_to_admin_panel"
-        )
-    else:
-        back_button = InlineKeyboardButton(
-            text="🔙 Назад", callback_data="back_to_main_menu"
-        )
+    match state:
+        case AdminAccess.admin_choosing_vpn_protocol_type:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="back_to_admin_panel"
+            )
+        case ManageKeys.no_active_keys:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="key_management_pressed"
+            )
+        case _:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="back_to_main_menu"
+            )
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -322,7 +325,7 @@ def get_key_name_extension_keyboard_with_names(keys: dict):
         days = get_day_by_number(keys[key_id][1])
         button = InlineKeyboardButton(
             text=f"🔑 {keys[key_id][0]} ({keys[key_id][1]} {days})",
-            callback_data=f"extend_{key_id}",
+            callback_data=f"expired_extend_{key_id}",
         )
         keyboard_buttons.append([button])
 
@@ -384,13 +387,21 @@ def get_confirmation_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[[confirm_button], [cancel]])
 
 
-def get_already_have_trial_key_keyboard():
+def get_already_have_trial_key_keyboard(state: FSMContext):
+    match state:
+        case GetKey.buy_key:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="back_to_choice_period"
+            )
+        case ManageKeys.no_active_keys:
+            back_button = InlineKeyboardButton(
+                text="🔙 Назад", callback_data="key_management_pressed"
+            )
+
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(
-                    text="🔙 Назад", callback_data=f"back_to_choice_period"
-                ),
+                back_button,
                 InlineKeyboardButton(
                     text="В главное меню", callback_data="back_to_main_menu"
                 ),

@@ -101,7 +101,11 @@ async def send_connection_choose(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "back_to_main_menu")
 async def back_button(callback: CallbackQuery, state: FSMContext):
     cur_state = await state.get_state()
-    if cur_state in {GetKey.waiting_for_payment, GetKey.waiting_for_extension_payment}:
+    if cur_state in {
+        GetKey.waiting_for_payment,
+        GetKey.waiting_for_extension_payment,
+        SubscriptionExtension.waiting_for_extension_payment,
+    }:
         await callback.message.delete()
         data = await state.get_data()
         payment_message_id = data.get("payment_message_id")
@@ -149,7 +153,7 @@ async def send_expired_keys(callback: CallbackQuery, state: FSMContext):
     expired_keys = await db_processor.get_expired_keys_by_user_id(user_tg_id)
     if expired_keys:
         await callback.message.edit_text(
-            text="Ваши просроченные ключи:",
+            text="Ключи с истекающим сроком действия:",
             reply_markup=get_key_name_extension_keyboard_with_names(expired_keys),
         )
     else:

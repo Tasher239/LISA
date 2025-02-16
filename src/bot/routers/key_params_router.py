@@ -1,16 +1,17 @@
 from datetime import datetime, timedelta
 
-from aiogram import F, Router
-from aiogram.filters import StateFilter
-from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
+from aiogram.fsm.context import FSMContext
+from aiogram.filters import StateFilter
+from aiogram import F, Router
 
-from bot.utils.get_processor import get_processor
+from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.utils.send_message import send_key_to_user_with_back_button
+from bot.initialization.db_processor_init import db_processor
+from bot.utils.get_processor import get_processor
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import ManageKeys
-from bot.initialization.db_processor_init import db_processor, session
-from bot.initialization.async_outline_processor_init import async_outline_processor
+
 from bot.initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
     get_back_button_to_key_params,

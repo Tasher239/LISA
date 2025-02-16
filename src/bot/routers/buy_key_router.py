@@ -57,6 +57,7 @@ async def back_buy_key_menu(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("extend_"))
+@router.callback_query(F.data.startswith("expired_extend_"))
 @router.callback_query(
     F.data.in_(
         [
@@ -66,8 +67,8 @@ async def back_buy_key_menu(callback: CallbackQuery, state: FSMContext):
     )
 )
 async def extension_period_key_menu(callback: CallbackQuery, state: FSMContext):
-    if callback.data.startswith("extend_"):
-        await state.update_data(selected_key_id=callback.data.split("_")[1])
+    if callback.data.startswith("expired_extend_"):
+        await state.update_data(selected_key_id=callback.data.split("_")[2])
         await callback.message.edit_text(
             "Выберите период продления:",
             reply_markup=get_notification_extension_periods_keyboard(),

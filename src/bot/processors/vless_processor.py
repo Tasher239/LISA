@@ -514,30 +514,31 @@ class VlessProcessor(BaseProcessor):
     #         logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
     #         return False, str(e)
 
-    def delete_key(self, vpn_key):
+    @create_server_session_by_id
+    async def delete_key(self, key_id, server_id=None) -> bool:
         """
         Удаляет клиента с именем vpn_key у inbound ID=1.
         """
         if not self.con:
             return False, "Нет подключения к серверу"
 
-        logger.debug(f"Удаляем ключ {vpn_key} на сервере {self.ip}...")
+        logger.debug(f"Удаляем ключ c id{key_id} на сервере {self.ip}...")
 
         try:
             # /panel/inbound/<id>/delClient/<email>
             response = self.ses.post(
-                f"{self.host}/panel/inbound/1/delClient/{vpn_key}", data=self.data
+                f"{self.host}/panel/inbound/1/delClient/{key_id}", data=self.data
             ).json()
             if response.get("success"):
-                logger.debug(f"Удалили ключ {vpn_key}")
-                return True, "Успешно удалено"
+                logger.debug(f"Удалили ключ {key_id}")
+                return True
             else:
                 msg = response.get("msg", "Неизвестная ошибка")
-                logger.warning(f"🛑Ошибка при удалении ключа {vpn_key}: {msg}")
+                logger.warning(f"🛑Ошибка при удалении ключа {key_id}: {msg}")
                 return False, msg
         except requests.RequestException as e:
             logger.error(f"Ошибка сети при удалении ключа: {e}")
-            return False, str(e)
+            return False
 
     @create_server_session_by_id
     async def get_key_info(self, key_id: str, server_id: int = None) -> VlessKey:
