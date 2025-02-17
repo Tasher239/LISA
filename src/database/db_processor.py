@@ -19,8 +19,7 @@ from sqlalchemy import (
 from bot.initialization.async_outline_processor_init import async_outline_processor
 from bot.initialization.vdsina_processor_init import vdsina_processor
 from bot.initialization.vless_processor_init import vless_processor
-from bot.fsm.states import SubscriptionExtension
-from bot.initialization.bot_init import dp, bot
+from bot.utils.get_processor import get_processor
 
 from bot.utils.send_message import send_message_subscription_expired
 
@@ -66,7 +65,7 @@ class DbProcessor:
             session.close()
 
     def update_database_with_key(
-        self, user_id, key, period, server_id, protocol_type="Outline"
+            self, user_id, key, period, server_id, protocol_type="Outline"
     ):
         """Обновляет БД по новому созданному ключу для пользователя"""
         session = self.get_session()
@@ -126,6 +125,7 @@ class DbProcessor:
     async def check_db(self):
         while True:
             session = self.get_session()
+            now = datetime.now()
             try:
                 users = session.query(DbProcessor.User).all()
                 for user in users:
@@ -133,39 +133,22 @@ class DbProcessor:
                     expiring_keys = {}  # {key_id: (key_name, expiration_time)}
                     for key in user.keys:
                         # ключ будет действовать меньше 3х дней
-                        if (
-                            timedelta(days=0)
-                            < key.expiration_date - datetime.now()
-                            < timedelta(days=4)
-                        ):
+                        if timedelta(days=0) < key.expiration_date - now < timedelta(days=4):
                             key.remembering = True
-                            expiring_keys[key.key_id] = (
-                                key.name,
-                                (key.expiration_date - datetime.now()).days + 1,
-                            )
+                            expiring_keys[key.key_id] = (key.name, (key.expiration_date - now).days + 1)
                         # тухлый ключ лежит в бд 1 день - удаляем из бд
-                        # !!!! дописать вызов процессора соответствующего типа для удаления с сервера
                         if key.expiration_date + timedelta(days=1) < datetime.now():
-                            match key.protocol_type.lower():
-                                case "outline":
-                                    await async_outline_processor.delete_key(
-                                        key.key_id, server_id=key.server_id
-                                    )
-                                case "vless":
-                                    await vless_processor.delete_key(
-                                        key.key_id, server_id=key.server_id
-                                    )
+                            processor = await get_processor(key.protocol_type.lower())
+                            processor.delete_key(key.key_id, server_id=key.server_id)
                             session.delete(key)
                             session.commit()
                         # ключ больше не работает
-                        elif key.expiration_date < datetime.now():
+                        elif key.expiration_date < now:
                             # Устанавливаем состояние "extension"
                             expiring_keys[key.key_id] = (key.name, 0)
 
                     if expiring_keys:
-                        await send_message_subscription_expired(
-                            user.user_telegram_id, expiring_keys
-                        )
+                        await send_message_subscription_expired(user.user_telegram_id, expiring_keys)
             except Exception as e:
                 logger.error(f"Ошибка проверки базы данных: {e}")
                 raise
