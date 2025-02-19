@@ -123,52 +123,36 @@ class DbProcessor:
         return expired_keys
 
     async def check_db(self):
-        while True:
-            session = self.get_session()
-            now = datetime.now()
-            try:
-                users = session.query(DbProcessor.User).all()
-                for user in users:
-                    print(f"Проверка пользователя: {user.user_telegram_id}")
-                    expiring_keys = {}  # {key_id: (key_name, expiration_time)}
-                    for key in user.keys:
-                        # ключ будет действовать меньше 3х дней
-                        if timedelta(days=0) < key.expiration_date - now < timedelta(days=4):
-                            key.remembering = True
-                            expiring_keys[key.key_id] = (key.name, (key.expiration_date - now).days + 1)
-                        # тухлый ключ лежит в бд 1 день - удаляем из бд
-                        if key.expiration_date + timedelta(days=1) < datetime.now():
-                            processor = await get_processor(key.protocol_type.lower())
-                            processor.delete_key(key.key_id, server_id=key.server_id)
-                            session.delete(key)
-                            session.commit()
-                        # ключ больше не работает
-                        elif key.expiration_date < now:
-                            # Устанавливаем состояние "extension"
-                            expiring_keys[key.key_id] = (key.name, 0)
-
-                    if expiring_keys:
-                        await send_message_subscription_expired(user.user_telegram_id, expiring_keys)
-            except Exception as e:
-                logger.error(f"Ошибка проверки базы данных: {e}")
-                raise
-            await asyncio.sleep(
-                60 * 60 * 24
-            )  # каждые 24 ч перенесена в конец чтобы 1 раз пробегаться при запуске бота
-
-    @aiocron.crontab("0 10,21 * * *")
-    async def scheduled_check_db(self):
         session = self.get_session()
+        now = datetime.now()
         try:
             users = session.query(DbProcessor.User).all()
             for user in users:
                 print(f"Проверка пользователя: {user.user_telegram_id}")
-                # ... остальной код проверки ...
+                expiring_keys = {}  # {key_id: (key_name, expiration_time)}
+                for key in user.keys:
+                    # ключ будет действовать меньше 3х дней
+                    if timedelta(days=0) < key.expiration_date - now < timedelta(days=4):
+                        key.remembering = True
+                        expiring_keys[key.key_id] = (key.name, (key.expiration_date - now).days + 1)
+                    # тухлый ключ лежит в бд 1 день - удаляем из бд
+                    if key.expiration_date + timedelta(days=1) < now:
+                        processor = await get_processor(key.protocol_type.lower())
+                        server = session.query(DbProcessor.Server).filter_by(id=key.server_id).first()
+                        processor.delete_key(key.key_id, server_id=key.server_id)
+                        session.delete(key)
+                        server.cnt_users -= 1
+                        session.commit()
+                    # ключ больше не работает
+                    elif key.expiration_date < now:
+                        # Устанавливаем состояние "extension"
+                        expiring_keys[key.key_id] = (key.name, 0)
+
+                if expiring_keys:
+                    await send_message_subscription_expired(user.user_telegram_id, expiring_keys)
         except Exception as e:
             logger.error(f"Ошибка проверки базы данных: {e}")
             raise
-        finally:
-            session.close()
 
     async def get_server_with_min_users(self, protocol_type: str):
         session = self.get_session()

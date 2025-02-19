@@ -1,4 +1,5 @@
 import asyncio
+import aiocron
 
 from bot.initialization.bot_init import dp
 from bot.initialization.bot_init import bot
@@ -30,17 +31,18 @@ dp.include_router(utils_router.router)
 dp.include_router(choice_vpn_type_router.router)
 dp.include_router(admin_router.router)
 
+@aiocron.crontab("0 11,21 * * *")
+async def scheduled_check_db():
+    await db_processor.check_db()
 
 async def main() -> None:
     logger.info("Регистрация main menu команд...")
     logger.info("Запуск polling...")
-    asyncio.create_task(db_processor.check_db())  # Запуск фоновой проверки базы данных
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.get_event_loop().run_until_complete(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Бот остановлен вручную.")
     except Exception as e:
