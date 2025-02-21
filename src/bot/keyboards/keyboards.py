@@ -3,6 +3,8 @@ from aiogram.fsm.context import FSMContext
 
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess, ManageKeys
+from bot.initialization.async_outline_processor_init import async_outline_processor
+from urllib.parse import quote_plus
 
 
 def get_main_menu_keyboard():
@@ -339,7 +341,17 @@ def get_key_name_extension_keyboard_with_names(keys: dict):
     return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
-def get_key_action_keyboard(key_id):
+async def get_key_action_keyboard(key_id):
+    from bot.initialization.db_processor_init import db_processor
+
+    # !!!!!!!!!!!!!считаем что ключ всегда outline, потом поменять!!!!!!!!!!!!!!!
+    # key_server_id = db_processor.get_key_by_id(key_id).server_id
+    # key = await async_outline_processor.get_key_info(key_id, server_id=key_server_id)
+    # full_key_url = key.access_url
+
+    # extracted_key_url = re.search(r"ss://([a-zA-Z0-9+/=]+)", full_key_url).group(1)
+    # encoded_key = quote_plus(full_key_url)
+
     view_traffic_button = InlineKeyboardButton(
         text="📊 Посмотреть объем трафика", callback_data=f"traffic_{key_id}"
     )
@@ -358,7 +370,7 @@ def get_key_action_keyboard(key_id):
     )
     launch_app_button = InlineKeyboardButton(
         text="🚀 Запустить в приложении",
-        url=f"https://tasher239.github.io/outline_open/?access_url={key_id}",
+        url=f"http://10.193.63.164:8000/outline/{key_id}",
     )
 
     back_button = InlineKeyboardButton(

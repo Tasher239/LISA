@@ -60,9 +60,10 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         # await callback.message.answer("Ключ не найден.")
         return
 
+    keyboard = await get_key_action_keyboard(key.key_id)
     await callback.message.edit_text(
         f"Выберите действие для ключа: «{key.name}»",
-        reply_markup=get_key_action_keyboard(key.key_id),
+        reply_markup=keyboard,
     )
     #
     # data = await state.get_data()

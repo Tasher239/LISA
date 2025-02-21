@@ -7,3 +7,4 @@ python-dotenv
 coolname
 urllib3
 asyncssh
+aiocron
