@@ -19,3 +19,4 @@ ENV PYTHONPATH=/app
 
 # Запускаем бота
 CMD ["python", "src/main.py"]
+
