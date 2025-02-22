@@ -370,7 +370,7 @@ async def get_key_action_keyboard(key_id):
     )
     launch_app_button = InlineKeyboardButton(
         text="🚀 Запустить в приложении",
-        url=f"http://10.193.63.164:8000/outline/{key_id}",
+        url=f"http://10.193.63.164:8000/open/{key_id}",
     )
 
     back_button = InlineKeyboardButton(
