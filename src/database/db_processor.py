@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from aiogram.fsm.context import FSMContext
 import asyncio
 import aiocron
+import os
 
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from sqlalchemy import func
@@ -24,9 +25,11 @@ from bot.utils.get_processor import get_processor
 from bot.utils.send_message import send_message_subscription_expired
 
 from logger.logging_config import setup_logger
-
+from dotenv import load_dotenv
 logger = setup_logger()
 Base = declarative_base()
+load_dotenv()
+vdsina_password = os.getenv("VDSINA_PASSWORD")
 
 
 class DbProcessor:
@@ -185,7 +188,7 @@ class DbProcessor:
                     template_id=template_id,
                     ip4=1,
                     email="asadullinam@yandex.ru",
-                    password="piDhij-tevtat-9rokgy",
+                    password=vdsina_password,
                 )
 
                 if not new_server:
