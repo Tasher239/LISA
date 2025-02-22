@@ -20,3 +20,6 @@ ENV PYTHONPATH=/app
 # Запускаем бота
 CMD ["python", "src/main.py"]
 
+# docker build -t lisa .
+# docker save lisa -o lisa.tar
+
