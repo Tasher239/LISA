@@ -1,12 +1,13 @@
-from outline_vpn.outline_vpn import OutlineKey
-from coolname import generate_slug
 import asyncio
 import base64
-import aiohttp
-import asyncssh
 import json
 import re
 
+import aiohttp
+import asyncssh
+from coolname import generate_slug
+
+from bot.initialization.db_processor_init import db_processor
 from bot.processors.structs import OutlineKey
 from bot.processors.base_processor import BaseProcessor
 from logger.logging_config import setup_logger
@@ -15,18 +16,25 @@ logger = setup_logger()
 
 
 class OutlineServerErrorException(Exception):
+    """
+    Исключение, возникающее при ошибках на сервере Outline
+    """
     pass
 
 
 def get_aiohttp_fingerprint(ssl_assert_fingerprint: str) -> aiohttp.Fingerprint:
-    return aiohttp.Fingerprint(
-        base64.b16decode(ssl_assert_fingerprint.replace(":", ""), casefold=True)
-    )
+    """
+    Преобразует строку с отпечатком SSL в aiohttp.Fingerprint
+    :param ssl_assert_fingerprint:
+    :return: aiohttp.Fingerprint
+    """
+    fingerprint = ssl_assert_fingerprint.replace(":", "")
+    return aiohttp.Fingerprint(base64.b16decode(fingerprint, casefold=True))
 
 
 class OutlineProcessor(BaseProcessor):
     """
-    An Outline VPN connection
+    Класс для работы с сервером Outline
     """
 
     def __init__(self):
@@ -36,6 +44,12 @@ class OutlineProcessor(BaseProcessor):
         self.server_id = None
 
     def create_server_session_by_id(func):
+        """
+        Декоратор для создания сессии для сервера по его id
+        Если сессия уже создана, то она не будет создана заново
+        Если же сессия не создана, то она будет создана для сервера с переданным id
+        :return:
+        """
         async def wrapper(self, *args, **kwargs):
             if self.session is None:
                 if kwargs.get("server_id") is None:
@@ -44,7 +58,6 @@ class OutlineProcessor(BaseProcessor):
                     )
 
                 server_id = kwargs.get("server_id")
-                from bot.initialization.db_processor_init import db_processor
 
                 server = db_processor.get_server_by_id(server_id)
                 self.api_url = server.api_url
@@ -71,139 +84,177 @@ class OutlineProcessor(BaseProcessor):
         connector = aiohttp.TCPConnector(
             ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
         )
-        session = aiohttp.ClientSession(connector=connector)
-        self.session = session
+        self.session = aiohttp.ClientSession(connector=connector)
 
     async def create_server_session_for_server(self, server) -> None:
+        """
+        Создает сессию для конкретного сервера
+        :param server: Объект сервера
+        :return:
+        """
         self.api_url = server.api_url
         self.server_id = server.id
         connector = aiohttp.TCPConnector(
             ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
         )
-        session = aiohttp.ClientSession(connector=connector)
-        self.session = session
+        self.session = aiohttp.ClientSession(connector=connector)
 
     async def _get_metrics(self) -> dict:
+        """
+        Получает метрики с Outline сервера
+        :return:
+        """
         async with self.session.get(url=f"{self.api_url}/metrics/transfer") as resp:
             resp_json = await resp.json()
             if resp.status >= 400 or "bytesTransferredByUserId" not in resp_json:
                 raise OutlineServerErrorException("Unable to get metrics")
-
             return resp_json
 
     async def _get_raw_keys(self) -> list[OutlineKey]:
-        async with self.session.get(
-            url=f"{self.api_url}/access-keys/",
-        ) as resp:
+        """
+        Получает все ключи с сервера
+        :return:
+        """
+        async with self.session.get(url=f"{self.api_url}/access-keys/") as resp:
             response_data = await resp.json()
             if resp.status != 200 or "accessKeys" not in response_data:
                 raise OutlineServerErrorException("Unable to retrieve keys")
-
         return [
             OutlineKey.from_key_json(key_data)
             for key_data in response_data.get("accessKeys", [])
         ]
 
     async def create_vpn_key(self) -> tuple[OutlineKey, int]:
-        """Create a new key"""
+        """
+        Создает ключ для подключения к VPN
+        :return: Кортеж из ключа и id сервера
+        """
         await self.create_server_session()
         async with self.session.post(url=f"{self.api_url}/access-keys/") as resp:
             if resp.status != 201:
                 raise OutlineServerErrorException("Unable to create key")
-            key = await resp.json()
-            tmp_key = OutlineKey.from_key_json(key)
-            logger.info(tmp_key)
+            key_data = await resp.json()
 
-            key_name = generate_slug(2).replace("-", " ")
-            data_limit = 200 * (10**9)
+        tmp_key = OutlineKey.from_key_json(key_data)
+        logger.info(tmp_key)
 
-            await self.rename_key(tmp_key.key_id, key_name)
-            await self.add_data_limit(tmp_key.key_id, data_limit)
+        key_name = generate_slug(2).replace("-", " ")
+        data_limit = 200 * (10**9)
 
-            key["name"] = key_name
-            key["used_bytes"] = 0
-            key["data_limit"] = 100
+        await self.rename_key(tmp_key.key_id, key_name)
+        await self.add_data_limit(tmp_key.key_id, data_limit)
 
-        outline_key = OutlineKey.from_key_json(key)
+        key_data["name"] = key_name
+        key_data["used_bytes"] = 0
+        key_data["data_limit"] = data_limit
+
+        outline_key = OutlineKey.from_key_json(key_data)
         return outline_key, self.server_id
 
     @create_server_session_by_id
     async def get_key_info(self, key_id: int, server_id=None) -> OutlineKey:
-        """!!!!!!server_id нужно передавать как ключевой аргумент!!!!!!!!
-        т.е. нельзя вызывать эту функцию как get_key_info(my_key_id, my_server_id)
-        дожно быть  get_key_info(my_key_id, server_id=my_server_id)
+        """
+        Получает информацию по ключу.
+        Обратите внимание, что server_id необходимо передавать как именованный параметр.
+
+        :param key_id: Идентификатор ключа.
+        :param server_id: Идентификатор сервера.
+        :return: Экземпляр OutlineKey с обновленной информацией.
         """
         async with self.session.get(url=f"{self.api_url}/access-keys/{key_id}") as resp:
             if resp.status != 200:
                 raise OutlineServerErrorException("Unable to retrieve keys")
-            client_data = OutlineKey.from_key_json(await resp.json())
-        current_metrics = await self._get_metrics()
+            key_json = await resp.json()
 
-        client_data.used_bytes = current_metrics.get("bytesTransferredByUserId").get(
-            client_data.key_id
+        client_data = OutlineKey.from_key_json(key_json)
+        current_metrics = await self._get_metrics()
+        client_data.used_bytes = current_metrics.get("bytesTransferredByUserId", {}).get(
+            client_data.key_id, 0
         )
         return client_data
 
     @create_server_session_by_id
     async def delete_key(self, key_id: int, server_id=None) -> bool:
-        """Delete a key"""
-        async with self.session.delete(
-            url=f"{self.api_url}/access-keys/{key_id}"
-        ) as resp:
+        """
+        Удаляет ключ с сервера.
+
+        :param key_id: Идентификатор ключа.
+        :param server_id: Идентификатор сервера.
+        :return: True, если удаление прошло успешно.
+        """
+        async with self.session.delete(url=f"{self.api_url}/access-keys/{key_id}") as resp:
             return resp.status == 204
 
     @create_server_session_by_id
     async def rename_key(self, key_id, new_key_name, server_id=None) -> bool:
-        """Rename a key"""
+        """
+        Переименовывает ключ.
+
+        :param key_id: Идентификатор ключа.
+        :param new_key_name: Новое имя ключа.
+        :param server_id: Идентификатор сервера.
+        :return: True, если операция прошла успешно.
+        """
         async with self.session.put(
-            url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
+            url=f"{self.api_url}/access-keys/{key_id}/name",
+            data={"name": new_key_name}
         ) as resp:
             return resp.status == 204
 
-    async def _fulfill_keys_with_metrics(
-        self, keys: list[OutlineKey]
-    ) -> list[OutlineKey]:
-        current_metrics = await self._get_metrics()
+    async def _fulfill_keys_with_metrics(self, keys: list[OutlineKey]) -> list[OutlineKey]:
+        """
+        Обогащает список ключей информацией о переданных данных.
 
+        :param keys: Список OutlineKey.
+        :return: Обновленный список OutlineKey.
+        """
+        current_metrics = await self._get_metrics()
         for key in keys:
-            key.used_bytes = current_metrics.get("bytesTransferredByUserId").get(
-                key.key_id
+            key.used_bytes = current_metrics.get("bytesTransferredByUserId", {}).get(
+                key.key_id, 0
             )
         return keys
 
     async def get_keys(self):
-        """Get all keys in the outline server"""
+        """
+        Получает список всех ключей с сервера Outline.
+        """
         raw_keys = await self._get_raw_keys()
-
         result_keys = await self._fulfill_keys_with_metrics(keys=raw_keys)
-
         return result_keys
 
     async def add_data_limit(self, key_id: int, limit_bytes: int) -> bool:
-        """Set data limit for a key (in bytes)"""
-        data = {"limit": {"bytes": limit_bytes}}
+        """
+        Устанавливает лимит передачи данных для ключа.
 
+        :param key_id: Идентификатор ключа.
+        :param limit_bytes: Лимит в байтах.
+        :return: True, если операция прошла успешно.
+        """
+        data = {"limit": {"bytes": limit_bytes}}
         async with self.session.put(
             url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
         ) as resp:
             return resp.status == 204
 
     async def delete_data_limit(self, key_id: int) -> bool:
-        """Removes data limit for a key"""
+        """
+        Убирает лимит передачи данных для ключа.
+
+        :param key_id: Идентификатор ключа.
+        :return: True, если операция прошла успешно.
+        """
         async with self.session.delete(
             url=f"{self.api_url}/access-keys/{key_id}/data-limit"
         ) as resp:
             return resp.status == 204
 
     async def get_transferred_data(self) -> dict:
-        """Gets how much data all keys have used
-        {
-            "bytesTransferredByUserId": {
-                "1":1008040941,
-                "2":5958113497,
-                "3":752221577
-            }
-        }"""
+        """
+        Получает данные о передаче для всех ключей.
+
+        :return: Словарь с информацией о переданных байтах по каждому ключу.
+        """
         async with self.session.get(url=f"{self.api_url}/metrics/transfer") as resp:
             resp_json = await resp.json()
             if resp.status >= 400 or "bytesTransferredByUserId" not in resp_json:
@@ -211,42 +262,40 @@ class OutlineProcessor(BaseProcessor):
         return resp_json
 
     async def get_server_info(self, server) -> dict:
-        """Get information about the server
-        {
-            "name":"My Server",
-            "serverId":"7fda0079-5317-4e5a-bb41-5a431dddae21",
-            "metricsEnabled":true,
-            "createdTimestampMs":1536613192052,
-            "version":"1.0.0",
-            "accessKeyDataLimit":{"bytes":8589934592},
-            "portForNewAccessKeys":1234,
-            "hostnameForAccessKeys":"example.com"
-        }
         """
+        Получает информацию о сервере.
 
+        :param server: Объект сервера с полями api_url и cert_sha256.
+        :return: Словарь с информацией о сервере.
+        """
         connector = aiohttp.TCPConnector(
             ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
         )
-        session = aiohttp.ClientSession(connector=connector)
-        self.session = session
-
-        async with self.session.get(url=f"{server.api_url}/server") as resp:
-            resp_json = await resp.json()
-            if resp.status != 200:
-                raise OutlineServerErrorException(
-                    "Unable to get information about the server"
-                )
+        async with aiohttp.ClientSession(connector=connector) as session:
+            async with session.get(url=f"{server.api_url}/server") as resp:
+                resp_json = await resp.json()
+                if resp.status != 200:
+                    raise OutlineServerErrorException("Unable to get information about the server")
         return resp_json
 
     async def set_server_name(self, name: str) -> bool:
-        """Renames the server"""
+        """
+        Переименовывает сервер.
+
+        :param name: Новое имя сервера.
+        :return: True, если операция прошла успешно.
+        """
         data = {"name": name}
         async with self.session.put(url=f"{self.api_url}/name", json=data) as resp:
             return resp.status == 204
 
     async def set_hostname(self, hostname: str) -> bool:
-        """Changes the hostname for access keys.
-        Must be a valid hostname or IP address."""
+        """
+        Изменяет hostname для доступа к ключам.
+
+        :param hostname: Новый hostname.
+        :return: True, если операция прошла успешно.
+        """
         data = {"hostname": hostname}
         async with self.session.put(
             url=f"{self.api_url}/server/hostname-for-access-keys", json=data
@@ -254,22 +303,34 @@ class OutlineProcessor(BaseProcessor):
             return resp.status == 204
 
     async def get_metrics_status(self) -> bool:
-        """Returns whether metrics is being shared"""
+        """
+        Проверяет, включены ли метрики на сервере.
+
+        :return:
+        """
         async with self.session.get(url=f"{self.api_url}/metrics/enabled") as resp:
             resp_json = await resp.json()
-            return resp_json.get("metricsEnabled")
+            return resp_json.get("metricsEnabled", False)
 
     async def set_metrics_status(self, status: bool) -> bool:
-        """Enables or disables sharing of metrics"""
+        """
+        Включает или выключает передачу метрик.
+
+        :param status: True для включения, False для выключения.
+        :return: True, если операция прошла успешно.
+        """
         data = {"metricsEnabled": status}
-        async with self.session.put(
-            url=f"{self.api_url}/metrics/enabled", json=data
-        ) as resp:
+        async with self.session.put(url=f"{self.api_url}/metrics/enabled", json=data) as resp:
             return resp.status == 204
 
     async def set_port_new_for_access_keys(self, port: int) -> bool:
-        """Changes the default port for newly created access keys.
-        This can be a port already used for access keys."""
+        """
+        Устанавливает порт для создания новых ключей.
+
+        :param port: Порт (от 1 до 65535).
+        :return: True, если операция прошла успешно.
+        :raises OutlineServerErrorException: При некорректном порте или конфликте.
+        """
         data = {"port": port}
         async with self.session.put(
             url=f"{self.api_url}/server/port-for-new-access-keys", json=data
@@ -285,7 +346,12 @@ class OutlineProcessor(BaseProcessor):
             return resp.status == 204
 
     async def set_data_limit_for_all_keys(self, limit_bytes: int) -> bool:
-        """Sets a data transfer limit for all access keys."""
+        """
+        Устанавливает лимит передачи данных для всех ключей.
+
+        :param limit_bytes: Лимит в байтах.
+        :return: True, если операция прошла успешно.
+        """
         data = {"limit": {"bytes": limit_bytes}}
         async with self.session.put(
             url=f"{self.api_url}/server/access-key-data-limit", json=data
@@ -293,16 +359,34 @@ class OutlineProcessor(BaseProcessor):
             return resp.status == 204
 
     async def delete_data_limit_for_all_keys(self) -> bool:
-        """Removes the access key data limit, lifting data transfer restrictions on all access keys."""
+        """
+        Убирает лимит передачи данных для всех ключей.
+
+        :return: True, если операция прошла успешно.
+        """
         async with self.session.delete(
             url=f"{self.api_url}/server/access-key-data-limit"
         ) as resp:
             return resp.status == 204
 
     async def _close(self):
-        await self.session.close()
+        """
+        Закрывает активную сессию.
+        """
+        if self.session:
+            await self.session.close()
+
+    async def close(self):
+        """
+        Публичный метод для закрытия сессии.
+        """
+        if self.session:
+            await self.session.close()
 
     def __del__(self):
+        """
+        Деструктор, пытающийся корректно закрыть сессию при уничтожении объекта.
+        """
         if self.session is None:
             return
         try:
@@ -312,11 +396,14 @@ class OutlineProcessor(BaseProcessor):
             return
         loop.create_task(self._close())
 
-    async def close(self):
-        if self.session:
-            await self.session.close()
-
+    @staticmethod
     def extract_outline_config(output: str) -> dict | None:
+        """
+        Извлекает конфигурацию сервера Outline из текстового вывода.
+
+        :param output: Строка с JSON-конфигурацией.
+        :return: Словарь с конфигурацией или None.
+        """
         match = re.search(r"(\{[^}]+\})", output)
         if match:
             json_str = match.group(1)
@@ -329,6 +416,12 @@ class OutlineProcessor(BaseProcessor):
         return None
 
     async def setup_server_outline(self, server):
+        """
+        Устанавливает сервер Outline, выполняя установку необходимых пакетов через SSH и извлекая конфигурацию.
+
+        :param server: Объект сервера с необходимыми полями (ip, password, и т.д.).
+        :return: True, если установка прошла успешно, иначе False.
+        """
         await self.create_server_session_for_server(server)
         install_cmd = [
             "sudo apt update && sudo apt install -y docker.io",
