@@ -1,11 +1,11 @@
 import os
+from dotenv import load_dotenv
 
 from database.db_processor import DbProcessor
-from dotenv import load_dotenv
 
 load_dotenv()
 
-
+# Инициализация базы данных
 db_processor = DbProcessor()
 db_processor.init_db()
 
