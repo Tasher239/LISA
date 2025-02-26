@@ -1,10 +1,8 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.fsm.context import FSMContext
 
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess, ManageKeys
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from urllib.parse import quote_plus
 
 
 def get_main_menu_keyboard():
@@ -140,20 +138,6 @@ def get_device_outline_keyboard():
     )
 
 
-def get_choice_vpn_type_keyboard_for_trial_period():
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(text="VLESS", callback_data="trial_period_vless"),
-                InlineKeyboardButton(
-                    text="OUTLINE", callback_data="trial_period_outline"
-                ),
-            ],
-            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")],
-        ]
-    )
-
-
 def get_about_us_keyboard():
     back_button = InlineKeyboardButton(
         text="🔙 Назад", callback_data="back_to_main_menu"
@@ -234,24 +218,6 @@ def get_back_button():
         text="В главное меню", callback_data="back_to_main_menu"
     )
     return InlineKeyboardMarkup(inline_keyboard=[[to_main_menu_button]])
-
-
-def get_extension_keyboard():
-    # Кнопки для продления подписки
-    extend_now_button = InlineKeyboardButton(
-        text="Продлить сейчас 🔄", callback_data="extension_pressed"
-    )
-    back_to_main_menu_button = InlineKeyboardButton(
-        text="В главное меню 🔙", callback_data="back_to_main_menu"
-    )
-
-    # Возвращаем клавиатуру
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [extend_now_button],  # Кнопка "Продлить сейчас"
-            [back_to_main_menu_button],  # Кнопка "В главное меню"
-        ]
-    )
 
 
 def get_extension_periods_keyboard():
@@ -342,16 +308,6 @@ def get_key_name_extension_keyboard_with_names(keys: dict):
 
 
 async def get_key_action_keyboard(key_id):
-    from bot.initialization.db_processor_init import db_processor
-
-    # !!!!!!!!!!!!!считаем что ключ всегда outline, потом поменять!!!!!!!!!!!!!!!
-    # key_server_id = db_processor.get_key_by_id(key_id).server_id
-    # key = await async_outline_processor.get_key_info(key_id, server_id=key_server_id)
-    # full_key_url = key.access_url
-
-    # extracted_key_url = re.search(r"ss://([a-zA-Z0-9+/=]+)", full_key_url).group(1)
-    # encoded_key = quote_plus(full_key_url)
-
     view_traffic_button = InlineKeyboardButton(
         text="📊 Посмотреть объем трафика", callback_data=f"traffic_{key_id}"
     )
@@ -370,7 +326,7 @@ async def get_key_action_keyboard(key_id):
     )
     launch_app_button = InlineKeyboardButton(
         text="🚀 Запустить в приложении",
-        url=f"http://10.193.63.164:8000/open/{key_id}",
+        url=f"http://10.193.63.21:8000/open/{key_id}",
     )
 
     back_button = InlineKeyboardButton(

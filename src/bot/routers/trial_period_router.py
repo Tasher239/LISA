@@ -5,9 +5,11 @@ from aiogram.filters import StateFilter
 from aiogram.types import CallbackQuery
 from aiogram import F, Router
 
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.vless_processor_init import vless_processor
-from bot.initialization.db_processor_init import db_processor
+from database.models import VpnKey
+from database.models import User
+from initialization.async_outline_processor_init import async_outline_processor
+from initialization.vless_processor_init import vless_processor
+from initialization.db_processor_init import db_processor
 from bot.utils.send_message import send_key_to_user
 from bot.fsm.states import GetKey, ManageKeys
 from bot.keyboards.keyboards import (
@@ -15,8 +17,6 @@ from bot.keyboards.keyboards import (
     get_choice_vpn_type_keyboard_for_no_key,
 )
 
-
-from database.db_processor import DbProcessor
 
 from logger.logging_config import setup_logger
 
@@ -57,12 +57,10 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     user_id_str = str(user_id)
     session = db_processor.get_session()
 
-    user = (
-        session.query(DbProcessor.User).filter_by(user_telegram_id=user_id_str).first()
-    )
+    user = session.query(User).filter_by(user_telegram_id=user_id_str).first()
 
     if not user:
-        user = DbProcessor.User(
+        user = User(
             user_telegram_id=user_id_str,
             subscription_status="active",  # тут поменять + добавить информацию о конце периода для ключа
             use_trial_period=False,
@@ -89,7 +87,7 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
         start_date = datetime.now()
         await state.update_data(key_access_url=key.access_url)
         expiration_date = start_date + timedelta(days=2)
-        new_key = DbProcessor.Key(
+        new_key = VpnKey(
             key_id=key.key_id,
             name=key.name,
             user_telegram_id=user_id_str,

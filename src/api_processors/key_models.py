@@ -5,7 +5,7 @@ from typing import Optional
 @dataclass
 class OutlineKey:
     """
-    Describes a key in the Outline server
+    Класс описания объекта ключа типа Outline
     """
 
     key_id: int
@@ -14,8 +14,8 @@ class OutlineKey:
     port: int
     method: str
     access_url: str
-    data_limit: Optional[int]
-    used_bytes: int = 0
+    data_limit: int
+    used_bytes: int
 
     @classmethod
     def from_key_json(cls, json_data: dict) -> "OutlineKey":
@@ -48,7 +48,7 @@ class OutlineKey:
 @dataclass
 class VlessKey:
     """
-    Describes a key in the VLESS server
+    Класс описания объекта ключа типа Vless
     """
 
     key_id: str
@@ -56,7 +56,7 @@ class VlessKey:
     email: str
     access_url: str
     used_bytes: int
-    data_limit: int | None
+    data_limit: int
 
     def __str__(self):
         return (

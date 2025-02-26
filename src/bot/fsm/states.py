@@ -2,11 +2,15 @@ from aiogram.fsm.state import State, StatesGroup
 
 
 class MainMenu(StatesGroup):
+    """Класс состояний, относящихся к главному меню"""
+
     waiting_for_action = State()
     about_us = State()
 
 
 class GetKey(StatesGroup):
+    """Класс состояний, относящихся к получению ключа"""
+
     get_trial_key = State()
     choosing_vpn_protocol_type = State()
     choosing_period = State()
@@ -18,6 +22,8 @@ class GetKey(StatesGroup):
 
 
 class ManageKeys(StatesGroup):
+    """Класс состояний, относящихся к управлению ключами"""
+
     key_management_no_key = State()
     choosing_key = State()
     choosing_action = State()
@@ -33,6 +39,8 @@ class ManageKeys(StatesGroup):
 
 
 class SubscriptionExtension(StatesGroup):
+    """Класс состояний, относящихся к продлению подписки"""
+
     have_extension_key = State()
     choose_extension_period = State()
     choose_key_for_extension = State()
@@ -40,6 +48,8 @@ class SubscriptionExtension(StatesGroup):
 
 
 class AdminAccess(StatesGroup):
+    """Класс состояний, относящихся к админ-доступу"""
+
     wait_password_enter = State()
     correct_password = State()
     admin_choosing_vpn_protocol_type = State()

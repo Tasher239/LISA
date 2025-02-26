@@ -1,5 +1,5 @@
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.vless_processor_init import vless_processor
+from initialization.async_outline_processor_init import async_outline_processor
+from initialization.vless_processor_init import vless_processor
 
 
 async def get_processor(vpn_type: str):

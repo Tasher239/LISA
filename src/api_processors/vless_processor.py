@@ -9,9 +9,8 @@ import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-from bot.processors.base_processor import BaseProcessor
-from bot.processors.structs import VlessKey
-
+from api_processors.base_processor import BaseProcessor
+from api_processors.key_models import VlessKey
 
 from logger.logging_config import setup_logger
 
@@ -33,31 +32,74 @@ class VlessProcessor(BaseProcessor):
         self.con = None
         self.server_id = None
 
+    @staticmethod
     def create_server_session_by_id(func):
+        """
+        Декоратор для создания сессии с сервером по переданному ID сервера.
+
+        :param func: Функция, которую декоратор оборачивает.
+
+        :return: Результат выполнения функции, обернутой декоратором.
+
+        Алгоритм работы:
+        1. Проверяет, существует ли уже сессия.
+        2. Если сессия не существует, извлекает `server_id` из аргументов функции.
+        3. Если `server_id` не передан, выбрасывает исключение.
+        4. Использует `db_processor` для получения данных о сервере по ID.
+        5. Если сервер не найден, выбрасывает исключение.
+        6. Инициализирует параметры подключения (IP, порт, данные).
+        7. Создает новую сессию с помощью `requests.Session`.
+        8. Выполняет исходную функцию с аргументами.
+        9. В случае ошибки при установке соединения выбрасывает исключение.
+        """
+
         def wrapper(self, *args, **kwargs):
             if self.ses is None:
-                if kwargs.get("server_id") is None:
+                server_id = kwargs.get("server_id")
+                if server_id is None:
                     raise ValueError(
                         "!!!server_id must be passed as a keyword argument!!!"
                     )
-                from bot.initialization.db_processor_init import db_processor
 
-                server_id = kwargs.get("server_id")
+                from initialization.db_processor_init import db_processor
+
                 server = db_processor.get_server_by_id(server_id)
+                if server is None:
+                    raise ValueError(f"Сервер с ID {server_id} не найден в базе данных")
+
                 self.ip = server.ip
                 self.sub_port = 2096
                 self.port_panel = 2053
                 self.host = f"http://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
-                self.ses = requests.Session()
-                self.ses.verify = False
-                self.con = self._connect()
+
+                try:
+                    self.ses = requests.Session()
+                    self.ses.verify = False
+                    self.con = self._connect()
+                except Exception as e:
+                    self.ses = None
+                    raise RuntimeError(f"Ошибка при установке соединения: {e}")
+
             return func(self, *args, **kwargs)
 
         return wrapper
 
-    async def create_server_session(self):
-        from bot.initialization.db_processor_init import db_processor
+    async def create_server_session(self) -> None:
+        """
+        Создает сессию для подключения к серверу с минимальным количеством пользователей для типа "vless".
+
+        :return: `None`
+
+        Алгоритм работы:
+        1. Получает сервер с минимальным количеством пользователей для типа "vless" с использованием `db_processor`.
+        2. Извлекает параметры подключения (IP, порты, данные для аутентификации).
+        3. Инициализирует объект сессии с помощью `requests.Session`.
+        4. Отключает проверку сертификатов с помощью `self.ses.verify = False`.
+        5. Устанавливает соединение с сервером через метод `_connect()`.
+        6. Сохраняет ID сервера в атрибуте `self.server_id`.
+        """
+        from initialization.db_processor_init import db_processor
 
         server = await db_processor.get_server_with_min_users("vless")
 
@@ -242,9 +284,22 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при запросе X25519Cert: {e}")
             return False, str(e)
 
-    def _get_link(self, key_id, key_name, isIOS=False):
+    def _get_link(self, key_id: str, key_name: str) -> str | bool:
         """
-        Генерация ссылки для клиента (vless://...).
+        Генерация ссылки для клиента (vless://...) для подключения к серверу.
+
+        :param key_id: Уникальный идентификатор ключа для клиента.
+        :param key_name: Имя ключа для клиента, которое будет отображаться в ссылке.
+
+        :return: Сгенерированная ссылка для клиента, если успешно, иначе `False`.
+
+        Алгоритм работы:
+        1. Проверяется наличие активного соединения.
+        2. Выполняется POST-запрос к панели управления для получения списка inbound соединений.
+        3. Проверяется наличие успешного ответа и данных о первом inbound соединении.
+        4. Извлекаются параметры настройки потока (streamSettings), включая публичный ключ.
+        5. Формируется ссылка для клиента с использованием полученных данных.
+        6. В случае ошибок в процессе генерируется лог с подробным описанием.
         """
 
         if not self.con:
@@ -275,16 +330,11 @@ class VlessProcessor(BaseProcessor):
             public_key = sett.get("publicKey", "")
             sni = "www.google.com"
             flow = stream_settings.get("flow", "xtls-rprx-vision")
-            # Формируем ссылку
 
-            if isIOS:
-                prev_text = f"https://{self.ip}/v?c=streisand://import/"
-                bottom_text = f"&name={key_id}"
-            else:
-                prev_text = ""
-                bottom_text = f"#{key_name}"
+            # Формируем ссылку
+            prev_text = ""
+            bottom_text = f"#{key_name}"
             sid = "03b090ff397c50b9"
-            # Здесь порт 443, fingerprint=chrome, sni=vk.com
 
             res = (
                 f"{prev_text}vless://{key_id}@{self.ip}:{port}/?type=tcp&security=reality&pbk={public_key}"
@@ -296,8 +346,28 @@ class VlessProcessor(BaseProcessor):
             return False
 
     async def create_vpn_key(
-        self, expire_time=0, sni="dl.google.com", port=46408
+        self, expire_time: int = 0, sni: str = "dl.google.com", port: int = 46408
     ) -> tuple[VlessKey, int]:
+        """
+        Создает новый VPN-ключ VLESS на удаленном сервере.
+
+        :param expire_time: Время жизни ключа в секундах (0 — бессрочный).
+        :param sni: Server Name Indication (SNI) для шифрования.
+        :param port: Порт для подключения.
+
+        :return: Созданный VLESS-ключ и ID сервера, либо ошибка.
+
+        :raises requests.RequestException: Ошибка сети при отправке запроса.
+
+        Алгоритм работы:
+        1. Устанавливает соединение с сервером (`create_server_session`).
+        2. Генерирует уникальный ID для нового клиента.
+        3. Отправляет POST-запрос на сервер для добавления нового ключа.
+        4. Извлекает публичный ключ и настройки потока (stream settings) из ответа сервера.
+        5. Формирует ссылку доступа (`access_url`) с параметрами подключения.
+        6. Возвращает объект `VlessKey` и ID сервера при успешном создании, либо ошибку.
+        """
+
         await self.create_server_session()
         if not self.con:
             return False, "Нет подключения к серверу"
@@ -309,7 +379,7 @@ class VlessProcessor(BaseProcessor):
         import json
 
         key_name = generate_slug(2).replace("-", " ")
-
+        data_limit = 200 * 1024**3  # лимит в байтах
         unique_id = str(uuid.uuid4())
         data = {
             "id": 1,
@@ -317,11 +387,11 @@ class VlessProcessor(BaseProcessor):
                 {
                     "clients": [
                         {
-                            "id": unique_id,  # должен быть уникальным, чтобы удалять нормально
+                            "id": unique_id,  # должен быть уникальным, чтобы удалять ключи
                             "alterId": 0,
                             "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
-                            "totalGB": 0,
+                            "totalGB": data_limit,
                             "expiryTime": expire_time,
                             "enable": True,
                             "tgId": "",
@@ -348,14 +418,12 @@ class VlessProcessor(BaseProcessor):
         reality = stream_settings.get("realitySettings", {})
         sett = reality.get("settings", {})
         public_key = sett.get("publicKey", "")
-        sni = "dl.google.com"
         flow = stream_settings.get("flow", "xtls-rprx-vision")
-        # Формируем ссылку
 
+        # Формируем ссылку
         prev_text = ""
         bottom_text = f"#{key_name}"
         sid = "03b090ff397c50b9"
-        # Здесь порт 443, fingerprint=chrome, sni=vk.com
 
         access_url = (
             f"{prev_text}vless://{unique_id}@{self.ip}:{port}/?type=tcp&security=reality&pbk={public_key}"
@@ -375,7 +443,7 @@ class VlessProcessor(BaseProcessor):
                         name=key_name,
                         access_url=access_url,
                         used_bytes=0,
-                        data_limit=None,
+                        data_limit=data_limit,
                     ),
                     self.server_id,
                 )
@@ -387,7 +455,27 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-    async def rename_key(self, key_id: str, server_id, new_key_name: str) -> bool:
+    @create_server_session_by_id
+    async def rename_key(self, key_id: str, server_id: int, new_key_name: str) -> bool:
+        """
+        Переименовывает существующий VPN-ключ VLESS на удаленном сервере.
+
+        :param key_id: Уникальный идентификатор ключа.
+        :param server_id: Идентификатор сервера, на котором находится ключ.
+        :param new_key_name: Новое имя для VPN-ключа.
+
+        :return: True, если ключ успешно переименован, иначе False.
+
+        :raises requests.RequestException: Ошибка сети при отправке запроса.
+
+        Алгоритм работы:
+        1. Проверяет наличие активного подключения (`self.con`).
+        2. Логирует процесс обновления ключа.
+        3. Формирует тело запроса с новыми параметрами ключа.
+        4. Отправляет POST-запрос на сервер для обновления ключа.
+        5. Анализирует ответ сервера и возвращает результат.
+        6. В случае ошибки сети логирует и возвращает `False`.
+        """
         if not self.con:
             return False, "Нет подключения к серверу"
 
@@ -409,7 +497,7 @@ class VlessProcessor(BaseProcessor):
                             "alterId": 0,  # тут будет имя ключа
                             "email": key_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
-                            "totalGB": 0,
+                            "totalGB": 200 * 1024**3,
                             "expiryTime": 0,
                             "enable": "true",
                             "tgId": "",
@@ -440,84 +528,22 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-    # def add_or_update_key(self, vpn_key, is_update=False, is_activ=True):
-    #     """
-    #     Добавляет (isUpdate=False) или обновляет (isUpdate=True) клиента с нужным id (vpn_key).
-    #     Параметр isActiv=True/False включает или выключает клиента.
-    #     """
-    #     if not self.con:
-    #         return False, "Нет подключения к серверу"
-    #
-    #     if not is_update:
-    #         logger.debug(f"Добавляем новый ключ {vpn_key} на сервере {self.ip}...")
-    #     else:
-    #         logger.debug(f"Обновляем ключ {vpn_key} на сервере {self.ip}...")
-    #
-    #     header = {"Accept": "application/json"}
-    #
-    #     if is_activ:
-    #         is_activ_str = "true"
-    #     else:
-    #         is_activ_str = "false"
-    #
-    #     # Сформируем тело запроса
-    #     # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
-    #     import json
-    #
-    #     unique_id = str(uuid.uuid4())
-    #     data = {
-    #         "id": 1,
-    #         "settings": json.dumps(
-    #             {
-    #                 "clients": [
-    #                     {
-    #                         "id": vpn_key,  # должен быть уникальным, чтобы удалять нормально
-    #                         "alterId": 0,  # тут будет имя ключа
-    #                         "email": unique_id,  # должен быть уникальным, чтобы добавлять ключи
-    #                         "limitIp": 1,
-    #                         "totalGB": 0,
-    #                         "expiryTime": 0,
-    #                         "enable": is_activ_str,
-    #                         "tgId": "",
-    #                         "subId": vpn_key,
-    #                         "flow": "xtls-rprx-vision",
-    #                     }
-    #                 ]
-    #             }
-    #         ),
-    #     }
-    #
-    #     # Выбираем конечную точку
-    #     if not is_update:
-    #         command = "/panel/inbound/addClient"
-    #     else:
-    #         command = f"/panel/inbound/updateClient/{vpn_key}"
-    #
-    #     try:
-    #         resource = self.ses.post(
-    #             f"{self.host}{command}", headers=header, json=data
-    #         ).json()
-    #         if resource.get("success"):
-    #             if not is_update:
-    #                 logger.debug(f"Добавили ключ {vpn_key} на сервере {self.ip}")
-    #             else:
-    #                 logger.debug(f"Обновили ключ {vpn_key} на сервере {self.ip}")
-    #             return True, self._get_link(vpn_key, isIOS)
-    #         else:
-    #             msg = resource.get("msg", "Неизвестная ошибка")
-    #             if not is_update:
-    #                 logger.warning(f"🛑Ошибка при добавлении ключа {vpn_key}: {msg}")
-    #             else:
-    #                 logger.warning(f"🛑Ошибка при обновлении ключа {vpn_key}: {msg}")
-    #             return False, msg
-    #     except requests.RequestException as e:
-    #         logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
-    #         return False, str(e)
-
     @create_server_session_by_id
-    async def delete_key(self, key_id, server_id=None) -> bool:
+    async def delete_key(self, key_id: int, server_id: int | None = None) -> bool:
         """
-        Удаляет клиента с именем vpn_key у inbound ID=1.
+        Удаляет клиентский ключ по указанному ID на сервере с заданным server_id.
+
+        :param key_id: Идентификатор ключа для удаления.
+        :param server_id: Идентификатор сервера (необязательный параметр, если передан, используется для получения данных сервера).
+
+        :return: `True`, если ключ был успешно удален, в противном случае `False` с сообщением об ошибке.
+
+        Алгоритм работы:
+        1. Проверяет, если нет подключения к серверу, возвращает ошибку.
+        2. Отправляет запрос на удаление ключа по указанному `key_id` на сервере.
+        3. Если запрос успешен, возвращает `True`.
+        4. В случае ошибки или неудачи выводит предупреждение с сообщением.
+        5. В случае ошибки сети возвращает `False` и логирует ошибку.
         """
         if not self.con:
             return False, "Нет подключения к серверу"
@@ -543,8 +569,23 @@ class VlessProcessor(BaseProcessor):
     @create_server_session_by_id
     async def get_key_info(self, key_id: str, server_id: int = None) -> VlessKey:
         """
-        Выполняет GET-запрос на сервер, получает информацию о ключе key_id и
-        возвращает объект VlessKey.
+        Получает информацию о VPN-ключе VLESS с удаленного сервера.
+
+        :param key_id: Уникальный идентификатор ключа.
+        :param server_id: Идентификатор сервера (опционально).
+
+        :return: Объект `VlessKey`, содержащий информацию о ключе, или `None`, если ключ не найден.
+
+        :raises requests.RequestException: Ошибка сети при отправке запроса.
+        :raises ValueError: Ошибка при декодировании JSON-ответа.
+
+        Алгоритм работы:
+        1. Проверяет наличие активного подключения (`self.con`).
+        2. Выполняет POST-запрос для получения списка ключей.
+        3. Проверяет успешность запроса, логирует возможные ошибки.
+        4. Ищет указанный `key_id` среди полученных inbound'ов.
+        5. Если ключ найден, формирует объект `VlessKey` и возвращает его.
+        6. В случае ошибки сети или некорректного JSON-ответа логирует и возвращает `None`.
         """
         if not self.con:
             logger.warning(f"Нет подключения к серверу")
@@ -575,9 +616,7 @@ class VlessProcessor(BaseProcessor):
                             ),
                             used_bytes=client.get("up", 0) + client.get("down", 0),
                             data_limit=(
-                                client.get("totalGB") * 1024 * 1024 * 1024
-                                if client.get("totalGB")
-                                else None
+                                client.get("totalGB") if client.get("totalGB") else None
                             ),
                         )
 
@@ -591,8 +630,24 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка при декодировании JSON-ответа: {e}")
             return None
 
-    async def setup_server_vless(self, server):
-        """Автоматическая установка 3X-UI с вводом данных"""
+    @staticmethod
+    async def setup_server(server) -> bool:
+        """
+        Автоматическая установка 3X-UI на сервер с предварительной настройкой Docker.
+
+        :param server: Объект сервера с атрибутами `ip` и `password`.
+
+        :return: `True` в случае успешной установки, иначе `False`.
+
+        Алгоритм работы:
+        1. Подключается к серверу через SSH.
+        2. Останавливает и удаляет старый Docker.
+        3. Очищает систему от остаточных файлов Docker.
+        4. Устанавливает свежую версию Docker и Docker Compose.
+        5. Загружает и выполняет скрипт установки `setup.sh`.
+        6. Передает в `setup.sh` необходимые данные для автоматической настройки.
+        7. Логирует все этапы выполнения, включая возможные ошибки.
+        """
 
         # Команды для остановки Docker-сервисов
         stop_docker_cmds = [

@@ -10,12 +10,12 @@ from aiogram.filters import StateFilter
 from aiogram.filters import Command
 from aiogram import Router, F
 
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.vdsina_processor_init import vdsina_processor
-from bot.initialization.vless_processor_init import vless_processor
-from bot.initialization.db_processor_init import db_processor
+from initialization.async_outline_processor_init import async_outline_processor
+from initialization.vdsina_processor_init import vdsina_processor
+from initialization.vless_processor_init import vless_processor
+from initialization.db_processor_init import db_processor
 from bot.utils.string_makers import get_your_key_string
-from bot.initialization.bot_init import bot
+from initialization.bot_init import bot
 from bot.fsm.states import AdminAccess
 from bot.keyboards.keyboards import (
     get_admin_keyboard,

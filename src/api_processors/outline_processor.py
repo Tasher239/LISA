@@ -2,14 +2,15 @@ import asyncio
 import base64
 import json
 import re
+import typing
 
 import aiohttp
 import asyncssh
 from coolname import generate_slug
 
-from bot.initialization.db_processor_init import db_processor
-from bot.processors.structs import OutlineKey
-from bot.processors.base_processor import BaseProcessor
+from initialization.db_processor_init import db_processor
+from api_processors.key_models import OutlineKey
+from api_processors.base_processor import BaseProcessor
 from logger.logging_config import setup_logger
 
 logger = setup_logger()
@@ -19,6 +20,7 @@ class OutlineServerErrorException(Exception):
     """
     Исключение, возникающее при ошибках на сервере Outline
     """
+
     pass
 
 
@@ -43,13 +45,14 @@ class OutlineProcessor(BaseProcessor):
         self.session: aiohttp.ClientSession | None = None
         self.server_id = None
 
-    def create_server_session_by_id(func):
+    @staticmethod
+    def create_server_session_by_id(func) -> typing.Callable:
         """
         Декоратор для создания сессии для сервера по его id
         Если сессия уже создана, то она не будет создана заново
-        Если же сессия не создана, то она будет создана для сервера с переданным id
         :return:
         """
+
         async def wrapper(self, *args, **kwargs):
             if self.session is None:
                 if kwargs.get("server_id") is None:
@@ -75,22 +78,33 @@ class OutlineProcessor(BaseProcessor):
         return wrapper
 
     async def create_server_session(self) -> None:
-        from bot.initialization.db_processor_init import db_processor
+        """
+        Инициализирует сессию HTTP-клиента для сервера с минимальным числом пользователей.
+
+        Метод выполняет следующие шаги:
+        1. Получает сервер с минимальным количеством пользователей, использующий протокол "Outline".
+        2. Сохраняет URL API и идентификатор сервера в атрибутах объекта.
+        3. Создает `aiohttp.ClientSession` с SSL-коннектором, настроенным на отпечаток сертификата сервера.
+
+        :return: None
+        """
+        from initialization.db_processor_init import db_processor
 
         server = await db_processor.get_server_with_min_users("outline")
 
         self.api_url = server.api_url
         self.server_id = server.id
-        connector = aiohttp.TCPConnector(
-            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
-        )
+
+        ssl_context = get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+
         self.session = aiohttp.ClientSession(connector=connector)
 
     async def create_server_session_for_server(self, server) -> None:
         """
         Создает сессию для конкретного сервера
         :param server: Объект сервера
-        :return:
+        :return: None
         """
         self.api_url = server.api_url
         self.server_id = server.id
@@ -130,6 +144,7 @@ class OutlineProcessor(BaseProcessor):
         :return: Кортеж из ключа и id сервера
         """
         await self.create_server_session()
+
         async with self.session.post(url=f"{self.api_url}/access-keys/") as resp:
             if resp.status != 201:
                 raise OutlineServerErrorException("Unable to create key")
@@ -139,14 +154,14 @@ class OutlineProcessor(BaseProcessor):
         logger.info(tmp_key)
 
         key_name = generate_slug(2).replace("-", " ")
-        data_limit = 200 * (10**9)
+        data_limit = 200 * 1024**3
 
         await self.rename_key(tmp_key.key_id, key_name)
-        await self.add_data_limit(tmp_key.key_id, data_limit)
+        await self.update_data_limit(tmp_key.key_id, data_limit, self.server_id)
 
         key_data["name"] = key_name
         key_data["used_bytes"] = 0
-        key_data["data_limit"] = data_limit
+        key_data["dataLimit"] = {"bytes": data_limit}
 
         outline_key = OutlineKey.from_key_json(key_data)
         return outline_key, self.server_id
@@ -168,9 +183,9 @@ class OutlineProcessor(BaseProcessor):
 
         client_data = OutlineKey.from_key_json(key_json)
         current_metrics = await self._get_metrics()
-        client_data.used_bytes = current_metrics.get("bytesTransferredByUserId", {}).get(
-            client_data.key_id, 0
-        )
+        client_data.used_bytes = current_metrics.get(
+            "bytesTransferredByUserId", {}
+        ).get(client_data.key_id, 0)
         return client_data
 
     @create_server_session_by_id
@@ -182,7 +197,9 @@ class OutlineProcessor(BaseProcessor):
         :param server_id: Идентификатор сервера.
         :return: True, если удаление прошло успешно.
         """
-        async with self.session.delete(url=f"{self.api_url}/access-keys/{key_id}") as resp:
+        async with self.session.delete(
+            url=f"{self.api_url}/access-keys/{key_id}"
+        ) as resp:
             return resp.status == 204
 
     @create_server_session_by_id
@@ -196,12 +213,13 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.put(
-            url=f"{self.api_url}/access-keys/{key_id}/name",
-            data={"name": new_key_name}
+            url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
         ) as resp:
             return resp.status == 204
 
-    async def _fulfill_keys_with_metrics(self, keys: list[OutlineKey]) -> list[OutlineKey]:
+    async def _fulfill_keys_with_metrics(
+        self, keys: list[OutlineKey]
+    ) -> list[OutlineKey]:
         """
         Обогащает список ключей информацией о переданных данных.
 
@@ -215,7 +233,8 @@ class OutlineProcessor(BaseProcessor):
             )
         return keys
 
-    async def get_keys(self):
+    @create_server_session_by_id
+    async def get_keys(self, server_id) -> list[OutlineKey]:
         """
         Получает список всех ключей с сервера Outline.
         """
@@ -223,7 +242,10 @@ class OutlineProcessor(BaseProcessor):
         result_keys = await self._fulfill_keys_with_metrics(keys=raw_keys)
         return result_keys
 
-    async def add_data_limit(self, key_id: int, limit_bytes: int) -> bool:
+    @create_server_session_by_id
+    async def update_data_limit(
+        self, key_id: int, limit_bytes: int, server_id: int
+    ) -> bool:
         """
         Устанавливает лимит передачи данных для ключа.
 
@@ -237,7 +259,8 @@ class OutlineProcessor(BaseProcessor):
         ) as resp:
             return resp.status == 204
 
-    async def delete_data_limit(self, key_id: int) -> bool:
+    @create_server_session_by_id
+    async def delete_data_limit(self, key_id: int, server_id: int) -> bool:
         """
         Убирает лимит передачи данных для ключа.
 
@@ -268,14 +291,16 @@ class OutlineProcessor(BaseProcessor):
         :param server: Объект сервера с полями api_url и cert_sha256.
         :return: Словарь с информацией о сервере.
         """
-        connector = aiohttp.TCPConnector(
-            ssl=get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
-        )
+
+        ssl_context = get_aiohttp_fingerprint(ssl_assert_fingerprint=server.cert_sha256)
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
         async with aiohttp.ClientSession(connector=connector) as session:
             async with session.get(url=f"{server.api_url}/server") as resp:
                 resp_json = await resp.json()
                 if resp.status != 200:
-                    raise OutlineServerErrorException("Unable to get information about the server")
+                    raise OutlineServerErrorException(
+                        "Unable to get information about the server"
+                    )
         return resp_json
 
     async def set_server_name(self, name: str) -> bool:
@@ -320,7 +345,9 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         data = {"metricsEnabled": status}
-        async with self.session.put(url=f"{self.api_url}/metrics/enabled", json=data) as resp:
+        async with self.session.put(
+            url=f"{self.api_url}/metrics/enabled", json=data
+        ) as resp:
             return resp.status == 204
 
     async def set_port_new_for_access_keys(self, port: int) -> bool:
@@ -369,7 +396,7 @@ class OutlineProcessor(BaseProcessor):
         ) as resp:
             return resp.status == 204
 
-    async def _close(self):
+    async def _close(self) -> None:
         """
         Закрывает активную сессию.
         """
@@ -383,7 +410,7 @@ class OutlineProcessor(BaseProcessor):
         if self.session:
             await self.session.close()
 
-    def __del__(self):
+    def __del__(self) -> None:
         """
         Деструктор, пытающийся корректно закрыть сессию при уничтожении объекта.
         """
@@ -415,7 +442,7 @@ class OutlineProcessor(BaseProcessor):
                 pass
         return None
 
-    async def setup_server_outline(self, server):
+    async def setup_server(self, server) -> None:
         """
         Устанавливает сервер Outline, выполняя установку необходимых пакетов через SSH и извлекая конфигурацию.
 
