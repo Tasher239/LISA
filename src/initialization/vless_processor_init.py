@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from bot.processors.vless_processor import VlessProcessor
+from api_processors.vless_processor import VlessProcessor
 
 load_dotenv()
 

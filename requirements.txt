@@ -8,3 +8,7 @@ coolname
 urllib3
 asyncssh
 aiocron
+pytest-mock
+pytest-asyncio
+aioresponses
+httpx

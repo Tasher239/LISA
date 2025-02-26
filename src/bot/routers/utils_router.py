@@ -6,8 +6,8 @@ from aiogram import F, Router
 
 from bot.fsm.states import MainMenu, GetKey, ManageKeys, SubscriptionExtension
 from bot.utils.string_makers import get_instruction_string
-from bot.initialization.db_processor_init import db_processor
-from bot.initialization.bot_init import bot
+from initialization.db_processor_init import db_processor
+from initialization.bot_init import bot
 from bot.lexicon.lexicon import INFO
 from bot.keyboards.keyboards import (
     get_about_us_keyboard,
@@ -81,20 +81,6 @@ async def send_connection_choose(callback: CallbackQuery, state: FSMContext):
                 reply_markup=get_device_outline_keyboard(),
             )
     await callback.answer()
-
-
-# @router.callback_query(F.data.in_(["device_MacOS", "device_iPhone", "device_Windows", "device_Android"]))
-# async def send_instruction_for_device(callback: CallbackQuery, state: FSMContext):
-#     user_data = await state.get_data()
-#     vpn_type = user_data.get("vpn_type", ["Unknown"])
-#     device_type = callback.data.split("_")[1]
-#     instruction = INSTALL_INSTR.get(f"{vpn_type}_{device_type}", "🚫 Инструкция не найдена.")
-#     await callback.message.edit_text(
-#         text=instruction,
-#         parse_mode="Markdown",
-#         disable_web_page_preview=True,  # Отключает предпросмотр ссылок
-#     )
-#     await callback.answer()
 
 
 # фильтр кнопки в главное меню из любого места

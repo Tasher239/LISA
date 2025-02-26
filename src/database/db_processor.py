@@ -1,42 +1,37 @@
-from aiogram.fsm.storage.base import StorageKey
 from datetime import datetime, timedelta
-from aiogram.fsm.context import FSMContext
-import asyncio
-import aiocron
 import os
 from contextlib import contextmanager
 
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import (
     func,
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    String,
     create_engine,
-    Integer,
 )
 
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.vdsina_processor_init import vdsina_processor
-from bot.initialization.vless_processor_init import vless_processor
-from bot.utils.get_processor import get_processor
-from bot.utils.send_message import send_message_subscription_expired
 
+from initialization.vdsina_processor_init import vdsina_processor
+from bot.utils.send_message import send_message_subscription_expired
+from database.models import Base, VpnKey, Server, User
 from logger.logging_config import setup_logger
 from dotenv import load_dotenv
 
 logger = setup_logger()
-Base = declarative_base()
+
 load_dotenv()
-vdsina_password = os.getenv("VDSINA_PASSWORD")
 
 
 class DbProcessor:
     def __init__(self):
         # Создаем движок для подключения к базе данных
-        self.engine = create_engine("sqlite:///database/vpn_users.db", echo=True)
+        base_dir = os.path.dirname(
+            os.path.abspath(__file__)
+        )  # Получаем путь к текущему файлу (db_processor_init.py)
+        db_path = os.path.join(
+            base_dir, "..", "database", "vpn_users.db"
+        )  # Поднимаемся на уровень выше
+        db_uri = f"sqlite:///{os.path.abspath(db_path)}"  # Создаем абсолютный путь
+
+        self.engine = create_engine(db_uri, echo=True)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     def init_db(self):
@@ -64,10 +59,10 @@ class DbProcessor:
         finally:
             session.close()
 
-
-    def get_key_by_id(self, key_id: str):
+    def get_key_by_id(self, key_id: str) -> VpnKey | None:
+        """Возвращает объект ключа (VpnKey) по его ID или None, если ключ не найден."""
         with self.session_scope() as session:
-            return session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+            return session.query(VpnKey).filter_by(key_id=key_id).first()
 
     def get_vpn_type_by_key_id(self, key_id: str) -> str:
         """
@@ -76,7 +71,7 @@ class DbProcessor:
         :return:
         """
         with self.session_scope() as session:
-            key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+            key = session.query(VpnKey).filter_by(key_id=key_id).first()
             if key:
                 return key.protocol_type
             else:
@@ -84,8 +79,8 @@ class DbProcessor:
                 return None
 
     def update_database_with_key(
-            self, user_id, key, period, server_id, protocol_type="Outline"
-    ):
+        self, user_id, key, period, server_id, protocol_type="Outline"
+    ) -> None:
         """
         Обновляет базу данных новым ключом.
         :param user_id:
@@ -102,9 +97,9 @@ class DbProcessor:
             minute=0, second=0, microsecond=0
         )
         with self.session_scope() as session:
-            user = session.query(DbProcessor.User).filter_by(user_telegram_id=user_id_str).first()
+            user = session.query(User).filter_by(user_telegram_id=user_id_str).first()
             if not user:
-                user = DbProcessor.User(
+                user = User(
                     user_telegram_id=user_id_str,
                     subscription_status="active",
                     use_trial_period=False,
@@ -112,7 +107,7 @@ class DbProcessor:
                 session.add(user)
                 session.commit()
 
-            new_key = DbProcessor.Key(
+            new_key = VpnKey(
                 key_id=key.key_id,
                 user_telegram_id=user_id_str,
                 expiration_date=expiration_date,
@@ -122,9 +117,9 @@ class DbProcessor:
                 server_id=server_id,
             )
             session.add(new_key)
-            session.commit()
+            # session.commit() <- возможно не нужно тк юзаем контекстный менеджер
 
-    async def get_expired_keys_by_user_id(self, user_id):
+    async def get_expired_keys_by_user_id(self, user_id) -> dict[str, tuple[str, int]]:
         """
         Возвращает словарь с истекшими ключами пользователя.
         :param user_id:
@@ -132,13 +127,13 @@ class DbProcessor:
         """
         expired_keys = {}
         with self.session_scope() as session:
-            keys = session.query(DbProcessor.Key).filter_by(user_telegram_id=user_id).all()
+            keys = session.query(VpnKey).filter_by(user_telegram_id=user_id).all()
             for key in keys:
                 time_remaining = key.expiration_date - datetime.now()
                 if time_remaining < timedelta(days=4):
                     expired_keys[key.key_id] = (
                         key.name,
-                        time_remaining.days + 1, # +1 день, чтобы учесть текущий день
+                        time_remaining.days + 1,  # +1 день, чтобы учесть текущий день
                     )
             return expired_keys
 
@@ -149,31 +144,61 @@ class DbProcessor:
         - Если ключ истекает сегодня, он удаляется из базы данных.
         :return:
         """
-        now = datetime.now()
         with self.session_scope() as session:
-            users = session.query(DbProcessor.User).all()
-            for user in users:
-                logger.info(f"Проверка пользователя: {user.user_telegram_id}")
-                expiring_keys = {}
-                for key in user.keys:
-                    time_diff = key.expiration_date - now
-                    if timedelta(days=0) < time_diff < timedelta(days=4):
-                        key.remembering = True
-                        expiring_keys[key.key_id] = (key.name, time_diff.days + 1)
-                    elif key.expiration_date + timedelta(days=1) < now:
-                        processor = await get_processor(key.protocol_type.lower())
-                        server = session.query(DbProcessor.Server).filter_by(id=key.server_id).first()
-                        processor.delete_key(key.key_id, server_id=key.server_id)
-                        session.delete(key)
-                        if server:
-                            server.cnt_users = max(0, server.cnt_users - 1)
-                        session.commit()
-                    elif key.expiration_date < now:
-                        expiring_keys[key.key_id] = (key.name, 0)
-                if expiring_keys:
-                    await send_message_subscription_expired(user.user_telegram_id, expiring_keys)
+            users = session.query(User).all()
 
-    async def get_server_with_min_users(self, protocol_type: str):
+            # Обрабатываем каждого пользователя
+            for user in users:
+                expiring_keys = await self._check_user_keys(user, session)
+
+                if expiring_keys:
+                    # Отправляем уведомления об истекающих ключах
+                    await send_message_subscription_expired(
+                        user.user_telegram_id, expiring_keys
+                    )
+
+    async def _check_user_keys(self, user, session):
+        """
+        Проверяет ключи пользователя на истечение и выполняет соответствующие действия.
+        :param user: Объект пользователя
+        :param session: Сессия базы данных
+        :return: Словарь с истекающими ключами для уведомления
+        """
+        expiring_keys = {}
+        now = datetime.now()
+        for key in user.keys:
+            time_diff = key.expiration_date - now
+
+            if timedelta(days=-2) < time_diff < timedelta(days=4):
+                # Ключ будет действителен не более 3х дней или уже истек
+                expiring_keys[key.key_id] = (
+                    key.name,
+                    max(time_diff, timedelta(days=0)).days + 1,
+                )
+            elif key.expiration_date < now:
+                # Если ключ истек более 2х дней назад
+                await self._delete_expired_key(key, session)
+                expiring_keys[key.key_id] = (key.name, 0)
+
+        return expiring_keys
+
+    @staticmethod
+    async def _delete_expired_key(key, session):
+        """
+        Удаляет истекший ключ из базы данных.
+        :param key: Ключ для удаления
+        :param session: Сессия базы данных
+        """
+        from utils import get_processor
+
+        processor = await get_processor(key.protocol_type.lower())
+        processor.delete_key(key.key_id, server_id=key.server_id)
+        session.delete(key)
+
+        # Обновляем количество пользователей на сервере
+        key.server.cnt_users = max(0, key.server.cnt_users - 1)
+
+    async def get_server_with_min_users(self, protocol_type: str) -> Server:
         """
         Выбирает сервер с минимальным количеством пользователей для указанного протокола.
         Если такой сервер отсутствует, создается новый сервер.
@@ -182,40 +207,36 @@ class DbProcessor:
         """
         with self.session_scope() as session:
             server = (
-                session.query(DbProcessor.Server)
-                .filter(
-                    func.lower(DbProcessor.Server.protocol_type)
-                    == protocol_type.lower()
-                )
-                .filter(DbProcessor.Server.cnt_users < 160)
-                .order_by(DbProcessor.Server.cnt_users.asc())
+                session.query(Server)
+                .filter(func.lower(Server.protocol_type) == protocol_type.lower())
+                .filter(Server.cnt_users < 160)
+                .order_by(Server.cnt_users.asc())
                 .with_for_update()  # Блокируем строку для изменения
                 .first()
             )
+            from utils.get_processor import get_processor
 
             if not server:
                 logger.info(f"Сервера с протоколом {protocol_type} не найдено.")
-                template_id = 31 # ID шаблона для сервера
+                template_id = 31  # ID шаблона для сервера
                 new_server = await vdsina_processor.create_new_server(
                     datacenter_id=1,
                     server_plan_id=1,
                     template_id=template_id,
                     ip4=1,
-                    email="asadullinam@yandex.ru",
-                    password=vdsina_password,
+                    email=os.getenv("VDSINA_EMAIL"),
+                    password=os.getenv("VDSINA_PASSWORD"),
                 )
+
                 if not new_server:
                     logger.error("Ошибка при создании нового сервера")
                     return None
+
                 new_server_db = self.add_server(new_server, protocol_type)
-                match protocol_type.lower():
-                    case "outline":
-                        await async_outline_processor.setup_server_outline(
-                            new_server_db
-                        )
-                    case "vless":
-                        await vless_processor.setup_server_vless(new_server_db)
+                processor = await get_processor(protocol_type.lower())
+                await processor.setup_server(new_server_db)
                 server = new_server_db
+
             server.cnt_users += 1
             session.commit()
             session.refresh(server)
@@ -229,9 +250,14 @@ class DbProcessor:
         :return: Объект нового сервера.
         """
         ip_list = server_data.get("ip", [])
-        primary_ip = ip_list[0].get("ip") if ip_list and isinstance(ip_list, list) and ip_list else None
+        primary_ip = (
+            ip_list[0].get("ip")
+            if ip_list and isinstance(ip_list, list) and ip_list
+            else None
+        )
+
         with self.session_scope() as session:
-            new_server = DbProcessor.Server(
+            new_server = Server(
                 ip=primary_ip,
                 password=server_data.get("password", ""),
                 api_url="https://userapi.vdsina.ru",
@@ -244,32 +270,34 @@ class DbProcessor:
             session.refresh(new_server)
             logger.info(f"Сервер {new_server.id} успешно добавлен в БД.")
             return new_server
-    def get_server_id_by_key_id(self, key_id):
+
+    def get_server_id_by_key_id(self, key_id) -> int:
         """
         Возвращает ID сервера по ID ключа.
         :param key_id:
         :return: ID сервера
         """
         with self.session_scope() as session:
-            key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+            key = session.query(VpnKey).filter_by(key_id=key_id).first()
             if key:
                 return key.server_id
             else:
                 logger.error(f"Ошибка при получении информации о ключе {key_id}")
                 return None
 
-    def get_server_by_id(self, server_id: str):
+    def get_server_by_id(self, server_id: str) -> Server:
         """
         Возвращает сервер по ID.
         :param server_id:
         :return:
         """
         with self.session_scope() as session:
-            server = session.query(DbProcessor.Server).filter_by(id=server_id).first()
+            server = session.query(Server).filter_by(id=server_id).first()
             if server:
                 logger.info(f"Найден сервер с id: {server_id}")
             else:
                 logger.error(f"Сервер с id {server_id} не найден.")
+                raise ValueError("Нет сервера с переданным id")
             return server
 
     def rename_key(self, key_id: str, new_name: str) -> bool:
@@ -280,57 +308,10 @@ class DbProcessor:
         :return:
         """
         with self.session_scope() as session:
-            key = session.query(DbProcessor.Key).filter_by(key_id=key_id).first()
+            key = session.query(VpnKey).filter_by(key_id=key_id).first()
             if not key:
                 logger.warning(f"Ключ с ID {key_id} не найден.")
                 return False
             key.name = new_name
             logger.info(f"Имя ключа с ID {key_id} изменено на {new_name}")
             return True
-
-    # Определение таблицы Users
-    class User(Base):
-        __tablename__ = "users"
-        user_telegram_id = Column(String, primary_key=True)  # Telegram ID пользователя
-        subscription_status = Column(String)  # Статус подписки (active/inactive)
-        use_trial_period = Column(Boolean)  # Использован ли пробный период
-        # Отношение с таблицей Keys: один ко многим
-        keys = relationship("Key", back_populates="user", cascade="all, delete-orphan")
-
-    # Определение таблицы Keys
-    class Key(Base):
-        __tablename__ = "keys"
-        key_id = Column(String, primary_key=True)  # id ключа в outline или vless и бд
-        user_telegram_id = Column(
-            String, ForeignKey("users.user_telegram_id")
-        )  # ID пользователя (ссылка на пользователя)
-        # Обратное отношение к таблице Users
-        user = relationship("User", back_populates="keys")
-        expiration_date = Column(DateTime)  # Дата окончания подписки
-        start_date = Column(DateTime)  # Дата начала подписки
-        protocol_type = Column(String, default="Outline")
-        name = Column(String, default=None)
-        remembering_before_exp = Column(
-            Boolean, default=False
-        )  # напомнить о продлении 1 раз
-        server_id = Column(String, ForeignKey("servers.id"))  # Связь с сервером
-        server = relationship("Server", back_populates="keys")
-
-    class Server(Base):
-        __tablename__ = "servers"
-        id = Column(Integer, primary_key=True, autoincrement=True)
-        ip = Column(String, default=None)
-        password = Column(String, default=None)
-        api_url = Column(String, default=None)
-        cert_sha256 = Column(String, default=None)
-        cnt_users = Column(Integer, default=0)
-        protocol_type = Column(String, default="Outline")
-        keys = relationship("Key", back_populates="server")
-
-        def save(self):
-            """
-            Сохраняет изменения объекта в базе данных.
-            Использует глобальный экземпляр db_processor для получения сессии.
-            """
-            with self.session_scope() as session:
-                session.merge(self)

@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 import uvicorn
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.db_processor_init import db_processor
-from bot.initialization.vless_processor_init import vless_processor
+from utils.get_processor import get_processor
+from initialization.db_processor_init import db_processor
 from urllib.parse import quote
 
-app = FastAPI()
+redirect_server = FastAPI()
+
 
 def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
     templates = {
@@ -51,58 +51,47 @@ def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
                 </script>
             </body>
         </html>
-        """
+        """,
     }
     return HTMLResponse(content=templates[protocol])
 
 
-
-
 def generate_hiddify_url(base_url: str, key_name: str) -> str:
     """Генерирует URL для Hiddify с именем ключа"""
-    encoded_url = quote(base_url, safe='')
+    encoded_url = quote(base_url, safe="")
     encoded_name = quote(key_name.strip())  # Кодируем имя
     return f"hiddify://import/{encoded_url}#{encoded_name}"
 
 
-@app.get("/open/{key_id}")
+@redirect_server.get("/open/{key_id}")
 async def open_connection(key_id: str):
     try:
         key = db_processor.get_key_by_id(key_id)
+
         if not key:
             raise HTTPException(status_code=404, detail="Key not found")
 
-        protocol = key.protocol_type.lower()
+        key_protocol = key.protocol_type.lower()
+        processor = await get_processor(key_protocol)
+        key_info = await processor.get_key_info(key_id, server_id=key.server_id)
 
-        if protocol == "outline":
-            key_info = await async_outline_processor.get_key_info(
-                key_id,
-                server_id=key.server_id
-            )
-            url = key_info.access_url
+        match key_protocol:
+            case "outline":
+                url = key_info.access_url
+            case "vless":
+                # Добавляем имя ключа из базы данных
+                url = generate_hiddify_url(
+                    key_info.access_url,
+                    key.name or f"Key-{key_id[:6]}",  # Используем имя или ID
+                )
+            case _:
+                raise HTTPException(status_code=400, detail="Unsupported protocol")
 
-        elif protocol == "vless":
-            key_info = await vless_processor.get_key_info(
-                key_id,
-                server_id=key.server_id
-            )
-            # Добавляем имя ключа из базы данных
-            url = generate_hiddify_url(
-                key_info.access_url,
-                key.name or f"Key-{key_id[:6]}"  # Используем имя или ID
-            )
-
-        else:
-            raise HTTPException(status_code=400, detail="Unsupported protocol")
-
-        return generate_redirect_html(protocol, url)
+        return generate_redirect_html(key_protocol, url)
 
     except Exception as e:
-        return HTMLResponse(
-            content=f"<h1>Error</h1><p>{str(e)}</p>",
-            status_code=500
-        )
+        return HTMLResponse(content=f"<h1>Error</h1><p>{str(e)}</p>", status_code=500)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(redirect_server, host="10.193.63.21", port=8000)

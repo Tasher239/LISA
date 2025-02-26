@@ -4,7 +4,7 @@ from aiogram.filters import StateFilter
 from aiogram import F, Router
 
 from bot.fsm.states import GetKey, ManageKeys, SubscriptionExtension
-from bot.initialization.bot_init import bot
+from initialization.bot_init import bot
 from bot.keyboards.keyboards import (
     get_extension_periods_keyboard,
     get_period_keyboard,

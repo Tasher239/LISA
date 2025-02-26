@@ -12,11 +12,11 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
-from bot.initialization.async_outline_processor_init import async_outline_processor
-from bot.initialization.vless_processor_init import vless_processor
-from bot.initialization.db_processor_init import db_processor
+from initialization.async_outline_processor_init import async_outline_processor
+from initialization.vless_processor_init import vless_processor
+from initialization.db_processor_init import db_processor
 from bot.fsm.states import GetKey, SubscriptionExtension
-from bot.initialization.bot_init import bot
+from initialization.bot_init import bot
 from bot.keyboards.keyboards import (
     get_back_button_to_key_params,
     get_after_payment_expired_key_keyboard,
@@ -36,13 +36,6 @@ provider_token = os.getenv("PROVIDER_PAYMENT_TOKEN")
 
 router = Router()
 logger = setup_logger()
-
-"""
-Метод answer_pre_checkout_query() отвечает на запрос Telegram о предварительной проверке платежа.
-В pre_checkout_q.id передается уникальный идентификатор запроса, полученный из объекта PreCheckoutQuery.
-Параметр ok=True указывает, что запрос на предварительную проверку платежа был принят и все в порядке (платеж можно продолжать).
-Если вы хотите отклонить платеж, вы можете установить ok=False и добавить описание причины отклонения через параметр error_message.
-"""
 
 
 @router.callback_query(

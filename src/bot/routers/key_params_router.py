@@ -5,14 +5,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 from aiogram import F, Router
 
-from bot.initialization.async_outline_processor_init import async_outline_processor
+from initialization.async_outline_processor_init import async_outline_processor
 from bot.utils.send_message import send_key_to_user_with_back_button
-from bot.initialization.db_processor_init import db_processor
-from bot.utils.get_processor import get_processor
+from initialization.db_processor_init import db_processor
+from utils.get_processor import get_processor
 from bot.lexicon.lexicon import get_day_by_number
+from initialization.bot_init import bot
 from bot.fsm.states import ManageKeys
 
-from bot.initialization.vless_processor_init import vless_processor
+from initialization.vless_processor_init import vless_processor
 from bot.keyboards.keyboards import (
     get_back_button_to_key_params,
     get_confirmation_keyboard,
@@ -57,7 +58,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     key = db_processor.get_key_by_id(selected_key_id)
 
     if not key:
-        # await callback.message.answer("Ключ не найден.")
+        await callback.message.answer("Ключ не найден.")
         return
 
     keyboard = await get_key_action_keyboard(key.key_id)
@@ -65,15 +66,6 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
         f"Выберите действие для ключа: «{key.name}»",
         reply_markup=keyboard,
     )
-    #
-    # data = await state.get_data()
-    # if data.get("key_info") is None:
-    #     processor = await get_processor(key.protocol_type)
-    #     key_info = await processor.get_key_info(key.key_id, server_id=key.server_id)
-    #     logger.info(f"Key info: {key_info}")
-    #
-    #     # заносим всю инфу о ключе в дату, чтобы оперативно доставать её в других обработчиках
-    #     await state.update_data(key_info=key_info)
 
     await state.set_state(ManageKeys.choose_key_action)
 
@@ -138,7 +130,8 @@ async def show_expiration_handler(callback: CallbackQuery, state: FSMContext):
 )
 async def ask_new_name_handler(callback: CallbackQuery, state: FSMContext):
     # Запрашиваем у пользователя новое имя для ключа
-    await callback.message.edit_text("Введите новое имя для ключа:")
+    prompt = await callback.message.edit_text("Введите новое имя для ключа:")
+    await state.update_data(prompt_msg_id=prompt.message_id)
     # Переходим к следующему состоянию
     await state.set_state(ManageKeys.wait_for_new_name)
 
@@ -146,6 +139,10 @@ async def ask_new_name_handler(callback: CallbackQuery, state: FSMContext):
 @router.message(StateFilter(ManageKeys.wait_for_new_name))
 async def receive_new_name_handler(message: Message, state: FSMContext):
     new_name = message.text.strip()  # Получаем введенное имя
+    await message.delete()
+
+    data = await state.get_data()
+    prompt_msg_id = data.get("prompt_msg_id")
 
     # Проверяем, что имя не пустое
     if not new_name:
@@ -156,8 +153,10 @@ async def receive_new_name_handler(message: Message, state: FSMContext):
     await state.update_data(new_name=new_name)
 
     # Запрашиваем подтверждение переименования
-    await message.answer(
-        f"Вы хотите переименовать ключ в «{new_name}»? Подтвердите действие.",
+    await bot.edit_message_text(
+        chat_id=message.chat.id,
+        message_id=prompt_msg_id,
+        text=f"Вы хотите переименовать ключ в «{new_name}»? Подтвердите действие.",
         reply_markup=get_confirmation_keyboard(),
     )
 

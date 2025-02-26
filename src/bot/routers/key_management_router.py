@@ -3,9 +3,9 @@ from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram import F, Router
 
-from bot.initialization.db_processor_init import db_processor
-from database.db_processor import DbProcessor
+from initialization.db_processor_init import db_processor
 from bot.fsm.states import ManageKeys, MainMenu, GetKey
+from database.models import User
 
 from bot.keyboards.keyboards import (
     get_buttons_for_trial_period,
@@ -35,11 +35,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
     session = db_processor.get_session()
 
     try:
-        user = (
-            session.query(DbProcessor.User)
-            .filter_by(user_telegram_id=user_id_str)
-            .first()
-        )
+        user = session.query(User).filter_by(user_telegram_id=user_id_str).first()
         if not user or len(user.keys) == 0:
             await state.set_state(ManageKeys.no_active_keys)
             await callback.message.edit_text(

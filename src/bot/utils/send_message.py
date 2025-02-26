@@ -4,7 +4,7 @@ from outline_vpn.outline_vpn import OutlineKey
 from src.bot.lexicon.lexicon import Notification
 from src.bot.utils.string_makers import get_your_key_string
 from src.logger.logging_config import setup_logger
-from src.bot.initialization.bot_init import bot
+from initialization.bot_init import bot
 from src.bot.keyboards.keyboards import (
     get_back_button_to_key_params,
     get_installation_button,
@@ -42,12 +42,3 @@ async def send_message_subscription_expired(user_tg_id, keys):
         parse_mode="HTML",
         reply_markup=get_key_name_extension_keyboard_with_names(keys),
     )
-
-
-# async def send_message_subscription_ends(user):
-#     await bot.send_message(
-#         user.user_telegram_id,
-#         Notification.SUBSCRIPTION_REMINDER.value,
-#         parse_mode="HTML",
-#         reply_markup=get_extension_keyboard(),
-#     )

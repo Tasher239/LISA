@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from bot.processors.vdsina_processor import VDSinaAPI
+from api_processors.vdsina_processor import VDSinaAPI
 
 load_dotenv()
 VDSINA_EMAIL = os.getenv("VDSINA_EMAIL")
