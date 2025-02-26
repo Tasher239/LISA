@@ -47,7 +47,7 @@ class VpnKey(Base):
     protocol_type = Column(String, default="Outline")  # Тип протокола (Outline/VLESS)
 
     server_id = Column(
-        String, ForeignKey("servers.id")
+        Integer, ForeignKey("servers.id")
     )  # ID сервера, на котором находится ключ
 
     # Связь с таблицей Server (каждый ключ привязан к серверу)
