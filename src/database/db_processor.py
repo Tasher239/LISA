@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import os
+import logging
 from contextlib import contextmanager
 
 from sqlalchemy.orm import sessionmaker
@@ -11,10 +12,10 @@ from sqlalchemy import (
 from initialization.vdsina_processor_init import vdsina_processor
 from bot.utils.send_message import send_message_subscription_expired
 from database.models import Base, VpnKey, Server, User
-from logger.logging_config import setup_logger
 from dotenv import load_dotenv
+from utils import get_processor
 
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -327,23 +328,27 @@ class DbProcessor:
         - Если на всех серверах какого-то типа > 159 клиентов, то поднимаем новый сервер соответствующего типа
         :return:
         """
+        from utils.get_processor import get_processor
         with self.session_scope() as session:
-            server_types = ("Outline", "Vless")
+            server_types = ("outline", "vless")
             for protocol_type in server_types:
                 servers = (
                     session.query(Server).filter_by(protocol_type=protocol_type).all()
                 )
 
-                all_servers_full = all(server.cnt_users > 159 for server in servers)
+                all_servers_full = all(server.cnt_users >= 159 for server in servers)
 
                 if all_servers_full:
                     logger.info(
                         f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
                     )
-                    new_server = self.create_new_server()
+                    new_server = await self.create_new_server()
                     logger.info(f"Подняли новый сервер типа {protocol_type}")
                     self.add_server(new_server, protocol_type)
                     logger.info(f"Записали данные нового сервера в БД")
+                    processor = await get_processor(protocol_type)
+                    await processor.setup_server(new_server)
+                    logger.info(f"Настроили сервер типа {protocol_type}")
 
     async def check_and_update_key_data_limit(self):
         from utils.get_processor import get_processor

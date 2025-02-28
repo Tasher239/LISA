@@ -1,3 +1,5 @@
+import logging
+
 from datetime import datetime, timedelta
 
 from aiogram.fsm.context import FSMContext
@@ -17,11 +19,8 @@ from bot.keyboards.keyboards import (
     get_choice_vpn_type_keyboard_for_no_key,
 )
 
-
-from logger.logging_config import setup_logger
-
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 @router.callback_query(

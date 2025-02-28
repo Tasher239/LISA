@@ -12,10 +12,10 @@ from bot.keyboards.keyboards import (
     get_key_name_choosing_keyboard,
 )
 
-from logger.logging_config import setup_logger
+import logging
 
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 @router.callback_query(

@@ -1,9 +1,9 @@
 import json
+import logging
 from aiogram.types import Message
 
-from logger.logging_config import setup_logger
 
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 class LogSender:

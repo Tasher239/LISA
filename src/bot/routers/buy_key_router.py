@@ -11,10 +11,10 @@ from bot.keyboards.keyboards import (
     get_notification_extension_periods_keyboard,
 )
 
-from logger.logging_config import setup_logger
+import logging
 
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 @router.callback_query(

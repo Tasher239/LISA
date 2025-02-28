@@ -1,9 +1,10 @@
+import logging
+
 from aiogram.types import Message
 from outline_vpn.outline_vpn import OutlineKey
 
 from src.bot.lexicon.lexicon import Notification
 from src.bot.utils.string_makers import get_your_key_string
-from src.logger.logging_config import setup_logger
 from initialization.bot_init import bot
 from src.bot.keyboards.keyboards import (
     get_back_button_to_key_params,
@@ -11,7 +12,7 @@ from src.bot.keyboards.keyboards import (
     get_key_name_extension_keyboard_with_names,
 )
 
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 async def send_key_to_user(
