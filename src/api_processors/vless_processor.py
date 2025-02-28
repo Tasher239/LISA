@@ -376,7 +376,6 @@ class VlessProcessor(BaseProcessor):
 
         # Сформируем тело запроса
         # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
-        import json
 
         key_name = generate_slug(2).replace("-", " ")
         data_limit = 200 * 1024**3  # лимит в байтах
@@ -398,6 +397,8 @@ class VlessProcessor(BaseProcessor):
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
                             "comment": key_name,  # имя ключа, которое видит пользователь
+                            "up": 0,
+                            "down": 0,
                         }
                     ]
                 }
@@ -485,7 +486,6 @@ class VlessProcessor(BaseProcessor):
 
         # Сформируем тело запроса
         # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
-        import json
 
         data = {
             "id": 1,
@@ -607,6 +607,7 @@ class VlessProcessor(BaseProcessor):
 
                 for client in clients:
                     if client.get("id") == key_id:
+                        print(json.dumps(client, indent=4))
                         return VlessKey(
                             key_id=client.get("id"),
                             name=client.get("comment", ""),
@@ -629,6 +630,76 @@ class VlessProcessor(BaseProcessor):
         except ValueError as e:
             logger.error(f"Ошибка при декодировании JSON-ответа: {e}")
             return None
+
+    @create_server_session_by_id
+    async def update_data_limit(
+        self,
+        key_id: str,
+        new_limit_bytes: int,
+        server_id: int = None,
+        key_name: str = None,
+    ) -> bool:
+        """
+        Обновляет лимит данных для указанного пользователя на сервере.
+
+        :param key_id: ID ключа, для которого обновляется лимит.
+        :param new_limit_bytes: Новый лимит данных в байтах.
+        :param server_id: ID сервера, на котором обновляется лимит данных.
+
+        :return: True, если обновление прошло успешно, иначе False.
+        """
+        if not self.con:
+            return False, "Нет подключения к серверу"
+
+        logger.debug(f"Обновляем лимит для ключа {key_id} на сервере {self.ip}...")
+
+        header = {"Accept": "application/json"}
+
+        # Сформируем тело запроса
+        # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
+
+        data = {
+            "id": 1,
+            "settings": json.dumps(
+                {
+                    "clients": [
+                        {
+                            "id": key_id,  # должен быть уникальным, чтобы удалять нормально
+                            "alterId": 0,  # тут будет имя ключа
+                            "email": key_id,  # должен быть уникальным, чтобы добавлять ключи
+                            "limitIp": 1,
+                            "totalGB": new_limit_bytes,
+                            "expiryTime": 0,
+                            "enable": "true",
+                            "tgId": "",
+                            "subId": key_id,
+                            "flow": "xtls-rprx-vision",
+                            "comment": key_name,
+                        }
+                    ]
+                }
+            ),
+        }
+
+        command = f"/panel/inbound/updateClient/{key_id}"
+
+        try:
+            resource = self.ses.post(
+                f"{self.host}{command}", headers=header, json=data
+            ).json()
+            if resource.get("success"):
+                logger.debug(
+                    f"Успешно обновили лимит для ключа {key_id} на сервере {self.ip}"
+                )
+                return True
+            else:
+                msg = resource.get("msg", "Неизвестная ошибка")
+                logger.warning(f"🛑Ошибка при обновлении лимита ключа {key_id}: {msg}")
+                return False
+
+        except requests.RequestException as e:
+            logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
+            return False, str(e)
 
     @staticmethod
     async def setup_server(server) -> bool:

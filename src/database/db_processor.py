@@ -8,7 +8,6 @@ from sqlalchemy import (
     create_engine,
 )
 
-
 from initialization.vdsina_processor_init import vdsina_processor
 from bot.utils.send_message import send_message_subscription_expired
 from database.models import Base, VpnKey, Server, User
@@ -218,15 +217,8 @@ class DbProcessor:
 
             if not server:
                 logger.info(f"Сервера с протоколом {protocol_type} не найдено.")
-                template_id = 31  # ID шаблона для сервера
-                new_server = await vdsina_processor.create_new_server(
-                    datacenter_id=1,
-                    server_plan_id=1,
-                    template_id=template_id,
-                    ip4=1,
-                    email=os.getenv("VDSINA_EMAIL"),
-                    password=os.getenv("VDSINA_PASSWORD"),
-                )
+
+                new_server = await self.create_new_server()
 
                 if not new_server:
                     logger.error("Ошибка при создании нового сервера")
@@ -241,6 +233,19 @@ class DbProcessor:
             session.commit()
             session.refresh(server)
             return server
+
+    @staticmethod
+    async def create_new_server():
+        template_id = 31  # ID шаблона для сервера
+        new_server = await vdsina_processor.create_new_server(
+            datacenter_id=1,
+            server_plan_id=1,
+            template_id=template_id,
+            ip4=1,
+            email=os.getenv("VDSINA_EMAIL"),
+            password=os.getenv("VDSINA_PASSWORD"),
+        )
+        return new_server
 
     def add_server(self, server_data: dict, protocol_type: str):
         """
@@ -315,3 +320,50 @@ class DbProcessor:
             key.name = new_name
             logger.info(f"Имя ключа с ID {key_id} изменено на {new_name}")
             return True
+
+    async def check_count_keys_on_servers(self):
+        """
+        Асинхронная проверка числа клиентов на серверах
+        - Если на всех серверах какого-то типа > 159 клиентов, то поднимаем новый сервер соответствующего типа
+        :return:
+        """
+        with self.session_scope() as session:
+            server_types = ("Outline", "Vless")
+            for protocol_type in server_types:
+                servers = (
+                    session.query(Server).filter_by(protocol_type=protocol_type).all()
+                )
+
+                all_servers_full = all(server.cnt_users > 159 for server in servers)
+
+                if all_servers_full:
+                    logger.info(
+                        f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
+                    )
+                    new_server = self.create_new_server()
+                    logger.info(f"Подняли новый сервер типа {protocol_type}")
+                    self.add_server(new_server, protocol_type)
+                    logger.info(f"Записали данные нового сервера в БД")
+
+    async def check_and_update_key_data_limit(self):
+        from utils.get_processor import get_processor
+
+        with self.session_scope() as session:
+            keys = session.query(VpnKey).all()
+            for key in keys:
+                now = datetime.now()
+                if key.expiration_date >= now:
+                    processor = await get_processor(key.protocol_type)
+                    key_info = await processor.get_key_info(
+                        key.key_id, server_id=key.server_id
+                    )
+                    logger.info("Обновляем лимит")
+                    print(key_info)
+                    await processor.update_data_limit(
+                        key.key_id,
+                        key_info.data_limit
+                        + (key_info.used_bytes - key.used_bytes_last_month),
+                        server_id=key.server_id,
+                        key_name=key.name,
+                    )
+                    key.used_bytes_last_month = key_info.used_bytes

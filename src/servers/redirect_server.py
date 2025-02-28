@@ -58,9 +58,20 @@ def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
 
 def generate_hiddify_url(base_url: str, key_name: str) -> str:
     """Генерирует URL для Hiddify с именем ключа"""
-    encoded_url = quote(base_url, safe="")
-    encoded_name = quote(key_name.strip())  # Кодируем имя
-    return f"hiddify://import/{encoded_url}#{encoded_name}"
+    # 1. Удаляем существующее имя из ссылки (если есть)
+    base_without_fragment = base_url.split("#")[0]
+
+    # 2. Кодируем имя ключа (пробелы -> %20 и т.д.)
+    encoded_name = quote(key_name.strip())
+
+    # 3. Собираем VLESS-ссылку с именем во фрагменте
+    vless_url_with_name = f"{base_without_fragment}#{encoded_name}"
+
+    # 4. Кодируем только спецсимволы, кроме :/?#&= для сохранения структуры
+    encoded_vless = quote(vless_url_with_name, safe=":/?#&=+")
+
+    # 5. Формируем итоговый URL для Hiddify
+    return f"hiddify://import/{encoded_vless}"
 
 
 @redirect_server.get("/open/{key_id}")
@@ -82,7 +93,7 @@ async def open_connection(key_id: str):
                 # Добавляем имя ключа из базы данных
                 url = generate_hiddify_url(
                     key_info.access_url,
-                    key.name or f"Key-{key_id[:6]}",  # Используем имя или ID
+                    key.name or f"Server-{key.server_id}",  # Дефолтное имя
                 )
             case _:
                 raise HTTPException(status_code=400, detail="Unsupported protocol")

@@ -62,7 +62,7 @@ async def test_create_vpn_key(mock_processor, mock_vpn_key):
     """Тестирование создания ключа для обычного пользователя и админа"""
     key, server_id = await anext(mock_vpn_key)
     assert key is not None
-    assert key.data_limit == 200 * 10**9
+    assert key.data_limit == 200 * 1024**3
 
 
 @pytest.mark.asyncio
@@ -128,7 +128,9 @@ async def test_update_data_limit(mock_processor, mock_vpn_key):
     key, server_id = await anext(mock_vpn_key)
     assert key.data_limit == 200 * 1024**3
     new_data_limit = 300 * 10**9
-    await mock_processor.update_data_limit(key.key_id, new_data_limit, server_id)
+    await mock_processor.update_data_limit(
+        key.key_id, new_data_limit, server_id=server_id, key_name=key.name
+    )
     key_info = await mock_processor.get_key_info(key.key_id, server_id)
     assert key_info.data_limit == new_data_limit
 
@@ -136,7 +138,7 @@ async def test_update_data_limit(mock_processor, mock_vpn_key):
 @pytest.mark.asyncio
 async def test_delete_data_limit(mock_processor, mock_vpn_key):
     key, server_id = await anext(mock_vpn_key)
-    assert key.data_limit == 200 * 10**9
+    assert key.data_limit == 200 * 1024**3
     await mock_processor.delete_data_limit(key.key_id, server_id)
     key_info = await mock_processor.get_key_info(key.key_id, server_id)
     assert key_info.data_limit is None

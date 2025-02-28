@@ -44,6 +44,9 @@ class VpnKey(Base):
     expiration_date = Column(DateTime)  # Дата окончания подписки
 
     name = Column(String, default=None)  # имя ключа
+    used_bytes_last_month = Column(
+        Integer, default=0
+    )  # использовано байтов к концу прошлого месяца
     protocol_type = Column(String, default="Outline")  # Тип протокола (Outline/VLESS)
 
     server_id = Column(

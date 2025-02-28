@@ -75,7 +75,7 @@ async def test_delete_key(mock_processor, mock_vpn_key):
 async def test_valid_get_key_info(mock_processor, mock_vpn_key):
     """Тестирование получение информации о существующих ключах"""
     key, server_id = await anext(mock_vpn_key)
-    key_info = await mock_processor.get_key_info(key.key_id, server_id)
+    key_info = await mock_processor.get_key_info(key.key_id, server_id=server_id)
     assert isinstance(key_info, VlessKey)
     assert key_info.key_id == key.key_id
     assert key_info.name == key.name
@@ -101,3 +101,16 @@ async def test_rename_key(mock_processor, mock_vpn_key):
     assert rename_status is True
     key_info = await mock_processor.get_key_info(key.key_id, server_id=server_id)
     assert key_info.name == new_key_name
+
+
+@pytest.mark.asyncio
+async def test_update_data_limit(mock_processor, mock_vpn_key):
+    key, server_id = await anext(mock_vpn_key)
+    assert key.data_limit == 200 * 1024**3
+    new_data_limit = 300 * 10**9
+    await mock_processor.update_data_limit(
+        key.key_id, new_data_limit, server_id=server_id, key_name=key.name
+    )
+    key_info = await mock_processor.get_key_info(key.key_id, server_id=server_id)
+    assert key_info.data_limit == new_data_limit
+    assert key_info.name == key.name
