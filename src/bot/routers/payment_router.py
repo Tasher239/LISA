@@ -1,5 +1,6 @@
 import os
 import uuid
+import logging
 from dotenv import load_dotenv
 
 from aiogram.fsm.context import FSMContext
@@ -29,13 +30,13 @@ from bot.utils.send_message import send_key_to_user
 from bot.lexicon.lexicon import get_month_by_number
 
 from logger.log_sender import LogSender
-from logger.logging_config import setup_logger
+
 
 load_dotenv()
 provider_token = os.getenv("PROVIDER_PAYMENT_TOKEN")
 
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 @router.callback_query(

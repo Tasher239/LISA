@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 import json
+import logging
 
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 from aiogram.filters import Command
@@ -23,11 +24,10 @@ from bot.keyboards.keyboards import (
     get_back_admin_panel_keyboard,
 )
 
-from logger.logging_config import setup_logger
 
 load_dotenv()
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -242,3 +242,25 @@ async def admin_panel(callback: CallbackQuery):
     await callback.message.edit_text(
         "👑 Вы вернулись в админ-панель", reply_markup=get_admin_keyboard()
     )
+
+ADMIN_IDS = list(map(int, json.loads(os.getenv("ADMIN_IDS", "[]"))))
+
+@router.message(Command("get_db"))
+async def send_db(message: Message):
+    """
+    Отправляет файл базы данных администратору по команде /get_db
+    """
+    if message.from_user.id not in ADMIN_IDS:
+        await message.answer("🚫 У вас нет доступа.")
+        return
+
+    db_path = os.path.abspath("database/vpn_users.db")  # Укажи правильный путь к БД
+
+    # Проверяем, существует ли файл
+    if not os.path.exists(db_path):
+        await message.answer("🚫 База данных не найдена!")
+        return
+
+    # Отправляем файл
+    db_file = FSInputFile(db_path)
+    await message.answer_document(db_file, caption="📂 Вот ваша база данных.")

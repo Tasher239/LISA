@@ -2,12 +2,12 @@ import aiohttp
 import certifi
 import ssl
 import os
+import logging
 
 from dotenv import load_dotenv
 
-from logger.logging_config import setup_logger
 
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 

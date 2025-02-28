@@ -6,15 +6,15 @@ import urllib3
 import json
 import uuid
 import os
+import logging
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from api_processors.base_processor import BaseProcessor
 from api_processors.key_models import VlessKey
 
-from logger.logging_config import setup_logger
 
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 

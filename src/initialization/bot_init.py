@@ -1,12 +1,12 @@
 import os
+import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-from src.logger.logging_config import setup_logger
 
 load_dotenv()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("TOKEN")
 

@@ -3,18 +3,21 @@ import base64
 import json
 import re
 import typing
+import logging
 
 import aiohttp
 import asyncssh
 from coolname import generate_slug
 
-from initialization.db_processor_init import db_processor
 from api_processors.key_models import OutlineKey
 from api_processors.base_processor import BaseProcessor
-from logger.logging_config import setup_logger
 
-logger = setup_logger()
 
+logger = logging.getLogger(__name__)
+
+def get_db_processor():
+    from initialization.db_processor_init import db_processor
+    return db_processor
 
 class OutlineServerErrorException(Exception):
     """
@@ -62,7 +65,7 @@ class OutlineProcessor(BaseProcessor):
 
                 server_id = kwargs.get("server_id")
 
-                server = db_processor.get_server_by_id(server_id)
+                server = get_db_processor().get_server_by_id(server_id)
                 self.api_url = server.api_url
                 self.server_id = server_id
                 connector = aiohttp.TCPConnector(
@@ -88,9 +91,9 @@ class OutlineProcessor(BaseProcessor):
 
         :return: None
         """
-        from initialization.db_processor_init import db_processor
 
-        server = await db_processor.get_server_with_min_users("outline")
+
+        server = await get_db_processor().get_server_with_min_users("outline")
 
         self.api_url = server.api_url
         self.server_id = server.id

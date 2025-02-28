@@ -6,10 +6,10 @@ from aiogram.types import Message
 from bot.fsm.states import MainMenu
 from bot.keyboards.keyboards import get_main_menu_keyboard
 
-from logger.logging_config import setup_logger
+import logging
 
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 @router.message(CommandStart())

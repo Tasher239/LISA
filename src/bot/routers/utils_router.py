@@ -1,3 +1,5 @@
+import logging
+
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery
@@ -19,10 +21,8 @@ from bot.keyboards.keyboards import (
     get_key_name_extension_keyboard_with_names,
 )
 
-from logger.logging_config import setup_logger
-
 router = Router()
-logger = setup_logger()
+logger = logging.getLogger(__name__)
 
 
 # фильтр запроса инструкции

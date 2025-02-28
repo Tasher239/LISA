@@ -6,11 +6,10 @@ from aiogram import F, Router
 from bot.keyboards.keyboards import get_choice_vpn_type_keyboard
 from bot.fsm.states import GetKey, ManageKeys, AdminAccess
 
-from logger.logging_config import setup_logger
+import logging
 
 router = Router()
-logger = setup_logger()
-
+logger = logging.getLogger(__name__)
 
 @router.callback_query(
     StateFilter(ManageKeys.no_active_keys), F.data.in_(["get_keys_pressed"])

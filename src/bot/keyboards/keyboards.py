@@ -4,6 +4,18 @@ from aiogram.fsm.context import FSMContext
 from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess, ManageKeys
 
+import socket
+def get_server_ip():
+    """Определяет текущий внешний IP-адрес сервера."""
+    try:
+        # Подключаемся к внешнему серверу, но НЕ отправляем данные
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))  # Google DNS
+            return s.getsockname()[0]
+    except Exception:
+        return "127.0.0.1"  # fallback на localhost
+
+SERVER_IP = get_server_ip()
 
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
@@ -250,35 +262,24 @@ async def get_key_name_choosing_keyboard(keys: list):
     outline_keys = [key for key in keys if key.protocol_type == "Outline"]
     vless_keys = [key for key in keys if key.protocol_type == "VLESS"]
 
-    if outline_keys:
-        keyboard_buttons.append(
-            [InlineKeyboardButton(text=f"OUTLINE 🔽{' ' * 43}", callback_data="none")]
-        )
-        for key in outline_keys:
-            padded_name = f"🔑 {key.name}".ljust(30, " ")
+    def add_keys_section(title: str, keys: list):
+        """Добавляет заголовок и кнопки ключей в клавиатуру."""
+        keyboard_buttons.append([InlineKeyboardButton(text=f" {title} 🔽 ", callback_data="none")])
+
+        # Определяем максимальную длину имени ключа для выравнивания
+        max_length = max((len(key.name) for key in keys), default=10)
+
+        for key in keys:
+            key_name = f"🔑 {key.name}".ljust(max_length + 3)  # +3 для отступов
             keyboard_buttons.append(
-                [
-                    InlineKeyboardButton(
-                        text=f"{' ' * 10}{padded_name}",
-                        callback_data=f"key_{key.key_id}",
-                    )
-                ]
+                [InlineKeyboardButton(text=f"  {key_name}  ", callback_data=f"key_{key.key_id}")]
             )
 
+    if outline_keys:
+        add_keys_section("OUTLINE", outline_keys)
+
     if vless_keys:
-        keyboard_buttons.append(
-            [InlineKeyboardButton(text=f"VLESS 🔽{' ' * 40}", callback_data="none")]
-        )
-        for key in vless_keys:
-            padded_name = f"🔑 {key.name}".ljust(30, " ")
-            keyboard_buttons.append(
-                [
-                    InlineKeyboardButton(
-                        text=f"{' ' * 10}{padded_name}",  # Отступ 10 пробелов + фиксированная длина
-                        callback_data=f"key_{key.key_id}",
-                    )
-                ]
-            )
+        add_keys_section("VLESS", vless_keys)
 
     keyboard_buttons.append(
         [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main_menu")]
@@ -326,7 +327,7 @@ async def get_key_action_keyboard(key_id):
     )
     launch_app_button = InlineKeyboardButton(
         text="🚀 Запустить в приложении",
-        url=f"http://10.193.63.21:8000/open/{key_id}",
+        url=f"http://{SERVER_IP}:8000/open/{key_id}",
     )
 
     back_button = InlineKeyboardButton(
