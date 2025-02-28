@@ -36,6 +36,16 @@ async def scheduled_check_db():
     await db_processor.check_db()
 
 
+# @aiocron.crontab("* * * * *")
+# async def scheduled_check_db():
+#     await db_processor.check_count_keys_on_servers()
+
+
+@aiocron.crontab("* * * * *")
+async def scheduled_check_db():
+    await db_processor.check_and_update_key_data_limit()
+
+
 async def main() -> None:
     main_init_db()  # инициализируем БД 1ый раз при запуске
     logger.info("Регистрация main menu команд...")

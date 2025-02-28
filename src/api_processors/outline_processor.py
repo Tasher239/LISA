@@ -244,16 +244,16 @@ class OutlineProcessor(BaseProcessor):
 
     @create_server_session_by_id
     async def update_data_limit(
-        self, key_id: int, limit_bytes: int, server_id: int
+        self, key_id: int, new_limit_bytes: int, server_id: int = None, key_name=None
     ) -> bool:
         """
         Устанавливает лимит передачи данных для ключа.
 
         :param key_id: Идентификатор ключа.
-        :param limit_bytes: Лимит в байтах.
+        :param new_limit_bytes: Лимит в байтах.
         :return: True, если операция прошла успешно.
         """
-        data = {"limit": {"bytes": limit_bytes}}
+        data = {"limit": {"bytes": new_limit_bytes}}
         async with self.session.put(
             url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
         ) as resp:
