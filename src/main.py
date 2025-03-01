@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI
 from servers.redirect_server import redirect_server
 from initialization.bot_init import dp, bot
+from initialization.vdsina_processor_init import vdsina_processor_init
 from initialization.db_processor_init import db_processor, main_init_db
 from bot.routers import (
     admin_router,
@@ -53,24 +54,28 @@ async def run_fastapi_server():
 async def scheduled_check_db():
     await db_processor.check_db()
 
-@aiocron.crontab("* * * * *")
-async def scheduled_check_db():
+@aiocron.crontab("0 * * * *")
+async def scheduled_update_key_data_limit():
     await db_processor.check_and_update_key_data_limit()
+
+@aiocron.crontab("*/5 * * * *")
+async def scheduled_check_servers():
+    await db_processor.check_count_keys_on_servers()
+
 
 
 async def main() -> None:
+    await vdsina_processor_init()  # инициализируем VDSina API
     main_init_db()  # инициализируем БД 1ый раз при запуске
-    logger.info("Запускаем FastAPI и бота...")
-    server_task = asyncio.create_task(run_fastapi_server())
-    bot_task = asyncio.create_task(dp.start_polling(bot))
+    logger.info("Регистрация main menu команд...")
     logger.info("Запуск polling...")
-    await asyncio.gather(server_task, bot_task)
+    await dp.start_polling(bot)
 
 
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.get_event_loop().run_until_complete(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Бот остановлен вручную.")
     except Exception as e:

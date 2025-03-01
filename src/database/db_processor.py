@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import os
 import logging
+import requests
+import asyncio
 from contextlib import contextmanager
 
 from sqlalchemy.orm import sessionmaker
@@ -79,7 +81,7 @@ class DbProcessor:
                 return None
 
     def update_database_with_key(
-        self, user_id, key, period, server_id, protocol_type="Outline"
+        self, user_id, key, period, server_id, protocol_type="outline"
     ) -> None:
         """
         Обновляет базу данных новым ключом.
@@ -227,7 +229,10 @@ class DbProcessor:
 
                 new_server_db = self.add_server(new_server, protocol_type)
                 processor = await get_processor(protocol_type.lower())
-                await processor.setup_server(new_server_db)
+                result = await processor.setup_server(new_server_db)
+                if not result:
+                    logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
+                    return None
                 server = new_server_db
 
             server.cnt_users += 1
@@ -235,9 +240,79 @@ class DbProcessor:
             session.refresh(server)
             return server
 
-    @staticmethod
-    async def create_new_server():
+    def get_server_info(self, server_id):
+        """
+        Запрашивает информацию о сервере по его ID.
+        :param server_id:
+        :return:
+        """
+        url = f"https://userapi.vdsina.com/v1/server/{server_id}"
+        headers = {"Authorization": f"Bearer {os.getenv('VDSINA_TOKEN')}"}
+
+        response = requests.get(url, headers=headers)
+        data = response.json()
+
+        if data.get("status") == "ok":
+            return data.get("data", {})
+        return None
+    async def wait_for_server_ready(self, server_id, timeout=65):
+        """
+        Ожидает, пока сервер станет активным.
+        :param server_id: ID сервера
+        :param timeout: Максимальное время ожидания в секундах
+        :return: True, если сервер активен, иначе False
+        """
+        for _ in range(timeout // 5):  # Проверяем каждые 5 секунд
+            server_data = self.get_server_info(server_id)
+            if server_data and server_data.get("status") == "active":
+                return True
+            logger.info("Сервер еще не активен, ждем...")
+            await asyncio.sleep(5)  # Ждем 5 секунд перед следующей проверкой
+        logger.error("Таймаут ожидания сервера!")
+        return False
+
+    def get_server_ip(self, server_id):
+        """
+        Запрашивает информацию о сервере по его ID.
+        :param server_id:
+        :return: IP-адрес сервера
+        """
+        url = f"https://userapi.vdsina.com/v1/server/{server_id}"
+        headers = {"Authorization": f"Bearer {os.getenv('VDSINA_TOKEN')}"}
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        if data.get("status") == "ok":
+            server_data = data.get("data", {})
+            ip_list = server_data.get("ip", [])
+            if ip_list:
+                return ip_list[0].get("ip")
+        return None
+
+    def get_server_password(self, server_id):
+        """
+        Получает пароль сервера по его ID.
+        :param server_id:
+        :return: Пароль сервера
+        """
+        url = f"https://userapi.vdsina.com/v1/server.password/{server_id}"
+        headers = {"Authorization": f"Bearer {os.getenv('VDSINA_TOKEN')}"}
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        if data.get("status") == "ok":
+            server_data = data.get("data", {})
+            password = server_data.get("password", [])
+            if password:
+                return password
+
+        return None
+
+    async def create_new_server(self):
+        """
+        Создает новый сервер на vdSina.
+        :return: Объект нового сервера
+        """
         template_id = 31  # ID шаблона для сервера
+        logger.info("Отправляем запрос на vdSina для создания нового сервера")
         new_server = await vdsina_processor.create_new_server(
             datacenter_id=1,
             server_plan_id=1,
@@ -246,30 +321,35 @@ class DbProcessor:
             email=os.getenv("VDSINA_EMAIL"),
             password=os.getenv("VDSINA_PASSWORD"),
         )
-        return new_server
+        if not new_server or new_server.get("status") != "ok":
+            logger.error("Ошибка при создании нового сервера")
+            return None
+        server_id = new_server["data"]["id"]
+        logger.info(f"Создан новый сервер с ID: {server_id}")
+        is_ready = await self.wait_for_server_ready(server_id)
+        if not is_ready:
+            logger.error("Сервер не стал активным, невозможно получить IP и пароль")
+            return None
+        server_ip = self.get_server_ip(server_id)
+        server_password = self.get_server_password(server_id)
+        logger.info(f"Сервер готов: IP={server_ip}, Пароль={server_password}")
+        return new_server, server_ip, server_password
 
-    def add_server(self, server_data: dict, protocol_type: str):
+    def add_server(self, server_data: dict, protocol_type: str, server_ip: str, server_password: str) -> Server:
         """
          Добавляет информацию о сервере в базу данных.
         :param server_data: Словарь с данными сервера.
         :param protocol_type: Тип протокола (например, "Outline").
         :return: Объект нового сервера.
         """
-        ip_list = server_data.get("ip", [])
-        primary_ip = (
-            ip_list[0].get("ip")
-            if ip_list and isinstance(ip_list, list) and ip_list
-            else None
-        )
-
         with self.session_scope() as session:
             new_server = Server(
-                ip=primary_ip,
-                password=server_data.get("password", ""),
+                ip=server_ip,
+                password=server_password,
                 api_url="https://userapi.vdsina.ru",
                 cert_sha256=server_data.get("cert_sha256", ""),
                 cnt_users=0,
-                protocol_type=server_data.get("protocol_type", "outline"),
+                protocol_type=protocol_type,
             )
             session.add(new_server)
             session.commit()
@@ -335,19 +415,21 @@ class DbProcessor:
                 servers = (
                     session.query(Server).filter_by(protocol_type=protocol_type).all()
                 )
-
                 all_servers_full = all(server.cnt_users >= 159 for server in servers)
-
                 if all_servers_full:
                     logger.info(
                         f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
                     )
-                    new_server = await self.create_new_server()
+                    new_server, server_ip, server_password = await self.create_new_server()
                     logger.info(f"Подняли новый сервер типа {protocol_type}")
-                    self.add_server(new_server, protocol_type)
+                    new_server = self.add_server(new_server, protocol_type, server_ip, server_password)
                     logger.info(f"Записали данные нового сервера в БД")
                     processor = await get_processor(protocol_type)
-                    await processor.setup_server(new_server)
+                    logger.info(f"Передаем сервер в setup_server: {new_server}")
+                    result = await processor.setup_server(new_server)
+                    if not result:
+                        logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
+                        return
                     logger.info(f"Настроили сервер типа {protocol_type}")
 
     async def check_and_update_key_data_limit(self):
