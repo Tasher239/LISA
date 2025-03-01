@@ -18,14 +18,14 @@ def main_init_db():
                 Server(
                     api_url=os.getenv("OUTLINE_API_URL"),
                     cert_sha256=os.getenv("OUTLINE_CERT_SHA"),
-                    cnt_users=0,
-                    protocol_type="Outline",
+                    cnt_users=159,
+                    protocol_type="outline",
                 ),
                 Server(
                     ip=os.getenv("VLESS_IP"),
                     password=os.getenv("VLESS_PASSWORD"),
                     cnt_users=0,
-                    protocol_type="Vless",
+                    protocol_type="vless",
                 ),
             ]
             session.add_all(servers)

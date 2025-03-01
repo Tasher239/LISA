@@ -426,8 +426,8 @@ class OutlineProcessor(BaseProcessor):
             return
         loop.create_task(self._close())
 
-    @staticmethod
-    def extract_outline_config(output: str) -> dict | None:
+
+    def extract_outline_config(self, output: str) -> dict | None:
         """
         Извлекает конфигурацию сервера Outline из текстового вывода.
 
@@ -445,38 +445,51 @@ class OutlineProcessor(BaseProcessor):
                 pass
         return None
 
-    async def setup_server(self, server) -> None:
+    async def setup_server(self, server) -> bool:
         """
         Устанавливает сервер Outline, выполняя установку необходимых пакетов через SSH и извлекая конфигурацию.
+        В случае неудачи делает до 5 попыток с паузой 10 секунд между ними.
 
-        :param server: Объект сервера с необходимыми полями (ip, password, и т.д.).
+        :param server: Объект сервера с необходимыми полями (ip, password и т.д.).
         :return: True, если установка прошла успешно, иначе False.
         """
-        await self.create_server_session_for_server(server)
-        install_cmd = [
-            "sudo apt update && sudo apt install -y docker.io",
-            'sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/server_manager/install_scripts/install_server.sh)',
-        ]
-        try:
-            async with asyncssh.connect(
-                host=server.ip,
-                username="root",
-                password=server.password,
-                known_hosts=None,
-            ) as conn:
-                for cmd in install_cmd:
-                    result = await asyncio.wait_for(
-                        conn.run(cmd, input="y\n"), timeout=300
-                    )
-                    print(result.stdout)
-                    if result.exit_status != 0:
-                        raise Exception(f"Error executing command: {cmd}")
-                config = self.extract_outline_config(result.stdout)
-                if config is None:
-                    raise Exception("Error while extracting config")
-                server.api_url = config["apiUrl"]
-                server.cert_sha256 = config["certSha256"]
-                server.save()
-        except Exception as e:
-            logger.error(f"Error while setting up Outline server: {e}")
-            return False
+        max_attempts = 5
+        for attempt in range(max_attempts):
+            cmd_update = "sudo apt update"
+            cmd_install_outline = (
+                'sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-server/'
+                'master/src/server_manager/install_scripts/install_server.sh)"'
+            )
+            try:
+                async with asyncssh.connect(
+                        host=server.ip,
+                        username="root",
+                        password=server.password,
+                        known_hosts=None,
+                ) as conn:
+                    result_update = await conn.run(cmd_update)
+                    logger.info("Вывод обновления:\n" + result_update.stdout)
+                    if result_update.exit_status != 0:
+                        raise Exception(f"Ошибка выполнения обновления: {result_update.stderr}")
+                    result_install = await conn.run(cmd_install_outline, input="y\n")
+                    stdout_outline = result_install.stdout
+                    stderr_outline = result_install.stderr
+                    logger.info("Вывод установки Outline:\n" + stdout_outline)
+                    if stderr_outline:
+                        logger.error("Ошибка установки Outline:\n" + stderr_outline)
+                        raise Exception("Ошибка установки Outline")
+                    config = self.extract_outline_config(stdout_outline)
+                    if config is None:
+                        raise Exception("Ошибка при извлечении конфигурации Outline")
+                    server.api_url = config["apiUrl"]
+                    server.cert_sha256 = config["certSha256"]
+                    server.save()
+                    logger.info(f"Сервер настроен. API URL: {server.api_url} (Попытка {attempt + 1} прошла успешно)")
+                    return True  # Успешно – возвращаем True
+            except Exception as e:
+                logger.error(f"Попытка {attempt + 1}/{max_attempts} не удалась: {e}")
+                if attempt < max_attempts - 1:
+                    logger.info("Повторная попытка через 10 секунд...")
+                    await asyncio.sleep(10)
+        return False
+

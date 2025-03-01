@@ -152,8 +152,10 @@ class VDSinaAPI:
             "datacenter": datacenter_id,
             "server-plan": server_plan_id,
             "template": template_id,
+            "backup": 0,
             "name": name,
             "ip4": 1,
+
         }
         return await self.request("POST", "/server", payload)
 

@@ -53,7 +53,10 @@ def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
                     </button>
                 </div>
                 <script>
+                    // Попытка открыть десктопное приложение
                     window.location.href = '{url}';
+
+                    // Автоматическое закрытие через 30 сек
                     setTimeout(() => window.close(), 30000);
                 </script>
             </body>
@@ -62,17 +65,30 @@ def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
     }
     return HTMLResponse(content=templates[protocol])
 
+
 def generate_hiddify_url(base_url: str, key_name: str) -> str:
+    """Генерирует URL для Hiddify с именем ключа"""
+    # 1. Удаляем существующее имя из ссылки (если есть)
     base_without_fragment = base_url.split("#")[0]
+
+    # 2. Кодируем имя ключа (пробелы -> %20 и т.д.)
     encoded_name = quote(key_name.strip())
+
+    # 3. Собираем VLESS-ссылку с именем во фрагменте
     vless_url_with_name = f"{base_without_fragment}#{encoded_name}"
+
+    # 4. Кодируем только спецсимволы, кроме :/?#&= для сохранения структуры
     encoded_vless = quote(vless_url_with_name, safe=":/?#&=+")
+
+    # 5. Формируем итоговый URL для Hiddify
     return f"hiddify://import/{encoded_vless}"
+
 
 @redirect_server.get("/open/{key_id}")
 async def open_connection(key_id: str):
     try:
         key = db_processor.get_key_by_id(key_id)
+
         if not key:
             raise HTTPException(status_code=404, detail="Key not found")
 
@@ -84,13 +100,20 @@ async def open_connection(key_id: str):
             case "outline":
                 url = key_info.access_url
             case "vless":
-                url = generate_hiddify_url(key_info.access_url, key.name or f"Server-{key.server_id}")
+                # Добавляем имя ключа из базы данных
+                url = generate_hiddify_url(
+                    key_info.access_url,
+                    key.name or f"Server-{key.server_id}",  # Дефолтное имя
+                )
             case _:
                 raise HTTPException(status_code=400, detail="Unsupported protocol")
 
         return generate_redirect_html(key_protocol, url)
+
     except Exception as e:
         return HTMLResponse(content=f"<h1>Error</h1><p>{str(e)}</p>", status_code=500)
+
+
 
 if __name__ == "__main__":
     host_ip = get_server_ip()

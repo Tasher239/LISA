@@ -2,6 +2,7 @@ from coolname import generate_slug
 from dotenv import load_dotenv
 import requests
 import asyncssh
+import asyncio
 import urllib3
 import json
 import uuid
@@ -701,8 +702,8 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-    @staticmethod
-    async def setup_server(server) -> bool:
+
+    async def setup_server(self, server):
         """
         Автоматическая установка 3X-UI на сервер с предварительной настройкой Docker.
 
@@ -760,19 +761,17 @@ class VlessProcessor(BaseProcessor):
             'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose',
             "sudo chmod +x /usr/local/bin/docker-compose",
         ]
-
-        # Команда для скачивания setup.sh
-        setup_script = "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
-        vless_password = os.getenv("VLESS_PASSWORD")
         vless_email = os.getenv("VLESS_EMAIL")
         vless_bot_token = os.getenv("VLESS_BOT_TOKEN")
+        # Команда для скачивания setup.sh
+        setup_script = "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
         # Данные для автоматического ввода в setup.sh (каждая строка — ответ на соответствующий вопрос)
         setup_answers = (
             "\n".join(
                 [
                     "admin",  # Логин
-                    vless_password,  # Пароль
-                    "2052",  # Порт 3X-UI
+                    server.password,  # Пароль
+                    "2053",  # Порт 3X-UI
                     server.ip,  # IP/домен
                     vless_email,  # Email
                     vless_bot_token,  # Telegram Bot Token
@@ -782,75 +781,80 @@ class VlessProcessor(BaseProcessor):
             )
             + "\n"
         )
+        max_attempts = 5
+        for attempt in range(max_attempts):
+            try:
+                async with asyncssh.connect(
+                    host=server.ip,
+                    username="root",
+                    password=server.password,
+                    known_hosts=None,
+                ) as conn:
+                    logger.info(f"Попытка {attempt + 1}/{max_attempts}...")
+                    logger.info(f"🔗 Подключение к серверу {server.ip} установлено!")
 
-        try:
-            async with asyncssh.connect(
-                host=server.ip,
-                username="root",
-                password=server.password,
-                known_hosts=None,
-            ) as conn:
-                logger.info(f"🔗 Подключение к серверу {server['ip']} установлено!")
+                    # Остановка и удаление старого Docker
+                    logger.info("🛑 Останавливаем старый Docker...")
+                    for cmd in stop_docker_cmds:
+                        logger.info(f"➡ Выполняем: {cmd}")
+                        result = await conn.run(cmd, check=False)
+                        if result.exit_status != 0:
+                            logger.warning(
+                                f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}"
+                            )
 
-                # Остановка и удаление старого Docker
-                logger.info("🛑 Останавливаем старый Docker...")
-                for cmd in stop_docker_cmds:
-                    logger.info(f"➡ Выполняем: {cmd}")
-                    result = await conn.run(cmd, check=False)
-                    if result.exit_status != 0:
-                        logger.warning(
-                            f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}"
-                        )
+                    logger.info("🗑️ Удаляем старый Docker (очистка)...")
+                    for cmd in remove_docker_cmds:
+                        logger.info(f"➡ Выполняем: {cmd}")
+                        result = await conn.run(cmd, check=False)
+                        if result.exit_status != 0:
+                            logger.warning(
+                                f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}"
+                            )
+                        else:
+                            logger.info(result.stdout)
 
-                logger.info("🗑️ Удаляем старый Docker (очистка)...")
-                for cmd in remove_docker_cmds:
-                    logger.info(f"➡ Выполняем: {cmd}")
-                    result = await conn.run(cmd, check=False)
-                    if result.exit_status != 0:
-                        logger.warning(
-                            f"⚠ Ошибка при выполнении {cmd}: {result.stderr.strip()}"
-                        )
-                    else:
+                    # Установка нового Docker
+                    logger.info("⬇ Устанавливаем Docker и Docker Compose...")
+                    for cmd in install_docker_cmds:
+                        logger.info(f"➡ Выполняем: {cmd}")
+                        result = await conn.run(cmd, check=False)
+                        if result.exit_status != 0:
+                            raise Exception(
+                                f"Ошибка при установке Docker: {cmd}\n{result.stderr.strip()}"
+                            )
                         logger.info(result.stdout)
 
-                # Установка нового Docker
-                logger.info("⬇ Устанавливаем Docker и Docker Compose...")
-                for cmd in install_docker_cmds:
-                    logger.info(f"➡ Выполняем: {cmd}")
-                    result = await conn.run(cmd, check=False)
+                    # Скачивание setup.sh
+                    logger.info("📥 Загружаем setup.sh...")
+                    result = await conn.run(setup_script)
                     if result.exit_status != 0:
                         raise Exception(
-                            f"Ошибка при установке Docker: {cmd}\n{result.stderr.strip()}"
+                            f"Ошибка при загрузке setup.sh: {result.stderr.strip()}"
                         )
                     logger.info(result.stdout)
 
-                # Скачивание setup.sh
-                logger.info("📥 Загружаем setup.sh...")
-                result = await conn.run(setup_script)
-                if result.exit_status != 0:
-                    raise Exception(
-                        f"Ошибка при загрузке setup.sh: {result.stderr.strip()}"
+                    # Запуск setup.sh с автоматическим вводом ответов
+                    logger.info("⚙️ Запускаем setup.sh с автоматическим вводом данных...")
+                    result = await conn.run('bash -c "./setup.sh"', input=setup_answers)
+                    if result.exit_status != 0:
+                        raise Exception(
+                            f"Ошибка при установке 3X-UI: {result.stderr.strip()}"
+                        )
+                    logger.info(result.stdout)
+
+                    logger.info(
+                        f"🎉 3X-UI успешно установлена! Теперь панель доступна на {server.ip}:2053"
                     )
-                logger.info(result.stdout)
+                    return True
 
-                # Запуск setup.sh с автоматическим вводом ответов
-                logger.info("⚙️ Запускаем setup.sh с автоматическим вводом данных...")
-                result = await conn.run('bash -c "./setup.sh"', input=setup_answers)
-                if result.exit_status != 0:
-                    raise Exception(
-                        f"Ошибка при установке 3X-UI: {result.stderr.strip()}"
-                    )
-                logger.info(result.stdout)
+            except Exception as e:
+                logger.info(f"❌ Ошибка при установке 3X-UI: {e}, попытка {attempt + 1}/{max_attempts}")
+                if attempt < max_attempts - 1:
+                    logger.info("Повторная попытка через 10 секунд...")
+                    await asyncio.sleep(10)
 
-                logger.success(
-                    f"🎉 3X-UI успешно установлена! Теперь панель доступна на {server['ip']}:2052"
-                )
-
-        except Exception as e:
-            logger.error(f"❌ Ошибка при настройке сервера {server['ip']}: {e}")
-            return False
-
-        return True
+        return False
 
     def get_server_info(self, server) -> dict:
         """
@@ -869,7 +873,7 @@ class VlessProcessor(BaseProcessor):
         """
         # Инициализация соединения с сервером панели
         self.ip = server.ip
-        self.port_panel = 2052
+        self.port_panel = 2053
         self.host = f"https://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
