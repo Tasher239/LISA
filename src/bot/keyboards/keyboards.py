@@ -5,6 +5,8 @@ from bot.lexicon.lexicon import get_day_by_number
 from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess, ManageKeys
 
 import socket
+
+
 def get_server_ip():
     """Определяет текущий внешний IP-адрес сервера."""
     try:
@@ -15,7 +17,9 @@ def get_server_ip():
     except Exception:
         return "127.0.0.1"  # fallback на localhost
 
+
 SERVER_IP = get_server_ip()
+
 
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
@@ -85,7 +89,7 @@ def get_device_vless_keyboard():
                 InlineKeyboardButton(
                     text="🖥 MacOS",
                     callback_data="device_MacOS",
-                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Mac-01-29",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-MacOS-01-29",
                 ),
                 InlineKeyboardButton(
                     text="📱 iPhone",
@@ -121,7 +125,7 @@ def get_device_outline_keyboard():
                 InlineKeyboardButton(
                     text="🖥 MacOS",
                     callback_data="device_MacOS",
-                    url="https://telegra.ph/Instrukciya-po-ustanovke-Otline-na-MacOS-01-29",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-MacOS-03-01",
                 ),
                 InlineKeyboardButton(
                     text="📱 iPhone",

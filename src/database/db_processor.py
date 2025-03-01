@@ -15,7 +15,6 @@ from initialization.vdsina_processor_init import vdsina_processor
 from bot.utils.send_message import send_message_subscription_expired
 from database.models import Base, VpnKey, Server, User
 from dotenv import load_dotenv
-from utils import get_processor
 
 logger = logging.getLogger(__name__)
 
