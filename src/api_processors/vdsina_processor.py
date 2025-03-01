@@ -131,11 +131,11 @@ class VDSinaAPI:
         return await self.request("GET", "/template")
 
     async def deploy_server(
-        self, datacenter_id: int, server_plan_id: int, template_id: int, name="MyServer"
+        self, name:str, datacenter_id: int, server_plan_id: int, template_id: int, ip4=1
     ):
         """
         Разворачивание нового сервера на платформе VDSina.
-
+        :param name: Имя сервера
         :param datacenter_id: Идентификатор дата-центра, в котором будет размещен сервер.
         :param server_plan_id: Идентификатор плана сервера, который будет использоваться.
         :param template_id: Идентификатор шаблона для нового сервера.
@@ -149,12 +149,13 @@ class VDSinaAPI:
         3. Возвращает ответ сервера.
         """
         payload = {
+            "name": name,
             "datacenter": datacenter_id,
             "server-plan": server_plan_id,
             "template": template_id,
             "backup": 0,
             "name": name,
-            "ip4": 1,
+            "ip4": ip4,
 
         }
         return await self.request("POST", "/server", payload)
@@ -175,6 +176,7 @@ class VDSinaAPI:
 
     async def create_new_server(
         self,
+        name,
         datacenter_id,
         server_plan_id,
         template_id,
@@ -203,7 +205,7 @@ class VDSinaAPI:
         if not self.token:
             await self.authenticate(email, password)
         # После успешной авторизации пробуем создать сервер
-        return await self.deploy_server(datacenter_id, server_plan_id, template_id, ip4)
+        return await self.deploy_server(name, datacenter_id, server_plan_id, template_id, ip4)
 
     async def get_servers(self):
         return await self.request("GET", "/server")

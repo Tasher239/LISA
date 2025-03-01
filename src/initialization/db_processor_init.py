@@ -18,7 +18,7 @@ def main_init_db():
                 Server(
                     api_url=os.getenv("OUTLINE_API_URL"),
                     cert_sha256=os.getenv("OUTLINE_CERT_SHA"),
-                    cnt_users=159,
+                    cnt_users=0,
                     protocol_type="outline",
                 ),
                 Server(

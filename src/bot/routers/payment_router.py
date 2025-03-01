@@ -131,7 +131,7 @@ async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_q.id, ok=True)
 
 
-# Обработчик успешного платежа при ПОКУПКИ ключа
+# Обработчик успешного платежа при ПОКУПКЕ ключа
 @router.message(
     StateFilter(GetKey.waiting_for_payment), lambda message: message.successful_payment
 )
@@ -141,7 +141,6 @@ async def successful_payment(message: Message, state: FSMContext):
         LogSender.log_payment_details(message)
         # Создание нового ключа VPN
         data = await state.get_data()
-        print(data.get("vpn_type"))
         match data.get("vpn_type"):
             case "Outline":
                 protocol_type = "Outline"

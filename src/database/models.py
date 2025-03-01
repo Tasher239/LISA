@@ -81,11 +81,3 @@ class Server(Base):
 
     # Связь один ко многим с таблицей Key (на сервере может быть несколько ключей)
     keys = relationship("VpnKey", back_populates="server")
-
-    def save(self):
-        """
-        Сохраняет изменения объекта в базе данных.
-        Использует глобальный экземпляр db_processor для получения сессии.
-        """
-        with self.session_scope() as session:
-            session.merge(self)

@@ -481,10 +481,8 @@ class OutlineProcessor(BaseProcessor):
                     config = self.extract_outline_config(stdout_outline)
                     if config is None:
                         raise Exception("Ошибка при извлечении конфигурации Outline")
-                    server.api_url = config["apiUrl"]
-                    server.cert_sha256 = config["certSha256"]
-                    server.save()
-                    logger.info(f"Сервер настроен. API URL: {server.api_url} (Попытка {attempt + 1} прошла успешно)")
+                    get_db_processor().update_server_by_id(server.id, config["apiUrl"], config["certSha256"])
+                    logger.info(f"Сервер настроен.")
                     return True  # Успешно – возвращаем True
             except Exception as e:
                 logger.error(f"Попытка {attempt + 1}/{max_attempts} не удалась: {e}")
