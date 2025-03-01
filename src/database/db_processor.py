@@ -35,6 +35,7 @@ class DbProcessor:
 
         self.engine = create_engine(db_uri, echo=True)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
+        self._server_creation_lock = asyncio.Lock()
 
     def init_db(self):
         """Синхронная инициализация базы данных."""
@@ -203,42 +204,43 @@ class DbProcessor:
     async def get_server_with_min_users(self, protocol_type: str) -> Server:
         """
         Выбирает сервер с минимальным количеством пользователей для указанного протокола.
-        Если такой сервер отсутствует, создается новый сервер.
-        :param protocol_type:
-        :return:
+        Если такого сервера нет, создает новый, гарантируя, что одновременно создается не более одного сервера.
+        :param protocol_type: Например, "outline" или "vless"
+        :return: Объект сервера
         """
-        with self.session_scope() as session:
-            server = (
-                session.query(Server)
-                .filter(func.lower(Server.protocol_type) == protocol_type.lower())
-                .filter(Server.cnt_users < 160)
-                .order_by(Server.cnt_users.asc())
-                .with_for_update()  # Блокируем строку для изменения
-                .first()
-            )
-            from utils.get_processor import get_processor
+        async with self._server_creation_lock:
+            with self.session_scope() as session:
+                count_servers = session.query(Server).count()
+                server = (
+                    session.query(Server)
+                    .filter(func.lower(Server.protocol_type) == protocol_type.lower())
+                    .filter(Server.cnt_users < 160)
+                    .order_by(Server.cnt_users.asc())
+                    .with_for_update()  # Блокируем строку для изменения
+                    .first()
+                )
+                from utils.get_processor import get_processor
 
-            if not server:
-                logger.info(f"Сервера с протоколом {protocol_type} не найдено.")
+                if not server:
+                    logger.info(f"Сервера с протоколом {protocol_type} не найдено.")
 
-                new_server = await self.create_new_server()
+                    new_server, server_ip, server_password = await self.create_new_server(count_servers)
 
-                if not new_server:
-                    logger.error("Ошибка при создании нового сервера")
-                    return None
+                    if not new_server:
+                        logger.error("Ошибка при создании нового сервера")
+                        return None
 
-                new_server_db = self.add_server(new_server, protocol_type)
-                processor = await get_processor(protocol_type.lower())
-                result = await processor.setup_server(new_server_db)
-                if not result:
-                    logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
-                    return None
-                server = new_server_db
+                    new_server_db = self.add_server(new_server, protocol_type, server_ip, server_password)
+                    processor = await get_processor(protocol_type.lower())
+                    result = await processor.setup_server(new_server_db)
+                    if not result:
+                        logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
+                        return None
+                    server = new_server_db
 
-            server.cnt_users += 1
-            session.commit()
-            session.refresh(server)
-            return server
+                self.increment_server_user_count(server.id)
+                server = self.get_server_by_id(server.id)
+                return server
 
     def get_server_info(self, server_id):
         """
@@ -255,7 +257,7 @@ class DbProcessor:
         if data.get("status") == "ok":
             return data.get("data", {})
         return None
-    async def wait_for_server_ready(self, server_id, timeout=65):
+    async def wait_for_server_ready(self, server_id, timeout=300):
         """
         Ожидает, пока сервер станет активным.
         :param server_id: ID сервера
@@ -306,7 +308,7 @@ class DbProcessor:
 
         return None
 
-    async def create_new_server(self):
+    async def create_new_server(self, count_servers):
         """
         Создает новый сервер на vdSina.
         :return: Объект нового сервера
@@ -314,6 +316,7 @@ class DbProcessor:
         template_id = 31  # ID шаблона для сервера
         logger.info("Отправляем запрос на vdSina для создания нового сервера")
         new_server = await vdsina_processor.create_new_server(
+            name="Server-" + str(count_servers + 1),
             datacenter_id=1,
             server_plan_id=1,
             template_id=template_id,
@@ -386,6 +389,14 @@ class DbProcessor:
                 raise ValueError("Нет сервера с переданным id")
             return server
 
+    def increment_server_user_count(self, server_id: int) -> Server:
+       with self.session_scope() as session:
+            server = session.query(Server).filter_by(id=server_id).one()
+            server.cnt_users += 1
+            session.commit()
+            session.refresh(server)
+            return server
+
     def rename_key(self, key_id: str, new_name: str) -> bool:
         """
         Изменяет имя ключа.
@@ -409,28 +420,30 @@ class DbProcessor:
         :return:
         """
         from utils.get_processor import get_processor
-        with self.session_scope() as session:
-            server_types = ("outline", "vless")
-            for protocol_type in server_types:
-                servers = (
-                    session.query(Server).filter_by(protocol_type=protocol_type).all()
-                )
-                all_servers_full = all(server.cnt_users >= 159 for server in servers)
-                if all_servers_full:
-                    logger.info(
-                        f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
+        async with self._server_creation_lock:
+            with self.session_scope() as session:
+                count_servers = session.query(Server).count()
+                server_types = ("outline", "vless")
+                for protocol_type in server_types:
+                    servers = (
+                        session.query(Server).filter_by(protocol_type=protocol_type).all()
                     )
-                    new_server, server_ip, server_password = await self.create_new_server()
-                    logger.info(f"Подняли новый сервер типа {protocol_type}")
-                    new_server = self.add_server(new_server, protocol_type, server_ip, server_password)
-                    logger.info(f"Записали данные нового сервера в БД")
-                    processor = await get_processor(protocol_type)
-                    logger.info(f"Передаем сервер в setup_server: {new_server}")
-                    result = await processor.setup_server(new_server)
-                    if not result:
-                        logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
-                        return
-                    logger.info(f"Настроили сервер типа {protocol_type}")
+                    all_servers_full = all(server.cnt_users >= 159 for server in servers)
+                    if all_servers_full:
+                        logger.info(
+                            f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
+                        )
+                        new_server, server_ip, server_password = await self.create_new_server(count_servers)
+                        logger.info(f"Подняли новый сервер типа {protocol_type}")
+                        new_server = self.add_server(new_server, protocol_type, server_ip, server_password)
+                        logger.info(f"Записали данные нового сервера в БД")
+                        processor = await get_processor(protocol_type)
+                        logger.info(f"Передаем сервер в setup_server: {new_server}")
+                        result = await processor.setup_server(new_server)
+                        if not result:
+                            logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
+                            return
+                        logger.info(f"Настроили сервер типа {protocol_type}")
 
     async def check_and_update_key_data_limit(self):
         from utils.get_processor import get_processor
@@ -454,3 +467,16 @@ class DbProcessor:
                         key_name=key.name,
                     )
                     key.used_bytes_last_month = key_info.used_bytes
+
+    def update_server_by_id(self, server_id, api_url, cert_sha256):
+        with self.session_scope() as session:
+            # Берём сервер непосредственно в этой же сессии
+            server = session.query(Server).filter_by(id=server_id).one()
+            server.api_url = api_url
+            server.cert_sha256 = cert_sha256
+            session.commit()
+            # При необходимости можно сделать session.refresh(server)
+            session.refresh(server)
+            logger.info(f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}")
+
+

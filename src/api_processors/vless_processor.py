@@ -71,7 +71,7 @@ class VlessProcessor(BaseProcessor):
                 self.ip = server.ip
                 self.sub_port = 2096
                 self.port_panel = 2053
-                self.host = f"http://{self.ip}:{self.port_panel}"
+                self.host = f"https://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
 
                 try:
@@ -107,7 +107,7 @@ class VlessProcessor(BaseProcessor):
         self.ip = server.ip
         self.sub_port = 2096
         self.port_panel = 2053
-        self.host = f"http://{self.ip}:{self.port_panel}"
+        self.host = f"https://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
