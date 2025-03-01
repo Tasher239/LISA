@@ -41,7 +41,7 @@ async def run_fastapi_server():
     # Настраиваем uvicorn для работы в том же цикле событий
     config = uvicorn.Config(
         redirect_server,       # наш объект FastAPI()
-        host="0.0.0.0",
+        host="192.168.160.1",
         port=8000,
         loop="asyncio",        # важно указать, что работаем на asyncio
         log_level="info"

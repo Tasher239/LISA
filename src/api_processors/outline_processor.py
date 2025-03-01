@@ -12,12 +12,13 @@ from coolname import generate_slug
 from api_processors.key_models import OutlineKey
 from api_processors.base_processor import BaseProcessor
 
-
 logger = logging.getLogger(__name__)
+
 
 def get_db_processor():
     from initialization.db_processor_init import db_processor
     return db_processor
+
 
 class OutlineServerErrorException(Exception):
     """
@@ -92,7 +93,6 @@ class OutlineProcessor(BaseProcessor):
         :return: None
         """
 
-
         server = await get_db_processor().get_server_with_min_users("outline")
 
         self.api_url = server.api_url
@@ -157,7 +157,7 @@ class OutlineProcessor(BaseProcessor):
         logger.info(tmp_key)
 
         key_name = generate_slug(2).replace("-", " ")
-        data_limit = 200 * 1024**3
+        data_limit = 200 * 1024 ** 3
 
         await self.rename_key(tmp_key.key_id, key_name)
         await self.update_data_limit(tmp_key.key_id, data_limit, self.server_id)
@@ -185,10 +185,14 @@ class OutlineProcessor(BaseProcessor):
             key_json = await resp.json()
 
         client_data = OutlineKey.from_key_json(key_json)
+        print(client_data)
+
         current_metrics = await self._get_metrics()
+        print(json.dumps(current_metrics.get("bytesTransferredByUserId"), indent=4))
+
         client_data.used_bytes = current_metrics.get(
             "bytesTransferredByUserId", {}
-        ).get(client_data.key_id, 0)
+        ).get(str(client_data.key_id), 0)
         return client_data
 
     @create_server_session_by_id
@@ -201,7 +205,7 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если удаление прошло успешно.
         """
         async with self.session.delete(
-            url=f"{self.api_url}/access-keys/{key_id}"
+                url=f"{self.api_url}/access-keys/{key_id}"
         ) as resp:
             return resp.status == 204
 
@@ -216,12 +220,12 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.put(
-            url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
+                url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
         ) as resp:
             return resp.status == 204
 
     async def _fulfill_keys_with_metrics(
-        self, keys: list[OutlineKey]
+            self, keys: list[OutlineKey]
     ) -> list[OutlineKey]:
         """
         Обогащает список ключей информацией о переданных данных.
@@ -247,7 +251,7 @@ class OutlineProcessor(BaseProcessor):
 
     @create_server_session_by_id
     async def update_data_limit(
-        self, key_id: int, new_limit_bytes: int, server_id: int = None, key_name=None
+            self, key_id: int, new_limit_bytes: int, server_id: int = None, key_name=None
     ) -> bool:
         """
         Устанавливает лимит передачи данных для ключа.
@@ -258,7 +262,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"limit": {"bytes": new_limit_bytes}}
         async with self.session.put(
-            url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
+                url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
         ) as resp:
             return resp.status == 204
 
@@ -271,7 +275,7 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.delete(
-            url=f"{self.api_url}/access-keys/{key_id}/data-limit"
+                url=f"{self.api_url}/access-keys/{key_id}/data-limit"
         ) as resp:
             return resp.status == 204
 
@@ -326,7 +330,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"hostname": hostname}
         async with self.session.put(
-            url=f"{self.api_url}/server/hostname-for-access-keys", json=data
+                url=f"{self.api_url}/server/hostname-for-access-keys", json=data
         ) as resp:
             return resp.status == 204
 
@@ -349,7 +353,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"metricsEnabled": status}
         async with self.session.put(
-            url=f"{self.api_url}/metrics/enabled", json=data
+                url=f"{self.api_url}/metrics/enabled", json=data
         ) as resp:
             return resp.status == 204
 
@@ -363,7 +367,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"port": port}
         async with self.session.put(
-            url=f"{self.api_url}/server/port-for-new-access-keys", json=data
+                url=f"{self.api_url}/server/port-for-new-access-keys", json=data
         ) as resp:
             if resp.status == 400:
                 raise OutlineServerErrorException(
@@ -384,7 +388,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"limit": {"bytes": limit_bytes}}
         async with self.session.put(
-            url=f"{self.api_url}/server/access-key-data-limit", json=data
+                url=f"{self.api_url}/server/access-key-data-limit", json=data
         ) as resp:
             return resp.status == 204
 
@@ -395,7 +399,7 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.delete(
-            url=f"{self.api_url}/server/access-key-data-limit"
+                url=f"{self.api_url}/server/access-key-data-limit"
         ) as resp:
             return resp.status == 204
 
@@ -425,7 +429,6 @@ class OutlineProcessor(BaseProcessor):
             asyncio.run(self._close())
             return
         loop.create_task(self._close())
-
 
     def extract_outline_config(self, output: str) -> dict | None:
         """
@@ -490,4 +493,3 @@ class OutlineProcessor(BaseProcessor):
                     logger.info("Повторная попытка через 10 секунд...")
                     await asyncio.sleep(10)
         return False
-

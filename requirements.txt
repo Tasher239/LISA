@@ -12,7 +12,6 @@ pytest-mock
 pytest-asyncio
 aioresponses
 httpx
-socket
 uvicorn
 fastapi
 requests

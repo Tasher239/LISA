@@ -71,7 +71,7 @@ class VlessProcessor(BaseProcessor):
                 self.ip = server.ip
                 self.sub_port = 2096
                 self.port_panel = 2053
-                self.host = f"https://{self.ip}:{self.port_panel}"
+                self.host = f"http://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
 
                 try:
@@ -107,7 +107,7 @@ class VlessProcessor(BaseProcessor):
         self.ip = server.ip
         self.sub_port = 2096
         self.port_panel = 2053
-        self.host = f"https://{self.ip}:{self.port_panel}"
+        self.host = f"http://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
@@ -398,8 +398,6 @@ class VlessProcessor(BaseProcessor):
                             "subId": unique_id,
                             "flow": "xtls-rprx-vision",
                             "comment": key_name,  # имя ключа, которое видит пользователь
-                            "up": 0,
-                            "down": 0,
                         }
                     ]
                 }
@@ -596,6 +594,9 @@ class VlessProcessor(BaseProcessor):
             response = self.ses.post(
                 f"{self.host}/panel/inbound/list/", data=self.data
             ).json()
+
+            print(json.dumps(response, indent=4))
+
             if not response.get("success"):
                 logger.warning(
                     f'🛑Ошибка при получении списка ключей: {response.get("msg")}'
@@ -603,24 +604,22 @@ class VlessProcessor(BaseProcessor):
                 return None
 
             # Ищем ключ в списке inbound'ов
-            for inbound in response.get("obj", []):
-                clients = json.loads(inbound.get("settings", "{}")).get("clients", [])
-
-                for client in clients:
-                    if client.get("id") == key_id:
-                        print(json.dumps(client, indent=4))
-                        return VlessKey(
-                            key_id=client.get("id"),
-                            name=client.get("comment", ""),
-                            email=client.get("email", ""),
-                            access_url=self._get_link(
-                                client.get("id"), client.get("comment", "")
-                            ),
-                            used_bytes=client.get("up", 0) + client.get("down", 0),
-                            data_limit=(
-                                client.get("totalGB") if client.get("totalGB") else None
-                            ),
-                        )
+            data = response['obj'][0]
+            for key_stat in data["clientStats"]:
+                if key_stat.get("email") == key_id:
+                    print(json.dumps(key_stat, indent=4))
+                    return VlessKey(
+                        key_id=key_stat.get("id"),
+                        name=key_stat.get("comment", ""),
+                        email=key_stat.get("email", ""),
+                        access_url=self._get_link(
+                            key_stat.get("id"), key_stat.get("comment", "")
+                        ),
+                        used_bytes=key_stat.get("up", 0) + key_stat.get("down", 0),
+                        data_limit=(
+                            key_stat.get("totalGB") if key_stat.get("totalGB") else None
+                        ),
+                    )
 
             logger.warning(f"Ключ {key_id} не найден на сервере")
             return None
