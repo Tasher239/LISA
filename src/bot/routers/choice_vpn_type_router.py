@@ -11,6 +11,7 @@ import logging
 router = Router()
 logger = logging.getLogger(__name__)
 
+
 @router.callback_query(
     StateFilter(ManageKeys.no_active_keys), F.data.in_(["get_keys_pressed"])
 )

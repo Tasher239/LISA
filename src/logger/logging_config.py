@@ -5,6 +5,7 @@ from logging.handlers import RotatingFileHandler
 
 LOG_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "bot.log"))
 
+
 def configure_logging():
     # Устанавливаем общий уровень логирования
     logging.basicConfig(level=logging.INFO)

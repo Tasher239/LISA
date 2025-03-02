@@ -13,7 +13,7 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
 from bot.fsm.states import GetKey, SubscriptionExtension
@@ -79,8 +79,10 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
             description = f"Ключ от VPN {vpn_type} на {selected_period} {moths}"
             title = "Покупка ключа"
 
-            await state.set_state(GetKey.waiting_for_payment)
-        case GetKey.choice_extension_period:
+        case (
+            GetKey.choice_extension_period
+            | SubscriptionExtension.choose_extension_period
+        ):
             selected_key_id = data.get("selected_key_id")
             vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
             await state.update_data(vpn_type=vpn_type)
@@ -88,19 +90,15 @@ async def handle_period_selection(callback: CallbackQuery, state: FSMContext):
             await state.update_data(key_name=key.name)
             title = "Продление ключа"
             description = f"Продление ключа «{key.name}» от VPN {vpn_type} на {selected_period} {moths}"
-            await state.set_state(GetKey.waiting_for_extension_payment)
             await state.update_data(selected_period=selected_period)
 
+    match cur_state:
+        case GetKey.buy_key:
+            await state.set_state(GetKey.waiting_for_payment)
+        case GetKey.choice_extension_period:
+            await state.set_state(GetKey.waiting_for_extension_payment)
         case SubscriptionExtension.choose_extension_period:
-            selected_key_id = data.get("selected_key_id")
-            vpn_type = db_processor.get_vpn_type_by_key_id(selected_key_id)
-            await state.update_data(vpn_type=vpn_type)
-            key = db_processor.get_key_by_id(selected_key_id)
-            await state.update_data(key_name=key.name)
-            title = "Продление ключа"
-            description = f"Продление ключа «{key.name}» от VPN {vpn_type} на {selected_period} {moths}"
             await state.set_state(SubscriptionExtension.waiting_for_extension_payment)
-            await state.update_data(selected_period=selected_period)
 
     # Сохранение выбранного периода в состоянии
     await state.update_data(selected_period=selected_period)

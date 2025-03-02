@@ -14,7 +14,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from api_processors.base_processor import BaseProcessor
 from api_processors.key_models import VlessKey
 
-
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -586,6 +585,7 @@ class VlessProcessor(BaseProcessor):
         5. Если ключ найден, формирует объект `VlessKey` и возвращает его.
         6. В случае ошибки сети или некорректного JSON-ответа логирует и возвращает `None`.
         """
+        print(key_id)
         if not self.con:
             logger.warning(f"Нет подключения к серверу")
             return None
@@ -595,7 +595,7 @@ class VlessProcessor(BaseProcessor):
                 f"{self.host}/panel/inbound/list/", data=self.data
             ).json()
 
-            print(json.dumps(response, indent=4))
+            # print(json.dumps(response, indent=4))
 
             if not response.get("success"):
                 logger.warning(
@@ -604,25 +604,43 @@ class VlessProcessor(BaseProcessor):
                 return None
 
             # Ищем ключ в списке inbound'ов
-            data = response['obj'][0]
+            data = response["obj"][0]
+            # print(data)
+            name = ""
+            email = ""
+            access_url = ""
+            used_bytes = ""
+            data_limit = ""
+
             for key_stat in data["clientStats"]:
                 if key_stat.get("email") == key_id:
-                    print(json.dumps(key_stat, indent=4))
-                    return VlessKey(
-                        key_id=key_stat.get("id"),
-                        name=key_stat.get("comment", ""),
-                        email=key_stat.get("email", ""),
-                        access_url=self._get_link(
-                            key_stat.get("id"), key_stat.get("comment", "")
-                        ),
-                        used_bytes=key_stat.get("up", 0) + key_stat.get("down", 0),
-                        data_limit=(
-                            key_stat.get("totalGB") if key_stat.get("totalGB") else None
-                        ),
-                    )
+                    used_bytes = key_stat.get("up", 0) + key_stat.get("down", 0)
+                    break
 
-            logger.warning(f"Ключ {key_id} не найден на сервере")
-            return None
+            for inbound in response.get("obj", []):
+                clients = json.loads(inbound.get("settings", "{}")).get("clients", [])
+
+                for client in clients:
+                    # print(client)
+                    if client.get("id") == key_id:
+                        key_id = client.get("id")
+                        name = client.get("comment", "")
+                        email = client.get("email", "")
+                        data_limit = (
+                            client.get("totalGB") if client.get("totalGB") else None
+                        )
+                        access_url = self._get_link(
+                            client.get("id"), client.get("comment", "")
+                        )
+
+                        return VlessKey(
+                            key_id=key_id,
+                            name=name,
+                            email=email,
+                            access_url=access_url,
+                            used_bytes=used_bytes,
+                            data_limit=data_limit,
+                        )
 
         except requests.RequestException as e:
             logger.error(f"Ошибка сети при получении информации о ключе {key_id}: {e}")
@@ -701,8 +719,8 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-
-    async def setup_server(self, server):
+    @staticmethod
+    async def setup_server(server):
         """
         Автоматическая установка 3X-UI на сервер с предварительной настройкой Docker.
 
@@ -834,7 +852,9 @@ class VlessProcessor(BaseProcessor):
                     logger.info(result.stdout)
 
                     # Запуск setup.sh с автоматическим вводом ответов
-                    logger.info("⚙️ Запускаем setup.sh с автоматическим вводом данных...")
+                    logger.info(
+                        "⚙️ Запускаем setup.sh с автоматическим вводом данных..."
+                    )
                     result = await conn.run('bash -c "./setup.sh"', input=setup_answers)
                     if result.exit_status != 0:
                         raise Exception(
@@ -848,7 +868,9 @@ class VlessProcessor(BaseProcessor):
                     return True
 
             except Exception as e:
-                logger.info(f"❌ Ошибка при установке 3X-UI: {e}, попытка {attempt + 1}/{max_attempts}")
+                logger.info(
+                    f"❌ Ошибка при установке 3X-UI: {e}, попытка {attempt + 1}/{max_attempts}"
+                )
                 if attempt < max_attempts - 1:
                     logger.info("Повторная попытка через 10 секунд...")
                     await asyncio.sleep(10)
