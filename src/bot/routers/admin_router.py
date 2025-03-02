@@ -11,7 +11,8 @@ from aiogram.filters import StateFilter
 from aiogram.filters import Command
 from aiogram import Router, F
 
-from initialization.outline_processor_init import async_outline_processor
+from bot.routers.admin_router_sending_message import send_error_report
+from initialization.async_outline_processor_init import async_outline_processor
 from initialization.vdsina_processor_init import vdsina_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
@@ -78,6 +79,7 @@ async def admin_auth(message: Message, state: FSMContext):
                         reply_markup=get_admin_keyboard(),
                     )
                 except TelegramBadRequest as e:
+                    await send_error_report(e)
                     if "message is not modified" in str(e):
                         # Сообщение не изменилось – игнорируем ошибку
                         pass
@@ -94,6 +96,7 @@ async def admin_auth(message: Message, state: FSMContext):
                     reply_markup=get_back_button(),
                 )
             except TelegramBadRequest as e:
+                await send_error_report(e)
                 if "message is not modified" in str(e):
                     # Сообщение не изменилось – игнорируем ошибку
                     pass
@@ -225,6 +228,7 @@ async def make_key_for_admin(callback: CallbackQuery, state: FSMContext):
         # Отправка инструкций по установке
         await state.update_data(key_access_url=key.access_url)
     except Exception as e:
+        await send_error_report(e)
         logger.error(f"Произошла ошибка: {e}")
         await callback.answer(
             "Произошла ошибка при создании ключа. Пожалуйста, свяжитесь с поддержкой."
@@ -243,9 +247,7 @@ async def admin_panel(callback: CallbackQuery):
         "👑 Вы вернулись в админ-панель", reply_markup=get_admin_keyboard()
     )
 
-
 ADMIN_IDS = list(map(int, json.loads(os.getenv("ADMIN_IDS", "[]"))))
-
 
 @router.message(Command("get_db"))
 async def send_db(message: Message):

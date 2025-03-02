@@ -4,6 +4,7 @@ import ssl
 import os
 import logging
 
+from bot.routers.admin_router_sending_message import send_error_report
 from dotenv import load_dotenv
 
 
@@ -116,6 +117,7 @@ class VDSinaAPI:
                 async with session.delete(url, json=data, headers=headers) as response:
                     return await response.json()
             else:
+                await send_error_report(f"Неподдерживаемый метод запроса: {method}")
                 raise ValueError(f"Неподдерживаемый метод запроса: {method}")
 
     async def get_datacenters(self) -> dict:

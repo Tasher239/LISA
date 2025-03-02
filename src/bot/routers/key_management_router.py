@@ -3,6 +3,7 @@ from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram import F, Router
 
+from bot.routers.admin_router_sending_message import send_error_report
 from initialization.db_processor_init import db_processor
 from bot.fsm.states import ManageKeys, MainMenu, GetKey
 from database.models import User
@@ -53,6 +54,7 @@ async def choosing_key_handler(callback: CallbackQuery, state: FSMContext):
             )
             await state.set_state(ManageKeys.get_key_params)
     except Exception as e:
+        await send_error_report(e)
         logger.error(f"Ошибка при выборе ключа: {e}")
         await callback.message.answer("Произошла ошибка. Пожалуйста, попробуйте позже.")
         await state.clear()

@@ -17,7 +17,7 @@ def configure_logging():
 
     # Обработчик ротации (max 5 МБ, храним 3 файла)
     file_handler = RotatingFileHandler(
-        LOG_FILE_PATH, maxBytes=5 * 1024 * 1024, backupCount=3
+        LOG_FILE_PATH, maxBytes=10 * 1024 * 1024, backupCount=3
     )
     file_handler.setFormatter(formatter)
 

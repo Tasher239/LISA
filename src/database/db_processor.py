@@ -11,6 +11,7 @@ from sqlalchemy import (
     create_engine,
 )
 
+from bot.routers.admin_router_sending_message import send_error_report
 from initialization.vdsina_processor_init import vdsina_processor
 from bot.utils.send_message import send_message_subscription_expired
 from database.models import Base, VpnKey, Server, User
@@ -81,14 +82,8 @@ class DbProcessor:
                 return None
 
     def update_database_with_key(
-        self,
-        user_id,
-        key,
-        period,
-        server_id,
-        protocol_type="outline",
-        is_trial_period=False,
-    ) -> bool:
+        self, user_id, key, period, server_id, protocol_type="outline"
+    ) -> None:
         """
         Обновляет базу данных новым ключом.
         :param user_id:
@@ -96,22 +91,14 @@ class DbProcessor:
         :param period:
         :param server_id:
         :param protocol_type:
-        :param is_trial_period:
         :return:
         """
-
         user_id_str = str(user_id)
-        start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        if is_trial_period:
-            expiration_date = (start_date + timedelta(days=2)).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-        else:
-            period_months = int(period.split()[0])
-            expiration_date = (start_date + timedelta(days=30 * period_months)).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-
+        period_months = int(period.split()[0])
+        start_date = datetime.now().replace(minute=0, second=0, microsecond=0)
+        expiration_date = (start_date + timedelta(days=30 * period_months)).replace(
+            minute=0, second=0, microsecond=0
+        )
         with self.session_scope() as session:
             user = session.query(User).filter_by(user_telegram_id=user_id_str).first()
             if not user:
@@ -121,26 +108,19 @@ class DbProcessor:
                     use_trial_period=False,
                 )
                 session.add(user)
-
-            if user.use_trial_period and is_trial_period:
-                return False
-
-            if is_trial_period:
-                user.use_trial_period = True
+                session.commit()
 
             new_key = VpnKey(
                 key_id=key.key_id,
                 user_telegram_id=user_id_str,
-                start_date=start_date,
                 expiration_date=expiration_date,
-                name=key.name,
-                used_bytes_last_month=0,
+                start_date=start_date,
                 protocol_type=protocol_type,
+                name=key.name,
                 server_id=server_id,
             )
             session.add(new_key)
             # session.commit() <- возможно не нужно тк юзаем контекстный менеджер
-        return True
 
     async def get_expired_keys_by_user_id(self, user_id) -> dict[str, tuple[str, int]]:
         """
@@ -244,23 +224,19 @@ class DbProcessor:
                 if not server:
                     logger.info(f"Сервера с протоколом {protocol_type} не найдено.")
 
-                    new_server, server_ip, server_password = (
-                        await self.create_new_server(count_servers)
-                    )
+                    new_server, server_ip, server_password = await self.create_new_server(count_servers)
 
                     if not new_server:
+                        await send_error_report("Ошибка при создании нового сервера")
                         logger.error("Ошибка при создании нового сервера")
                         return None
 
-                    new_server_db = self.add_server(
-                        new_server, protocol_type, server_ip, server_password
-                    )
+                    new_server_db = self.add_server(new_server, protocol_type, server_ip, server_password)
                     processor = await get_processor(protocol_type.lower())
                     result = await processor.setup_server(new_server_db)
                     if not result:
-                        logger.error(
-                            f"Ошибка при настройке сервера типа {protocol_type}"
-                        )
+                        await send_error_report("Ошибка при настройке сервера {protocol_type}")
+                        logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
                         return None
                     server = new_server_db
 
@@ -268,8 +244,7 @@ class DbProcessor:
                 server = self.get_server_by_id(server.id)
                 return server
 
-    @staticmethod
-    def get_server_info(server_id):
+    def get_server_info(self, server_id):
         """
         Запрашивает информацию о сервере по его ID.
         :param server_id:
@@ -299,10 +274,10 @@ class DbProcessor:
             logger.info("Сервер еще не активен, ждем...")
             await asyncio.sleep(5)  # Ждем 5 секунд перед следующей проверкой
         logger.error("Таймаут ожидания сервера!")
+        await send_error_report("Таймаут ожидания сервера!")
         return False
 
-    @staticmethod
-    def get_server_ip(server_id):
+    def get_server_ip(self, server_id):
         """
         Запрашивает информацию о сервере по его ID.
         :param server_id:
@@ -317,10 +292,11 @@ class DbProcessor:
             ip_list = server_data.get("ip", [])
             if ip_list:
                 return ip_list[0].get("ip")
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(send_error_report("Ошибка при получении IP сервера"))
         return None
 
-    @staticmethod
-    def get_server_password(server_id):
+    def get_server_password(self, server_id):
         """
         Получает пароль сервера по его ID.
         :param server_id:
@@ -335,7 +311,8 @@ class DbProcessor:
             password = server_data.get("password", [])
             if password:
                 return password
-
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(send_error_report("Ошибка при получении пароля сервера"))
         return None
 
     async def create_new_server(self, count_servers):
@@ -355,12 +332,14 @@ class DbProcessor:
             password=os.getenv("VDSINA_PASSWORD"),
         )
         if not new_server or new_server.get("status") != "ok":
+            await send_error_report("Ошибка при создании нового сервера")
             logger.error("Ошибка при создании нового сервера")
             return None
         server_id = new_server["data"]["id"]
         logger.info(f"Создан новый сервер с ID: {server_id}")
         is_ready = await self.wait_for_server_ready(server_id)
         if not is_ready:
+            await send_error_report("Сервер не стал активным, невозможно получить IP и пароль")
             logger.error("Сервер не стал активным, невозможно получить IP и пароль")
             return None
         server_ip = self.get_server_ip(server_id)
@@ -368,13 +347,7 @@ class DbProcessor:
         logger.info(f"Сервер готов: IP={server_ip}, Пароль={server_password}")
         return new_server, server_ip, server_password
 
-    def add_server(
-        self,
-        server_data: dict,
-        protocol_type: str,
-        server_ip: str,
-        server_password: str,
-    ) -> Server:
+    def add_server(self, server_data: dict, protocol_type: str, server_ip: str, server_password: str) -> Server:
         """
          Добавляет информацию о сервере в базу данных.
         :param server_data: Словарь с данными сервера.
@@ -407,6 +380,8 @@ class DbProcessor:
             if key:
                 return key.server_id
             else:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_error_report("Ошибка при получении ID сервера"))
                 logger.error(f"Ошибка при получении информации о ключе {key_id}")
                 return None
 
@@ -421,12 +396,14 @@ class DbProcessor:
             if server:
                 logger.info(f"Найден сервер с id: {server_id}")
             else:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_error_report("Ошибка при получении сервера по ID"))
                 logger.error(f"Сервер с id {server_id} не найден.")
                 raise ValueError("Нет сервера с переданным id")
             return server
 
     def increment_server_user_count(self, server_id: int) -> Server:
-        with self.session_scope() as session:
+       with self.session_scope() as session:
             server = session.query(Server).filter_by(id=server_id).one()
             server.cnt_users += 1
             session.commit()
@@ -456,39 +433,28 @@ class DbProcessor:
         :return:
         """
         from utils.get_processor import get_processor
-
         async with self._server_creation_lock:
             with self.session_scope() as session:
                 count_servers = session.query(Server).count()
                 server_types = ("outline", "vless")
                 for protocol_type in server_types:
                     servers = (
-                        session.query(Server)
-                        .filter_by(protocol_type=protocol_type)
-                        .all()
+                        session.query(Server).filter_by(protocol_type=protocol_type).all()
                     )
-                    all_servers_full = all(
-                        server.cnt_users >= 159 for server in servers
-                    )
+                    all_servers_full = all(server.cnt_users >= 159 for server in servers)
                     if all_servers_full:
                         logger.info(
                             f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
                         )
-                        new_server, server_ip, server_password = (
-                            await self.create_new_server(count_servers)
-                        )
+                        new_server, server_ip, server_password = await self.create_new_server(count_servers)
                         logger.info(f"Подняли новый сервер типа {protocol_type}")
-                        new_server = self.add_server(
-                            new_server, protocol_type, server_ip, server_password
-                        )
+                        new_server = self.add_server(new_server, protocol_type, server_ip, server_password)
                         logger.info(f"Записали данные нового сервера в БД")
                         processor = await get_processor(protocol_type)
                         logger.info(f"Передаем сервер в setup_server: {new_server}")
                         result = await processor.setup_server(new_server)
                         if not result:
-                            logger.error(
-                                f"Ошибка при настройке сервера типа {protocol_type}"
-                            )
+                            logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
                             return
                         logger.info(f"Настроили сервер типа {protocol_type}")
 
@@ -499,10 +465,7 @@ class DbProcessor:
             keys = session.query(VpnKey).all()
             for key in keys:
                 now = datetime.now()
-                key_start_date = key.start_date.replace(
-                    hour=0, minute=0, second=0, microsecond=0
-                )
-                if key.expiration_date >= now and (now - key_start_date).days % 30 == 0:
+                if key.expiration_date >= now:
                     processor = await get_processor(key.protocol_type)
                     key_info = await processor.get_key_info(
                         key.key_id, server_id=key.server_id
@@ -527,6 +490,6 @@ class DbProcessor:
             session.commit()
             # При необходимости можно сделать session.refresh(server)
             session.refresh(server)
-            logger.info(
-                f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}"
-            )
+            logger.info(f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}")
+
+
