@@ -11,6 +11,7 @@ from sqlalchemy import (
     create_engine,
 )
 
+from bot.routers.admin_router_sending_message import send_error_report
 from initialization.vdsina_processor_init import vdsina_processor
 from bot.utils.send_message import send_message_subscription_expired
 from database.models import Base, VpnKey, Server, User
@@ -226,6 +227,7 @@ class DbProcessor:
                     new_server, server_ip, server_password = await self.create_new_server(count_servers)
 
                     if not new_server:
+                        await send_error_report("Ошибка при создании нового сервера")
                         logger.error("Ошибка при создании нового сервера")
                         return None
 
@@ -233,6 +235,7 @@ class DbProcessor:
                     processor = await get_processor(protocol_type.lower())
                     result = await processor.setup_server(new_server_db)
                     if not result:
+                        await send_error_report("Ошибка при настройке сервера {protocol_type}")
                         logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
                         return None
                     server = new_server_db
@@ -256,6 +259,7 @@ class DbProcessor:
         if data.get("status") == "ok":
             return data.get("data", {})
         return None
+
     async def wait_for_server_ready(self, server_id, timeout=300):
         """
         Ожидает, пока сервер станет активным.
@@ -270,6 +274,7 @@ class DbProcessor:
             logger.info("Сервер еще не активен, ждем...")
             await asyncio.sleep(5)  # Ждем 5 секунд перед следующей проверкой
         logger.error("Таймаут ожидания сервера!")
+        await send_error_report("Таймаут ожидания сервера!")
         return False
 
     def get_server_ip(self, server_id):
@@ -287,6 +292,8 @@ class DbProcessor:
             ip_list = server_data.get("ip", [])
             if ip_list:
                 return ip_list[0].get("ip")
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(send_error_report("Ошибка при получении IP сервера"))
         return None
 
     def get_server_password(self, server_id):
@@ -304,7 +311,8 @@ class DbProcessor:
             password = server_data.get("password", [])
             if password:
                 return password
-
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(send_error_report("Ошибка при получении пароля сервера"))
         return None
 
     async def create_new_server(self, count_servers):
@@ -324,12 +332,14 @@ class DbProcessor:
             password=os.getenv("VDSINA_PASSWORD"),
         )
         if not new_server or new_server.get("status") != "ok":
+            await send_error_report("Ошибка при создании нового сервера")
             logger.error("Ошибка при создании нового сервера")
             return None
         server_id = new_server["data"]["id"]
         logger.info(f"Создан новый сервер с ID: {server_id}")
         is_ready = await self.wait_for_server_ready(server_id)
         if not is_ready:
+            await send_error_report("Сервер не стал активным, невозможно получить IP и пароль")
             logger.error("Сервер не стал активным, невозможно получить IP и пароль")
             return None
         server_ip = self.get_server_ip(server_id)
@@ -370,6 +380,8 @@ class DbProcessor:
             if key:
                 return key.server_id
             else:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_error_report("Ошибка при получении ID сервера"))
                 logger.error(f"Ошибка при получении информации о ключе {key_id}")
                 return None
 
@@ -384,6 +396,8 @@ class DbProcessor:
             if server:
                 logger.info(f"Найден сервер с id: {server_id}")
             else:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_error_report("Ошибка при получении сервера по ID"))
                 logger.error(f"Сервер с id {server_id} не найден.")
                 raise ValueError("Нет сервера с переданным id")
             return server
