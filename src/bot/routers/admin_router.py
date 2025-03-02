@@ -11,7 +11,7 @@ from aiogram.filters import StateFilter
 from aiogram.filters import Command
 from aiogram import Router, F
 
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from initialization.vdsina_processor_init import vdsina_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
@@ -243,7 +243,9 @@ async def admin_panel(callback: CallbackQuery):
         "👑 Вы вернулись в админ-панель", reply_markup=get_admin_keyboard()
     )
 
+
 ADMIN_IDS = list(map(int, json.loads(os.getenv("ADMIN_IDS", "[]"))))
+
 
 @router.message(Command("get_db"))
 async def send_db(message: Message):
