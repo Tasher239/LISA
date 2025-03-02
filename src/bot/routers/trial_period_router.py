@@ -27,9 +27,12 @@ logger = logging.getLogger(__name__)
     StateFilter(ManageKeys.no_active_keys), F.data == "get_trial_period"
 )
 async def trial_key_protocol_type_choice(callback: CallbackQuery, state: FSMContext):
+    current_state = await state.get_state()
+    await state.update_data(prev_state=current_state)
     await callback.message.edit_text(
-        "Выберите тип подключения:",
+        "Выберите тип подключения:\n\n",
         reply_markup=get_choice_vpn_type_keyboard_for_no_key(),
+        parse_mode="HTML",
     )
 
 
