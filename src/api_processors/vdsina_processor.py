@@ -133,7 +133,12 @@ class VDSinaAPI:
         return await self.request("GET", "/template")
 
     async def deploy_server(
-        self, name:str, datacenter_id: int, server_plan_id: int, template_id: int, ip4=1
+        self,
+        name: str,
+        datacenter_id: int,
+        server_plan_id: int,
+        template_id: int,
+        ip4=1,
     ):
         """
         Разворачивание нового сервера на платформе VDSina.
@@ -158,7 +163,6 @@ class VDSinaAPI:
             "backup": 0,
             "name": name,
             "ip4": ip4,
-
         }
         return await self.request("POST", "/server", payload)
 
@@ -207,7 +211,9 @@ class VDSinaAPI:
         if not self.token:
             await self.authenticate(email, password)
         # После успешной авторизации пробуем создать сервер
-        return await self.deploy_server(name, datacenter_id, server_plan_id, template_id, ip4)
+        return await self.deploy_server(
+            name, datacenter_id, server_plan_id, template_id, ip4
+        )
 
     async def get_servers(self):
         return await self.request("GET", "/server")

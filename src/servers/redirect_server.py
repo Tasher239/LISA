@@ -8,6 +8,7 @@ from urllib.parse import quote
 
 redirect_server = FastAPI()
 
+
 def get_server_ip():
     """Определяет текущий внешний IP-адрес сервера."""
     try:
@@ -17,6 +18,7 @@ def get_server_ip():
             return s.getsockname()[0]
     except Exception:
         return "127.0.0.1"  # fallback на localhost
+
 
 def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
     templates = {
@@ -114,9 +116,7 @@ async def open_connection(key_id: str):
         return HTMLResponse(content=f"<h1>Error</h1><p>{str(e)}</p>", status_code=500)
 
 
-
 if __name__ == "__main__":
     host_ip = get_server_ip()
     print(f"Запуск сервера на {host_ip}:8000")
     uvicorn.run(redirect_server, host=host_ip, port=8000)
-
