@@ -82,8 +82,8 @@ class DbProcessor:
                 return None
 
     def update_database_with_key(
-        self, user_id, key, period, server_id, protocol_type="outline"
-    ) -> None:
+            self, user_id, key, period, server_id, protocol_type="outline", is_trial_key=False
+    ) -> bool:
         """
         Обновляет базу данных новым ключом.
         :param user_id:
@@ -94,13 +94,21 @@ class DbProcessor:
         :return:
         """
         user_id_str = str(user_id)
-        period_months = int(period.split()[0])
         start_date = datetime.now().replace(minute=0, second=0, microsecond=0)
-        expiration_date = (start_date + timedelta(days=30 * period_months)).replace(
-            minute=0, second=0, microsecond=0
-        )
+
+        if is_trial_key:
+            expiration_date = (start_date + timedelta(days=2)).replace(
+                minute=0, second=0, microsecond=0
+            )
+        else:
+            period_months = int(period.split()[0])
+            expiration_date = (start_date + timedelta(days=30 * period_months)).replace(
+                minute=0, second=0, microsecond=0
+            )
+
         with self.session_scope() as session:
             user = session.query(User).filter_by(user_telegram_id=user_id_str).first()
+
             if not user:
                 user = User(
                     user_telegram_id=user_id_str,
@@ -108,7 +116,12 @@ class DbProcessor:
                     use_trial_period=False,
                 )
                 session.add(user)
-                session.commit()
+
+            if is_trial_key is True:
+                if user.use_trial_period is True:
+                    return False
+                else:
+                    user.use_trial_period = True
 
             new_key = VpnKey(
                 key_id=key.key_id,
@@ -120,6 +133,7 @@ class DbProcessor:
                 server_id=server_id,
             )
             session.add(new_key)
+        return True
             # session.commit() <- возможно не нужно тк юзаем контекстный менеджер
 
     async def get_expired_keys_by_user_id(self, user_id) -> dict[str, tuple[str, int]]:
@@ -403,7 +417,7 @@ class DbProcessor:
             return server
 
     def increment_server_user_count(self, server_id: int) -> Server:
-       with self.session_scope() as session:
+        with self.session_scope() as session:
             server = session.query(Server).filter_by(id=server_id).one()
             server.cnt_users += 1
             session.commit()
@@ -471,7 +485,6 @@ class DbProcessor:
                         key.key_id, server_id=key.server_id
                     )
                     logger.info("Обновляем лимит")
-                    print(key_info)
                     await processor.update_data_limit(
                         key.key_id,
                         key_info.data_limit
@@ -490,6 +503,5 @@ class DbProcessor:
             session.commit()
             # При необходимости можно сделать session.refresh(server)
             session.refresh(server)
-            logger.info(f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}")
-
-
+            logger.info(
+                f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}")

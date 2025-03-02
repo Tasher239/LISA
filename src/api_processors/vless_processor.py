@@ -15,6 +15,7 @@ from api_processors.base_processor import BaseProcessor
 from api_processors.key_models import VlessKey
 
 from bot.routers.admin_router_sending_message import send_error_report
+
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -71,7 +72,7 @@ class VlessProcessor(BaseProcessor):
                 self.ip = server.ip
                 self.sub_port = 2096
                 self.port_panel = 2053
-                self.host = f"https://{self.ip}:{self.port_panel}"
+                self.host = f"http://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
 
                 try:
@@ -109,7 +110,7 @@ class VlessProcessor(BaseProcessor):
         self.ip = server.ip
         self.sub_port = 2096
         self.port_panel = 2053
-        self.host = f"https://{self.ip}:{self.port_panel}"
+        self.host = f"http://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
@@ -359,7 +360,7 @@ class VlessProcessor(BaseProcessor):
             return False
 
     async def create_vpn_key(
-        self, expire_time: int = 0, sni: str = "dl.google.com", port: int = 46408
+            self, expire_time: int = 0, sni: str = "dl.google.com", port: int = 46408
     ) -> tuple[VlessKey, int]:
         """
         Создает новый VPN-ключ VLESS на удаленном сервере.
@@ -391,7 +392,7 @@ class VlessProcessor(BaseProcessor):
         # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
 
         key_name = generate_slug(2).replace("-", " ")
-        data_limit = 200 * 1024**3  # лимит в байтах
+        data_limit = 200 * 1024 ** 3  # лимит в байтах
         unique_id = str(uuid.uuid4())
         data = {
             "id": 1,
@@ -510,7 +511,7 @@ class VlessProcessor(BaseProcessor):
                             "alterId": 0,  # тут будет имя ключа
                             "email": key_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
-                            "totalGB": 200 * 1024**3,
+                            "totalGB": 200 * 1024 ** 3,
                             "expiryTime": 0,
                             "enable": "true",
                             "tgId": "",
@@ -613,7 +614,7 @@ class VlessProcessor(BaseProcessor):
                 f"{self.host}/panel/inbound/list/", data=self.data
             ).json()
 
-            print(json.dumps(response, indent=4))
+            # print(json.dumps(response, indent=4))
 
             if not response.get("success"):
                 logger.warning(
@@ -621,23 +622,35 @@ class VlessProcessor(BaseProcessor):
                 )
                 return None
 
+            used_bytes = 0
+
             # Ищем ключ в списке inbound'ов
-            data = response['obj'][0]
-            for key_stat in data["clientStats"]:
+            for key_stat in response['obj'][0]["clientStats"]:
+                # print(key_stat)
                 if key_stat.get("email") == key_id:
-                    print(json.dumps(key_stat, indent=4))
-                    return VlessKey(
-                        key_id=key_stat.get("id"),
-                        name=key_stat.get("comment", ""),
-                        email=key_stat.get("email", ""),
-                        access_url=self._get_link(
-                            key_stat.get("id"), key_stat.get("comment", "")
-                        ),
-                        used_bytes=key_stat.get("up", 0) + key_stat.get("down", 0),
-                        data_limit=(
-                            key_stat.get("totalGB") if key_stat.get("totalGB") else None
-                        ),
-                    )
+                    # print(json.dumps(key_stat, indent=4))
+                    used_bytes = key_stat.get("up", 0) + key_stat.get("down", 0)
+                    break
+
+            # Ищем ключ в списке inbound'ов
+            for inbound in response.get("obj", []):
+                clients = json.loads(inbound.get("settings", "{}")).get("clients", [])
+                for client in clients:
+                    if client.get("id") == key_id:
+                        # print(json.dumps(client, indent=4))
+                        name = client.get("comment", "")
+                        email = client.get("email", "")
+                        access_url = self._get_link(client.get("id"), client.get("comment", ""))
+                        data_limit = (client.get("totalGB") if client.get("totalGB") else None)
+
+                        return VlessKey(
+                            key_id=key_id,
+                            name=name,
+                            email=email,
+                            access_url=access_url,
+                            used_bytes=used_bytes,
+                            data_limit=data_limit
+                        )
 
             logger.warning(f"Ключ {key_id} не найден на сервере")
             return None
@@ -655,11 +668,11 @@ class VlessProcessor(BaseProcessor):
 
     @create_server_session_by_id
     async def update_data_limit(
-        self,
-        key_id: str,
-        new_limit_bytes: int,
-        server_id: int = None,
-        key_name: str = None,
+            self,
+            key_id: str,
+            new_limit_bytes: int,
+            server_id: int = None,
+            key_name: str = None,
     ) -> bool:
         """
         Обновляет лимит данных для указанного пользователя на сервере.
@@ -725,7 +738,6 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
-
     async def setup_server(self, server):
         """
         Автоматическая установка 3X-UI на сервер с предварительной настройкой Docker.
@@ -790,28 +802,28 @@ class VlessProcessor(BaseProcessor):
         setup_script = "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
         # Данные для автоматического ввода в setup.sh (каждая строка — ответ на соответствующий вопрос)
         setup_answers = (
-            "\n".join(
-                [
-                    "admin",  # Логин
-                    server.password,  # Пароль
-                    "2053",  # Порт 3X-UI
-                    server.ip,  # IP/домен
-                    vless_email,  # Email
-                    vless_bot_token,  # Telegram Bot Token
-                    "lisa_helper",  # Telegram admin profile
-                    "y",  # Автоматическое подтверждение перезаписи конфига
-                ]
-            )
-            + "\n"
+                "\n".join(
+                    [
+                        "admin",  # Логин
+                        server.password,  # Пароль
+                        "2053",  # Порт 3X-UI
+                        server.ip,  # IP/домен
+                        vless_email,  # Email
+                        vless_bot_token,  # Telegram Bot Token
+                        "lisa_helper",  # Telegram admin profile
+                        "y",  # Автоматическое подтверждение перезаписи конфига
+                    ]
+                )
+                + "\n"
         )
         max_attempts = 5
         for attempt in range(max_attempts):
             try:
                 async with asyncssh.connect(
-                    host=server.ip,
-                    username="root",
-                    password=server.password,
-                    known_hosts=None,
+                        host=server.ip,
+                        username="root",
+                        password=server.password,
+                        known_hosts=None,
                 ) as conn:
                     logger.info(f"Попытка {attempt + 1}/{max_attempts}...")
                     logger.info(f"🔗 Подключение к серверу {server.ip} установлено!")

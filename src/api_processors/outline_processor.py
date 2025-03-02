@@ -97,10 +97,6 @@ class OutlineProcessor(BaseProcessor):
 
         server = await get_db_processor().get_server_with_min_users("outline")
 
-        print(server.api_url)
-        print(server.id)
-        print(server.cert_sha256)
-
         self.api_url = server.api_url
         self.server_id = server.id
 
@@ -191,10 +187,10 @@ class OutlineProcessor(BaseProcessor):
             key_json = await resp.json()
 
         client_data = OutlineKey.from_key_json(key_json)
-        print(client_data)
+        # print(client_data)
 
         current_metrics = await self._get_metrics()
-        print(json.dumps(current_metrics.get("bytesTransferredByUserId"), indent=4))
+        # print(json.dumps(current_metrics.get("bytesTransferredByUserId"), indent=4))
 
         client_data.used_bytes = current_metrics.get(
             "bytesTransferredByUserId", {}
@@ -431,12 +427,10 @@ class OutlineProcessor(BaseProcessor):
             return
         try:
             loop = asyncio.get_running_loop()
+            loop.create_task(self._close())
         except RuntimeError:
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(send_error_report("OutlineProcessor: RuntimeError"))
-            asyncio.run(self._close())
-            return
-        loop.create_task(self._close())
+            # Нет активного event loop — пропускаем асинхронное закрытие
+            pass
 
     @staticmethod
     def extract_outline_config(output: str) -> dict | None:

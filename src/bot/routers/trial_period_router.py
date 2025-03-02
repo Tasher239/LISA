@@ -55,20 +55,18 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     match protocol_type.lower():
         case "outline":
             processor = async_outline_processor
-            key, server_id = await processor.create_vpn_key()
         case "vless":
             processor = vless_processor
-            key, server_id = await processor.create_vpn_key()
+
+    key, server_id = await processor.create_vpn_key()
+    print(key, server_id)
 
     user_id = callback.from_user.id
-
-    status = db_processor.update_database_with_key(
-        user_id, key, 2, server_id, protocol_type, True
-    )
+    status = db_processor.update_database_with_key(user_id, key, 2, server_id, protocol_type, True)
 
     if status:
         text = f"Ваш пробный ключ «{key.name}» готов к использованию. Срок действия - 2 дня."
-        await send_key_to_user(callback.message, key, text)
+        await send_key_to_user(callback.message, key, text, state)
     else:
         current_state = await state.get_state()
         await callback.message.edit_text(

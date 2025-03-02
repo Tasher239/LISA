@@ -12,7 +12,7 @@ from aiogram.filters import Command
 from aiogram import Router, F
 
 from bot.routers.admin_router_sending_message import send_error_report
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from initialization.vdsina_processor_init import vdsina_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor

@@ -1,5 +1,6 @@
 import logging
 
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from outline_vpn.outline_vpn import OutlineKey
 
@@ -16,10 +17,11 @@ logger = logging.getLogger(__name__)
 
 
 async def send_key_to_user(
-    message: Message, key: OutlineKey, text: str = "Ваш ключ от VPN"
+        message: Message, key: OutlineKey, text: str, state: FSMContext
 ) -> None:
     """Отправляет ключ пользователю."""
     logger.info(f"Key created: {key} for user {message.from_user.id}")
+    await state.update_data(key_access_url=key.access_url)
     await message.edit_text(
         get_your_key_string(key, text),
         parse_mode="Markdown",
