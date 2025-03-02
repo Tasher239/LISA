@@ -61,17 +61,36 @@ def get_choice_vpn_type_keyboard(state: FSMContext = None):
                 InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
                 InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
             ],
+            [
+                InlineKeyboardButton(
+                    text="Узнать отличия протоколов", callback_data="protocol_diff"
+                )
+            ],
             [back_button],
         ]
     )
 
+def get_diff_protocol_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад", callback_data="back_to_previous"
+                )
+            ]
+        ]
+    )
 
-def get_choice_vpn_type_keyboard_for_no_key():
+
+def get_choice_vpn_type_keyboard_for_no_key() -> object:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text="VLESS", callback_data="VPNtype_VLESS"),
                 InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
+            ],
+            [
+                InlineKeyboardButton(text="Узнать отличия протоколов", callback_data="protocol_diff"),
             ],
             [
                 InlineKeyboardButton(
