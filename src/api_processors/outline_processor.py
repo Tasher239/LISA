@@ -11,6 +11,7 @@ from coolname import generate_slug
 
 from api_processors.key_models import OutlineKey
 from api_processors.base_processor import BaseProcessor
+from bot.routers.admin_router_sending_message import send_error_report
 
 logger = logging.getLogger(__name__)
 
@@ -426,6 +427,8 @@ class OutlineProcessor(BaseProcessor):
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report("OutlineProcessor: RuntimeError"))
             asyncio.run(self._close())
             return
         loop.create_task(self._close())
@@ -488,6 +491,7 @@ class OutlineProcessor(BaseProcessor):
                     logger.info(f"Сервер настроен.")
                     return True  # Успешно – возвращаем True
             except Exception as e:
+                await send_error_report(e)
                 logger.error(f"Попытка {attempt + 1}/{max_attempts} не удалась: {e}")
                 if attempt < max_attempts - 1:
                     logger.info("Повторная попытка через 10 секунд...")

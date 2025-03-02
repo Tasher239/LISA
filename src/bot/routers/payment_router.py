@@ -13,6 +13,7 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
+from bot.routers.admin_router_sending_message import send_error_report
 from initialization.async_outline_processor_init import async_outline_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
@@ -169,6 +170,7 @@ async def successful_payment(message: Message, state: FSMContext):
         await state.update_data(key_access_url=key.access_url)
         await state.set_state(GetKey.sending_key)
     except Exception as e:
+        await send_error_report(e)
         logger.error(f"Произошла ошибка: {e}")
         await message.answer(
             "Произошла ошибка при создании ключа. Пожалуйста, свяжитесь с поддержкой."
@@ -212,4 +214,5 @@ async def successful_extension_payment(message: Message, state: FSMContext):
         )
         await state.set_state(GetKey.sending_key)
     except Exception as e:
+        await send_error_report(e)
         logger.info(e)

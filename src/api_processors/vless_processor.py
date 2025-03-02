@@ -14,7 +14,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from api_processors.base_processor import BaseProcessor
 from api_processors.key_models import VlessKey
 
-
+from bot.routers.admin_router_sending_message import send_error_report
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -71,7 +71,7 @@ class VlessProcessor(BaseProcessor):
                 self.ip = server.ip
                 self.sub_port = 2096
                 self.port_panel = 2053
-                self.host = f"http://{self.ip}:{self.port_panel}"
+                self.host = f"https://{self.ip}:{self.port_panel}"
                 self.data = {"username": "admin", "password": server.password}
 
                 try:
@@ -79,6 +79,8 @@ class VlessProcessor(BaseProcessor):
                     self.ses.verify = False
                     self.con = self._connect()
                 except Exception as e:
+                    loop = asyncio.get_event_loop()
+                    loop.run_until_complete(send_error_report(e))
                     self.ses = None
                     raise RuntimeError(f"Ошибка при установке соединения: {e}")
 
@@ -107,7 +109,7 @@ class VlessProcessor(BaseProcessor):
         self.ip = server.ip
         self.sub_port = 2096
         self.port_panel = 2053
-        self.host = f"http://{self.ip}:{self.port_panel}"
+        self.host = f"https://{self.ip}:{self.port_panel}"
         self.data = {"username": "admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
@@ -132,6 +134,8 @@ class VlessProcessor(BaseProcessor):
             logger.error(f"Ошибка сети при подключении к {self.host}: {e}")
             return False
         except ValueError as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка при декодировании JSON-ответа от {self.host}: {e}")
             return False
 
@@ -159,6 +163,8 @@ class VlessProcessor(BaseProcessor):
             logger.warning(f"⚠️Подключение (inbound) не найдено")
             return False
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при _check_connect: {e}")
             return False
 
@@ -263,6 +269,8 @@ class VlessProcessor(BaseProcessor):
                 logger.warning(f"🛑Ошибка при добавлении нового подключения: {msg}")
                 return False, msg
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при добавлении inbound: {e}")
             return False, str(e)
 
@@ -282,6 +290,8 @@ class VlessProcessor(BaseProcessor):
             else:
                 return False, response.get("msg", "Неизвестная ошибка")
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при запросе X25519Cert: {e}")
             return False, str(e)
 
@@ -343,6 +353,8 @@ class VlessProcessor(BaseProcessor):
             )
             return res
         except (requests.RequestException, ValueError) as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка при генерации ссылки: {e}")
             return False
 
@@ -452,6 +464,8 @@ class VlessProcessor(BaseProcessor):
                 logger.warning(f"🛑Ошибка при добавлении ключа {unique_id}: {msg}")
                 return False, msg
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
@@ -524,6 +538,8 @@ class VlessProcessor(BaseProcessor):
                 return False
 
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
@@ -562,6 +578,8 @@ class VlessProcessor(BaseProcessor):
                 logger.warning(f"🛑Ошибка при удалении ключа {key_id}: {msg}")
                 return False, msg
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при удалении ключа: {e}")
             return False
 
@@ -625,9 +643,13 @@ class VlessProcessor(BaseProcessor):
             return None
 
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при получении информации о ключе {key_id}: {e}")
             return None
         except ValueError as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка при декодировании JSON-ответа: {e}")
             return None
 
@@ -698,6 +720,8 @@ class VlessProcessor(BaseProcessor):
                 return False
 
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             logger.error(f"Ошибка сети при добавлении/обновлении ключа: {e}")
             return False, str(e)
 
@@ -848,6 +872,8 @@ class VlessProcessor(BaseProcessor):
                     return True
 
             except Exception as e:
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_error_report(e))
                 logger.info(f"❌ Ошибка при установке 3X-UI: {e}, попытка {attempt + 1}/{max_attempts}")
                 if attempt < max_attempts - 1:
                     logger.info("Повторная попытка через 10 секунд...")
@@ -891,4 +917,6 @@ class VlessProcessor(BaseProcessor):
                     response.get("msg", "Ошибка получения информации о сервере")
                 )
         except requests.RequestException as e:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(send_error_report(e))
             raise Exception(f"Ошибка сети: {e}")
