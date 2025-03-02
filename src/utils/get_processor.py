@@ -1,4 +1,4 @@
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from initialization.vless_processor_init import vless_processor
 
 

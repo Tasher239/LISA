@@ -9,7 +9,7 @@ from aiogram import F, Router
 
 from database.models import VpnKey
 from database.models import User
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
 from bot.utils.send_message import send_key_to_user
@@ -51,56 +51,25 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     match cur_state:
         case GetKey.buy_key:
             data = await state.get_data()
-            vpn_type = data.get("vpn_type")
+            protocol_type = data.get("vpn_type")
         case ManageKeys.no_active_keys:
-            vpn_type = callback.data.split("_")[1]
+            protocol_type = callback.data.split("_")[1]
+
+    match protocol_type.lower():
+        case "outline":
+            processor = async_outline_processor
+            key, server_id = await processor.create_vpn_key()
+        case "vless":
+            processor = vless_processor
+            key, server_id = await processor.create_vpn_key()
 
     user_id = callback.from_user.id
-    user_id_str = str(user_id)
-    session = db_processor.get_session()
 
-    user = session.query(User).filter_by(user_telegram_id=user_id_str).first()
+    status = db_processor.update_database_with_key(
+        user_id, key, 2, server_id, protocol_type, True
+    )
 
-    if not user:
-        user = User(
-            user_telegram_id=user_id_str,
-            subscription_status="active",  # тут поменять + добавить информацию о конце периода для ключа
-            use_trial_period=False,
-        )
-        session.add(user)
-        session.commit()
-
-    if not user.use_trial_period:
-        # обновляем статус использования пробного периода
-        # генерируем и высылаем ключ
-        user.use_trial_period = True
-        session.commit()
-
-        # processor = await get_processor(vpn_type)
-
-        match vpn_type.lower():
-            case "outline":
-                processor = async_outline_processor
-                key, server_id = await processor.create_vpn_key()
-            case "vless":
-                processor = vless_processor
-                key, server_id = await processor.create_vpn_key()
-
-        start_date = datetime.now()
-        await state.update_data(key_access_url=key.access_url)
-        expiration_date = start_date + timedelta(days=2)
-        new_key = VpnKey(
-            key_id=key.key_id,
-            name=key.name,
-            user_telegram_id=user_id_str,
-            expiration_date=expiration_date,
-            start_date=start_date,
-            protocol_type=vpn_type,
-            server_id=server_id,
-        )
-        session.add(new_key)
-        session.commit()
-
+    if status:
         text = f"Ваш пробный ключ «{key.name}» готов к использованию. Срок действия - 2 дня."
         await send_key_to_user(callback.message, key, text)
     else:

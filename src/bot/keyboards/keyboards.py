@@ -120,12 +120,12 @@ def get_device_vless_keyboard():
                 InlineKeyboardButton(
                     text="💻 Windows",
                     callback_data="device_Windows",
-                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Windows-01-29",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Vless-na-Windows-03-02",
                 ),
                 InlineKeyboardButton(
                     text="📲 Android",
                     callback_data="device_Android",
-                    url="https://telegra.ph/Instrukciya-po-ustanovke-vless-na-Android-01-29",
+                    url="https://telegra.ph/Instrukciya-po-ustanovke-Vless-na-Android-03-02",
                 ),
             ],
             [
@@ -156,7 +156,7 @@ def get_device_outline_keyboard():
                 InlineKeyboardButton(
                     text="💻 Windows",
                     callback_data="device_Windows",
-                    url="https://telegra.ph/Instrukciya-po-ustanovke-Outline-na-Windows-01-29",
+                    url="https://telegra.ph/Podklyuchenie-Outline-na-Windows-03-02",
                 ),
                 InlineKeyboardButton(
                     text="📲 Android",
@@ -287,7 +287,9 @@ async def get_key_name_choosing_keyboard(keys: list):
 
     def add_keys_section(title: str, keys: list):
         """Добавляет заголовок и кнопки ключей в клавиатуру."""
-        keyboard_buttons.append([InlineKeyboardButton(text=f" {title} 🔽 ", callback_data="none")])
+        keyboard_buttons.append(
+            [InlineKeyboardButton(text=f" {title} 🔽 ", callback_data="none")]
+        )
 
         # Определяем максимальную длину имени ключа для выравнивания
         max_length = max((len(key.name) for key in keys), default=10)
@@ -295,7 +297,11 @@ async def get_key_name_choosing_keyboard(keys: list):
         for key in keys:
             key_name = f"🔑 {key.name}".ljust(max_length + 3)  # +3 для отступов
             keyboard_buttons.append(
-                [InlineKeyboardButton(text=f"  {key_name}  ", callback_data=f"key_{key.key_id}")]
+                [
+                    InlineKeyboardButton(
+                        text=f"  {key_name}  ", callback_data=f"key_{key.key_id}"
+                    )
+                ]
             )
 
     if outline_keys:

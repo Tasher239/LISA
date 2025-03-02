@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 from aiogram import F, Router
 
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from bot.utils.send_message import send_key_to_user_with_back_button
 from initialization.db_processor_init import db_processor
 from utils.get_processor import get_processor
@@ -82,7 +82,7 @@ async def show_traffic_handler(callback: CallbackQuery, state: FSMContext):
         key_info = await processor.get_key_info(key.key_id, server_id=key.server_id)
         logger.info(f"Key info: {key_info}")
         # заносим всю инфу о ключе в дату, чтобы оперативно доставать её в других обработчиках
-        await state.update_data(key_info=key_info)
+        await state.update_data(key_info=key_info, key_name=key.name)
 
     used_bytes = 0
 
@@ -176,15 +176,19 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
     db_processor.rename_key(key_id, new_name)
     key = db_processor.get_key_by_id(key_id)
 
+    await state.update_data(key_name=key.name)
+
     # Переименовываем ключ через OutlineProcessor (если нужно)
-    if key.protocol_type == "Outline":
-        await async_outline_processor.rename_key(
-            key.key_id, new_name, server_id=key.server_id
-        )
-    else:
-        await vless_processor.rename_key(
-            key_id=key.key_id, server_id=key.server_id, new_key_name=new_name
-        )
+    match key.protocol_type.lower():
+        case "outline":
+            await async_outline_processor.rename_key(
+                key.key_id, new_name, server_id=key.server_id
+            )
+        case "vless":
+            await vless_processor.rename_key(
+                key_id=key.key_id, server_id=key.server_id, new_key_name=new_name
+            )
+
     # Отправляем сообщение пользователю
     await callback.message.edit_text(
         f"Ключ переименован в: «{new_name}»",
@@ -197,7 +201,7 @@ async def confirm_rename_handler(callback: CallbackQuery, state: FSMContext):
 )
 async def cancel_rename_handler(callback: CallbackQuery):
     await callback.message.edit_text(
-        "Переименование отменено.", reply_markup=get_back_button_to_key_params()
+        "Переименование отменено", reply_markup=get_back_button_to_key_params()
     )
 
 
@@ -208,15 +212,17 @@ async def show_key_url_handler(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
 
     key_info = data.get("key_info")
+    key_name = data.get("key_name")
     if key_info is None:
         key = db_processor.get_key_by_id(data.get("selected_key_id"))
+        key_name = key.name
         processor = await get_processor(key.protocol_type)
         key_info = await processor.get_key_info(key.key_id, server_id=key.server_id)
         logger.info(f"Key info: {key_info}")
         # заносим всю инфу о ключе в дату, чтобы оперативно доставать её в других обработчиках
-        await state.update_data(key_info=key_info)
+        await state.update_data(key_info=key_info, key_name=key_name)
 
     # Отправляем ключ пользователю
     await send_key_to_user_with_back_button(
-        callback.message, key_info, f"Ваш ключ «{key_info.name}»"
+        callback.message, key_info, f"Ваш ключ «{key_name}»"
     )

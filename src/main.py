@@ -22,7 +22,7 @@ from bot.routers import (
 
 from logger.logging_config import configure_logging
 
-configure_logging() # конфигурируем логгер для всего
+configure_logging()  # конфигурируем логгер для всего
 
 logger = logging.getLogger(__name__)
 
@@ -37,40 +37,41 @@ dp.include_router(utils_router.router)
 dp.include_router(choice_vpn_type_router.router)
 dp.include_router(admin_router.router)
 
+
 async def run_fastapi_server():
     # Настраиваем uvicorn для работы в том же цикле событий
     config = uvicorn.Config(
-        redirect_server,       # наш объект FastAPI()
+        redirect_server,  # наш объект FastAPI()
         host="192.168.160.1",
         port=8000,
-        loop="asyncio",        # важно указать, что работаем на asyncio
-        log_level="info"
+        loop="asyncio",  # важно указать, что работаем на asyncio
+        log_level="info",
     )
     server = uvicorn.Server(config)
     # Запускаем сервер (он будет «заблокирован» внутри своей задачи)
     await server.serve()
 
+
 @aiocron.crontab("0 10,21 * * *")
 async def scheduled_check_db():
     await db_processor.check_db()
 
+
 @aiocron.crontab("0 * * * *")
 async def scheduled_update_key_data_limit():
     await db_processor.check_and_update_key_data_limit()
+
 
 @aiocron.crontab("*/5 * * * *")
 async def scheduled_check_servers():
     await db_processor.check_count_keys_on_servers()
 
 
-
 async def main() -> None:
     await vdsina_processor_init()  # инициализируем VDSina API
     main_init_db()  # инициализируем БД 1ый раз при запуске
-    logger.info("Регистрация main menu команд...")
     logger.info("Запуск polling...")
     await dp.start_polling(bot)
-
 
 
 if __name__ == "__main__":

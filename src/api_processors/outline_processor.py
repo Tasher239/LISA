@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 def get_db_processor():
     from initialization.db_processor_init import db_processor
+
     return db_processor
 
 
@@ -96,6 +97,10 @@ class OutlineProcessor(BaseProcessor):
 
         server = await get_db_processor().get_server_with_min_users("outline")
 
+        print(server.api_url)
+        print(server.id)
+        print(server.cert_sha256)
+
         self.api_url = server.api_url
         self.server_id = server.id
 
@@ -158,7 +163,7 @@ class OutlineProcessor(BaseProcessor):
         logger.info(tmp_key)
 
         key_name = generate_slug(2).replace("-", " ")
-        data_limit = 200 * 1024 ** 3
+        data_limit = 200 * 1024**3
 
         await self.rename_key(tmp_key.key_id, key_name)
         await self.update_data_limit(tmp_key.key_id, data_limit, self.server_id)
@@ -206,7 +211,7 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если удаление прошло успешно.
         """
         async with self.session.delete(
-                url=f"{self.api_url}/access-keys/{key_id}"
+            url=f"{self.api_url}/access-keys/{key_id}"
         ) as resp:
             return resp.status == 204
 
@@ -221,12 +226,12 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.put(
-                url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
+            url=f"{self.api_url}/access-keys/{key_id}/name", data={"name": new_key_name}
         ) as resp:
             return resp.status == 204
 
     async def _fulfill_keys_with_metrics(
-            self, keys: list[OutlineKey]
+        self, keys: list[OutlineKey]
     ) -> list[OutlineKey]:
         """
         Обогащает список ключей информацией о переданных данных.
@@ -252,7 +257,7 @@ class OutlineProcessor(BaseProcessor):
 
     @create_server_session_by_id
     async def update_data_limit(
-            self, key_id: int, new_limit_bytes: int, server_id: int = None, key_name=None
+        self, key_id: int, new_limit_bytes: int, server_id: int = None, key_name=None
     ) -> bool:
         """
         Устанавливает лимит передачи данных для ключа.
@@ -263,7 +268,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"limit": {"bytes": new_limit_bytes}}
         async with self.session.put(
-                url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
+            url=f"{self.api_url}/access-keys/{key_id}/data-limit", json=data
         ) as resp:
             return resp.status == 204
 
@@ -276,7 +281,7 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.delete(
-                url=f"{self.api_url}/access-keys/{key_id}/data-limit"
+            url=f"{self.api_url}/access-keys/{key_id}/data-limit"
         ) as resp:
             return resp.status == 204
 
@@ -331,7 +336,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"hostname": hostname}
         async with self.session.put(
-                url=f"{self.api_url}/server/hostname-for-access-keys", json=data
+            url=f"{self.api_url}/server/hostname-for-access-keys", json=data
         ) as resp:
             return resp.status == 204
 
@@ -354,7 +359,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"metricsEnabled": status}
         async with self.session.put(
-                url=f"{self.api_url}/metrics/enabled", json=data
+            url=f"{self.api_url}/metrics/enabled", json=data
         ) as resp:
             return resp.status == 204
 
@@ -368,7 +373,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"port": port}
         async with self.session.put(
-                url=f"{self.api_url}/server/port-for-new-access-keys", json=data
+            url=f"{self.api_url}/server/port-for-new-access-keys", json=data
         ) as resp:
             if resp.status == 400:
                 raise OutlineServerErrorException(
@@ -389,7 +394,7 @@ class OutlineProcessor(BaseProcessor):
         """
         data = {"limit": {"bytes": limit_bytes}}
         async with self.session.put(
-                url=f"{self.api_url}/server/access-key-data-limit", json=data
+            url=f"{self.api_url}/server/access-key-data-limit", json=data
         ) as resp:
             return resp.status == 204
 
@@ -400,7 +405,7 @@ class OutlineProcessor(BaseProcessor):
         :return: True, если операция прошла успешно.
         """
         async with self.session.delete(
-                url=f"{self.api_url}/server/access-key-data-limit"
+            url=f"{self.api_url}/server/access-key-data-limit"
         ) as resp:
             return resp.status == 204
 
@@ -433,7 +438,8 @@ class OutlineProcessor(BaseProcessor):
             return
         loop.create_task(self._close())
 
-    def extract_outline_config(self, output: str) -> dict | None:
+    @staticmethod
+    def extract_outline_config(output: str) -> dict | None:
         """
         Извлекает конфигурацию сервера Outline из текстового вывода.
 
@@ -468,15 +474,17 @@ class OutlineProcessor(BaseProcessor):
             )
             try:
                 async with asyncssh.connect(
-                        host=server.ip,
-                        username="root",
-                        password=server.password,
-                        known_hosts=None,
+                    host=server.ip,
+                    username="root",
+                    password=server.password,
+                    known_hosts=None,
                 ) as conn:
                     result_update = await conn.run(cmd_update)
                     logger.info("Вывод обновления:\n" + result_update.stdout)
                     if result_update.exit_status != 0:
-                        raise Exception(f"Ошибка выполнения обновления: {result_update.stderr}")
+                        raise Exception(
+                            f"Ошибка выполнения обновления: {result_update.stderr}"
+                        )
                     result_install = await conn.run(cmd_install_outline, input="y\n")
                     stdout_outline = result_install.stdout
                     stderr_outline = result_install.stderr
@@ -487,7 +495,9 @@ class OutlineProcessor(BaseProcessor):
                     config = self.extract_outline_config(stdout_outline)
                     if config is None:
                         raise Exception("Ошибка при извлечении конфигурации Outline")
-                    get_db_processor().update_server_by_id(server.id, config["apiUrl"], config["certSha256"])
+                    get_db_processor().update_server_by_id(
+                        server.id, config["apiUrl"], config["certSha256"]
+                    )
                     logger.info(f"Сервер настроен.")
                     return True  # Успешно – возвращаем True
             except Exception as e:
