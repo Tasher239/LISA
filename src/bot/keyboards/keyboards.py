@@ -100,6 +100,12 @@ def get_choice_vpn_type_keyboard_for_no_key() -> object:
         ]
     )
 
+def get_confirm_broadcast_keyboard():
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Отправить", callback_data="broadcast_confirm")],
+        [InlineKeyboardButton(text="❌ Отменить", callback_data="broadcast_cancel")]
+    ])
+    return keyboard
 
 def get_device_vless_keyboard():
     return InlineKeyboardMarkup(
@@ -498,15 +504,18 @@ def get_admin_keyboard():
     servers_info = InlineKeyboardButton(
         text="📊 Информация о серверах", callback_data="get_servers_info"
     )
-
+    broadcast = InlineKeyboardButton(
+        text="📢 Рассылка", callback_data="admin_broadcast"
+    )
+    get_db = InlineKeyboardButton(
+        text="📁 Получить базу данных", callback_data="get_db"
+    )
     back_to_main_menu = InlineKeyboardButton(
         text="🔙 В меню", callback_data="back_to_main_menu"
     )
-
     return InlineKeyboardMarkup(
-        inline_keyboard=[[get_key], [servers_info], [back_to_main_menu]]
+        inline_keyboard=[[get_key], [servers_info], [broadcast], [get_db], [back_to_main_menu]]
     )
-
 
 def get_back_admin_panel_keyboard():
     back_button = InlineKeyboardButton(

@@ -49,7 +49,8 @@ class SubscriptionExtension(StatesGroup):
 
 class AdminAccess(StatesGroup):
     """Класс состояний, относящихся к админ-доступу"""
-
     wait_password_enter = State()
     correct_password = State()
     admin_choosing_vpn_protocol_type = State()
+    broadcast_wait_text = State()
+    broadcast_confirm = State()  #
