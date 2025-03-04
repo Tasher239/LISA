@@ -12,11 +12,12 @@ from aiogram.filters import Command
 from aiogram import Router, F
 
 from bot.routers.admin_router_sending_message import send_error_report
-from initialization.async_outline_processor_init import async_outline_processor
+from initialization.outline_processor_init import async_outline_processor
 from initialization.vdsina_processor_init import vdsina_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
 from bot.utils.string_makers import get_your_key_string
+from bot.keyboards.keyboards import get_confirm_broadcast_keyboard
 from initialization.bot_init import bot
 from bot.fsm.states import AdminAccess
 from bot.keyboards.keyboards import (
@@ -36,6 +37,12 @@ admin_passwords = json.loads(os.getenv("ADMIN_PASSWORDS"))
 admin_passwords = {int(k): v for k, v in admin_passwords.items()}
 
 pending_admin = {}
+try:
+    admin_ids_str = os.getenv("ADMIN_IDS", "[]")
+    ADMIN_IDS = list(map(int, json.loads(admin_ids_str)))
+except Exception as e:
+    logger.error(f"Ошибка загрузки ADMIN_IDS: {e}")
+    ADMIN_IDS = []
 
 
 @router.message(Command("admin"))
@@ -178,7 +185,7 @@ async def aggregate_statistics(response):
 
 
 @router.callback_query(F.data == "get_servers_info")
-async def get_servers_info(callback: CallbackQuery):
+async def get_servers_info(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Получение информации по серверам...")
     now = datetime.now()
     start = now - timedelta(days=30)
@@ -196,6 +203,7 @@ async def get_servers_info(callback: CallbackQuery):
     await callback.message.edit_text(
         text=info, reply_markup=get_back_admin_panel_keyboard()
     )
+    await state.set_state(AdminAccess.correct_password)
 
 
 @router.callback_query(
@@ -233,7 +241,7 @@ async def make_key_for_admin(callback: CallbackQuery, state: FSMContext):
         await callback.answer(
             "Произошла ошибка при создании ключа. Пожалуйста, свяжитесь с поддержкой."
         )
-        await state.clear()
+        await state.set_state(AdminAccess.correct_password)
 
 
 @router.callback_query(
@@ -249,22 +257,70 @@ async def admin_panel(callback: CallbackQuery):
 
 ADMIN_IDS = list(map(int, json.loads(os.getenv("ADMIN_IDS", "[]"))))
 
-@router.message(Command("get_db"))
-async def send_db(message: Message):
+@router.callback_query(F.data == "get_db", StateFilter(AdminAccess.correct_password))
+async def send_db(callback: CallbackQuery, state: FSMContext):
     """
     Отправляет файл базы данных администратору по команде /get_db
     """
-    if message.from_user.id not in ADMIN_IDS:
-        await message.answer("🚫 У вас нет доступа.")
+    if callback.from_user.id not in ADMIN_IDS:
+        await callback.answer("🚫 У вас нет доступа.")
         return
 
-    db_path = os.path.abspath("database/vpn_users.db")  # Укажи правильный путь к БД
-
-    # Проверяем, существует ли файл
+    db_path = os.path.abspath("database/vpn_users.db")  # Укажите правильный путь к БД
     if not os.path.exists(db_path):
-        await message.answer("🚫 База данных не найдена!")
+        await callback.message.answer("🚫 База данных не найдена!")
         return
 
-    # Отправляем файл
     db_file = FSInputFile(db_path)
-    await message.answer_document(db_file, caption="📂 Вот ваша база данных.")
+    await state.set_state(AdminAccess.correct_password)
+    await callback.message.answer_document(db_file, caption="📂 Вот ваша база данных.")
+
+@router.callback_query(F.data == "admin_broadcast", StateFilter(AdminAccess.correct_password))
+async def admin_broadcast_start(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(
+        "Введите текст для рассылки всем пользователям:",
+        reply_markup=get_back_admin_panel_keyboard()
+    )
+    await state.set_state(AdminAccess.broadcast_wait_text)
+
+@router.callback_query(F.data == "back_to_admin_panel", StateFilter(AdminAccess.broadcast_wait_text))
+async def cancel_broadcast_input(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(AdminAccess.correct_password)
+    try:
+        await callback.message.edit_text("Операция рассылки отменена.", reply_markup=get_admin_keyboard())
+    except TelegramBadRequest as e:
+        if "message is not modified" in str(e):
+            pass
+        else:
+            raise
+    await state.update_data(broadcast_text=None)
+
+@router.message(StateFilter(AdminAccess.broadcast_wait_text))
+async def admin_broadcast_get_text(message: Message, state: FSMContext):
+    broadcast_text = message.text
+    await state.update_data(broadcast_text=broadcast_text)
+    await message.answer(
+        f"Вы уверены, что хотите отправить следующее сообщение всем пользователям?\n\n{broadcast_text}",
+        reply_markup=get_confirm_broadcast_keyboard()
+    )
+    await state.set_state(AdminAccess.broadcast_confirm)
+
+
+@router.callback_query(F.data.in_(["broadcast_confirm", "broadcast_cancel"]),
+                       StateFilter(AdminAccess.broadcast_confirm))
+async def admin_broadcast_confirm(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    broadcast_text = data.get("broadcast_text")
+    if callback.data == "broadcast_confirm":
+        user_ids = await db_processor.get_all_user_ids()
+        for user_id in user_ids:
+            try:
+                await bot.send_message(user_id, broadcast_text)
+            except Exception as e:
+                logger.error(f"Ошибка отправки сообщения пользователю {user_id}: {e}")
+        await callback.message.edit_text("Рассылка завершена.", reply_markup=get_admin_keyboard())
+    else:
+        await callback.message.edit_text("Рассылка отменена.", reply_markup=get_admin_keyboard())
+    await state.set_state(AdminAccess.correct_password)
+    await state.update_data(broadcast_text=None)
+    await state.clear()

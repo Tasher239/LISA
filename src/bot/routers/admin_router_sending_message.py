@@ -16,7 +16,7 @@ except Exception as e:
     ADMIN_IDS = []
 
 
-async def send_error_report(error: Exception, log_file_path: str = "logger/bot.log"):
+async def send_error_report(error: Exception):
     """
     Рассылает администраторам сообщение с информацией об ошибке и прикрепляет лог-файл.
 
@@ -28,13 +28,16 @@ async def send_error_report(error: Exception, log_file_path: str = "logger/bot.l
         f"`{error}`\n"
         f"Время: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
+    log_file_paths = ["logger/bot.log", "logger/bot.log.1", "logger/bot.log.2", "logger/bot.log.3"]
     for admin_id in ADMIN_IDS:
         try:
             # Отправляем сообщение с текстом ошибки
             await bot.send_message(admin_id, error_text, parse_mode="Markdown")
             # Если лог-файл существует, отправляем его как документ
-            if os.path.exists(log_file_path):
-                log_file = FSInputFile(log_file_path)
-                await bot.send_document(admin_id, document=log_file, caption="Лог-файл")
+            for log_file_path in log_file_paths:
+                if os.path.exists(log_file_path):
+                    log_file = FSInputFile(log_file_path)
+                    await bot.send_document(admin_id, document=log_file, caption=f"Лог-файл {log_file_path}")
         except Exception as ex:
             logger.error(f"Не удалось отправить сообщение админу {admin_id}: {ex}")
+

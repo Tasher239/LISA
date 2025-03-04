@@ -492,4 +492,9 @@ class DbProcessor:
             session.refresh(server)
             logger.info(f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}")
 
+    async def get_all_user_ids(self):
+        with self.session_scope() as session:
+            users = session.query(User).all()
+            return [user.user_telegram_id for user in users]
+
 
