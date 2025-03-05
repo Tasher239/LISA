@@ -11,7 +11,10 @@ from coolname import generate_slug
 
 from api_processors.key_models import OutlineKey
 from api_processors.base_processor import BaseProcessor
-from bot.routers.admin_router_sending_message import send_error_report, send_new_server_report
+from bot.routers.admin_router_sending_message import (
+    send_error_report,
+    send_new_server_report,
+)
 
 logger = logging.getLogger(__name__)
 

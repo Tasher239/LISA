@@ -53,5 +53,6 @@ class AdminAccess(StatesGroup):
     wait_password_enter = State()
     correct_password = State()
     admin_choosing_vpn_protocol_type = State()
+    admin_choosing_period_for_key = State()
     broadcast_wait_text = State()
-    broadcast_confirm = State()  #
+    broadcast_confirm = State()

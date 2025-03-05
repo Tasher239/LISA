@@ -43,9 +43,26 @@ def get_main_menu_keyboard():
 
 def get_choice_vpn_type_keyboard(state: FSMContext = None):
     match state:
-        case AdminAccess.admin_choosing_vpn_protocol_type:
+        case (
+            AdminAccess.admin_choosing_vpn_protocol_type
+            | AdminAccess.correct_password
+            | AdminAccess.admin_choosing_period_for_key
+        ):
             back_button = InlineKeyboardButton(
                 text="🔙 Назад", callback_data="back_to_admin_panel"
+            )
+            return InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(
+                            text="VLESS", callback_data="VPNtype_VLESS"
+                        ),
+                        InlineKeyboardButton(
+                            text="OUTLINE", callback_data="VPNtype_Outline"
+                        ),
+                    ],
+                    [back_button],
+                ]
             )
         case ManageKeys.no_active_keys:
             back_button = InlineKeyboardButton(
@@ -540,3 +557,22 @@ def get_back_admin_panel_keyboard():
         text="🔙 Назад", callback_data="back_to_admin_panel"
     )
     return InlineKeyboardMarkup(inline_keyboard=[[back_button]])
+
+
+def get_admin_period_keyboard():
+    month_button = InlineKeyboardButton(text="1 Месяц", callback_data="1_month")
+    three_month_button = InlineKeyboardButton(text="3 Месяца", callback_data="3_months")
+    six_month_button = InlineKeyboardButton(text="6 Месяцев", callback_data="6_months")
+    year_button = InlineKeyboardButton(text="12 Месяцев", callback_data="12_months")
+    back_button = InlineKeyboardButton(
+        text="🔙 Назад", callback_data="back_to_choice_vpn_type"
+    )
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [month_button],
+            [three_month_button],
+            [six_month_button],
+            [year_button],
+            [back_button],
+        ]
+    )

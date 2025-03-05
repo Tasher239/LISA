@@ -17,7 +17,10 @@ from initialization.vdsina_processor_init import vdsina_processor
 from initialization.vless_processor_init import vless_processor
 from initialization.db_processor_init import db_processor
 from bot.utils.string_makers import get_your_key_string
-from bot.keyboards.keyboards import get_confirm_broadcast_keyboard
+from bot.keyboards.keyboards import (
+    get_confirm_broadcast_keyboard,
+    get_admin_period_keyboard,
+)
 from initialization.bot_init import bot
 from bot.fsm.states import AdminAccess
 from bot.keyboards.keyboards import (
@@ -85,12 +88,12 @@ async def admin_auth(message: Message, state: FSMContext):
                         reply_markup=get_admin_keyboard(),
                     )
                 except TelegramBadRequest as e:
-                    await send_error_report(e)
+                    # await send_error_report(e)
                     if "message is not modified" in str(e):
                         # Сообщение не изменилось – игнорируем ошибку
                         pass
-                    else:
-                        raise
+                    # else:
+                    #     raise
             await state.set_state(AdminAccess.correct_password)
             pending_admin.pop(message.from_user.id, None)
         else:
@@ -102,12 +105,12 @@ async def admin_auth(message: Message, state: FSMContext):
                     reply_markup=get_back_button(),
                 )
             except TelegramBadRequest as e:
-                await send_error_report(e)
+                # await send_error_report(e)
                 if "message is not modified" in str(e):
                     # Сообщение не изменилось – игнорируем ошибку
                     pass
-                else:
-                    raise
+                # else:
+                #     raise
 
 
 async def make_servers_info_text(servers):
@@ -209,9 +212,25 @@ async def get_servers_info(callback: CallbackQuery, state: FSMContext):
     StateFilter(AdminAccess.admin_choosing_vpn_protocol_type),
     F.data.in_(["VPNtype_VLESS", "VPNtype_Outline"]),
 )
+async def choose_period_for_admin_key(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(chosen_protocol=callback.data.split("_")[1].lower())
+    await state.set_state(AdminAccess.admin_choosing_period_for_key)
+    await callback.message.edit_text(
+        "Выберите период подписки:",
+        reply_markup=get_admin_period_keyboard(),
+    )
+
+
+@router.callback_query(
+    StateFilter(AdminAccess.admin_choosing_period_for_key),
+    ~F.data.in_("back_to_admin_panel"),
+)
 async def make_key_for_admin(callback: CallbackQuery, state: FSMContext):
+    chosen_period = callback.data.split("_")[0]
+    data = await state.get_data()
+    protocol_type = data.get("chosen_protocol")
     try:
-        match callback.data.split("_")[1].lower():
+        match protocol_type:
             case "outline":
                 protocol_type = "Outline"
                 key, server_id = await async_outline_processor.create_vpn_key()
@@ -227,9 +246,8 @@ async def make_key_for_admin(callback: CallbackQuery, state: FSMContext):
             reply_markup=get_back_admin_panel_keyboard(),
         )
 
-        period = "12"
         db_processor.update_database_with_key(
-            callback.from_user.id, key, period, server_id, protocol_type
+            callback.from_user.id, key, chosen_period, server_id, protocol_type
         )
 
         # Отправка инструкций по установке
@@ -246,7 +264,9 @@ async def make_key_for_admin(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(
     F.data == "back_to_admin_panel",
     StateFilter(
-        AdminAccess.correct_password, AdminAccess.admin_choosing_vpn_protocol_type
+        AdminAccess.correct_password,
+        AdminAccess.admin_choosing_vpn_protocol_type,
+        AdminAccess.admin_choosing_period_for_key,
     ),
 )
 async def admin_panel(callback: CallbackQuery):
@@ -278,7 +298,10 @@ async def send_db(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(
-    F.data == "admin_broadcast", StateFilter(AdminAccess.correct_password)
+    F.data == "admin_broadcast",
+    StateFilter(
+        AdminAccess.correct_password, AdminAccess.admin_choosing_vpn_protocol_type
+    ),
 )
 async def admin_broadcast_start(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
@@ -339,4 +362,3 @@ async def admin_broadcast_confirm(callback: CallbackQuery, state: FSMContext):
         )
     await state.set_state(AdminAccess.correct_password)
     await state.update_data(broadcast_text=None)
-    await state.clear()

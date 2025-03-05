@@ -26,9 +26,10 @@ async def choice_vpn_type(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     prev_state = data.get("prev_state")
     current_state = await state.get_state()
+
     if not current_state:
         current_state = prev_state
-    if callback.data == "admin_choice_vpn_type":
+    if callback.data in ["admin_choice_vpn_type", "back_to_choice_vpn_type"]:
         await state.set_state(AdminAccess.admin_choosing_vpn_protocol_type)
     else:
         await state.set_state(GetKey.choosing_vpn_protocol_type)
@@ -40,7 +41,7 @@ async def choice_vpn_type(callback: CallbackQuery, state: FSMContext):
     )
 
 
-@router.callback_query(lambda c: c.data == "protocol_diff")
+@router.callback_query(F.data == "protocol_diff")
 async def protocol_diff_handler(callback: CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
     await state.update_data(prev_state=current_state)
@@ -52,7 +53,7 @@ async def protocol_diff_handler(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(lambda c: c.data == "back_to_previous")
+@router.callback_query(F.data == "back_to_previous")
 async def back_to_previous_handler(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     prev_state = data.get("prev_state")

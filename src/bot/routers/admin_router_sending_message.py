@@ -48,10 +48,15 @@ async def send_error_report(error: Exception):
         except Exception as ex:
             logger.error(f"Не удалось отправить сообщение админу {admin_id}: {ex}")
 
-async def send_new_server_report(server_id: int, ip: str, protocol: str,
-                                   management_panel_url: str = "",
-                                   api_url: str = "",
-                                   cert_sha256: str = ""):
+
+async def send_new_server_report(
+    server_id: int,
+    ip: str,
+    protocol: str,
+    management_panel_url: str = "",
+    api_url: str = "",
+    cert_sha256: str = "",
+):
     """
     Отправляет администраторам сообщение о том, что новый сервер запущен.
 
@@ -76,7 +81,7 @@ async def send_new_server_report(server_id: int, ip: str, protocol: str,
             f"🚀 *Новый сервер (Outline) запущен!*\n\n"
             f"*ID сервера:* {server_id}\n"
             f"*IP:* {ip}\n"
-            f"*Данные сервера:* {{\"api_url\": \"{api_url}\", \"certSha256\": \"{cert_sha256}\"}}\n"
+            f'*Данные сервера:* {{"api_url": "{api_url}", "certSha256": "{cert_sha256}"}}\n'
         )
 
     report_text += f"\nВремя: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
@@ -86,5 +91,3 @@ async def send_new_server_report(server_id: int, ip: str, protocol: str,
             await bot.send_message(admin_id, report_text, parse_mode="Markdown")
         except Exception as ex:
             logger.error(f"Не удалось отправить сообщение админу {admin_id}: {ex}")
-
-
