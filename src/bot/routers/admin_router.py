@@ -26,7 +26,6 @@ from bot.keyboards.keyboards import (
     get_back_admin_panel_keyboard,
 )
 
-
 load_dotenv()
 router = Router()
 logger = logging.getLogger(__name__)
@@ -255,7 +254,9 @@ async def admin_panel(callback: CallbackQuery):
         "👑 Вы вернулись в админ-панель", reply_markup=get_admin_keyboard()
     )
 
+
 ADMIN_IDS = list(map(int, json.loads(os.getenv("ADMIN_IDS", "[]"))))
+
 
 @router.callback_query(F.data == "get_db", StateFilter(AdminAccess.correct_password))
 async def send_db(callback: CallbackQuery, state: FSMContext):
@@ -275,6 +276,7 @@ async def send_db(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AdminAccess.correct_password)
     await callback.message.answer_document(db_file, caption="📂 Вот ваша база данных.")
 
+
 @router.callback_query(F.data == "admin_broadcast", StateFilter(AdminAccess.correct_password))
 async def admin_broadcast_start(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
@@ -282,6 +284,7 @@ async def admin_broadcast_start(callback: CallbackQuery, state: FSMContext):
         reply_markup=get_back_admin_panel_keyboard()
     )
     await state.set_state(AdminAccess.broadcast_wait_text)
+
 
 @router.callback_query(F.data == "back_to_admin_panel", StateFilter(AdminAccess.broadcast_wait_text))
 async def cancel_broadcast_input(callback: CallbackQuery, state: FSMContext):
@@ -294,6 +297,7 @@ async def cancel_broadcast_input(callback: CallbackQuery, state: FSMContext):
         else:
             raise
     await state.update_data(broadcast_text=None)
+
 
 @router.message(StateFilter(AdminAccess.broadcast_wait_text))
 async def admin_broadcast_get_text(message: Message, state: FSMContext):

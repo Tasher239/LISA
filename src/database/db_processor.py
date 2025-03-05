@@ -4,6 +4,7 @@ import logging
 import requests
 import asyncio
 from contextlib import contextmanager
+from git import Repo
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import (
@@ -21,6 +22,12 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+github_token = os.getenv("GITHUB_TOKEN")
+github_username = os.getenv("GITHUB_USERNAME")
+repo_owner = os.getenv("REPO_OWNER")
+repo_name = os.getenv("REPO_NAME")
+github_remote_url = f"https://{github_username}:{github_token}@github.com/{repo_owner}/{repo_name}.git"
+git_repo_dir = os.path.abspath("DB_LISA")
 
 class DbProcessor:
     def __init__(self):
@@ -509,5 +516,46 @@ class DbProcessor:
         with self.session_scope() as session:
             users = session.query(User).all()
             return [user.user_telegram_id for user in users]
+
+    async def backup_bd(self):
+        db_path = os.path.abspath("database/vpn_users.db")
+        if not os.path.exists(db_path):
+            logger.error(f"Файл базы данных {db_path} не найден.")
+            await send_error_report(f"Файл базы данных {db_path} не найден.")
+            return None
+        if not db_path:
+            return
+
+        repo_db_path = os.path.join(git_repo_dir, os.path.basename(db_path))
+        with open(db_path, "rb") as f:
+            new_content = f.read()
+        if os.path.exists(repo_db_path):
+            with open(repo_db_path, "rb") as f:
+                current_content = f.read()
+        else:
+            current_content = None
+
+        if new_content != current_content:
+            with open(repo_db_path, "wb") as f:
+                f.write(new_content)
+            logger.info(f"Файл базы данных обновлён в репозитории: {repo_db_path}")
+            try:
+                repo = Repo(git_repo_dir)
+                repo.git.add(os.path.basename(db_path))
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                commit_message = f"Backup at {timestamp}"
+                repo.index.commit(commit_message)
+                logger.info(f"Коммит сделан: {commit_message}")
+                if "origin" not in [remote.name for remote in repo.remotes]:
+                    repo.create_remote("origin", github_remote_url)
+                origin = repo.remote(name="origin")
+                origin.push()
+                logger.info("Изменения отправлены в удалённый репозиторий.")
+            except Exception as e:
+                logger.error(f"Ошибка при резервном копировании: {e}")
+                await send_error_report(f"Ошибка при резервном копировании: {e}")
+        else:
+            logger.info("База данных не изменилась, резервное копирование не требуется.")
+
 
 

@@ -67,6 +67,10 @@ async def scheduled_check_servers():
     await db_processor.check_count_keys_on_servers()
 
 
+@aiocron.crontab("0 0 * * *")
+async def scheduled_back_up_db():
+    await db_processor.backup_bd()
+
 async def main() -> None:
     await vdsina_processor_init()  # инициализируем VDSina API
     main_init_db()  # инициализируем БД 1ый раз при запуске
