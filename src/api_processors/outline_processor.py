@@ -11,7 +11,7 @@ from coolname import generate_slug
 
 from api_processors.key_models import OutlineKey
 from api_processors.base_processor import BaseProcessor
-from bot.routers.admin_router_sending_message import send_error_report
+from bot.routers.admin_router_sending_message import send_error_report, send_new_server_report
 
 logger = logging.getLogger(__name__)
 
@@ -489,6 +489,13 @@ class OutlineProcessor(BaseProcessor):
                     config = self.extract_outline_config(stdout_outline)
                     if config is None:
                         raise Exception("Ошибка при извлечении конфигурации Outline")
+                    await send_new_server_report(
+                        server.id,
+                        server.ip,
+                        "outline",
+                        api_url=config["apiUrl"],
+                        cert_sha256=config["certSha256"],
+                    )
                     get_db_processor().update_server_by_id(
                         server.id, config["apiUrl"], config["certSha256"]
                     )

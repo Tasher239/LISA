@@ -47,3 +47,44 @@ async def send_error_report(error: Exception):
                     )
         except Exception as ex:
             logger.error(f"Не удалось отправить сообщение админу {admin_id}: {ex}")
+
+async def send_new_server_report(server_id: int, ip: str, protocol: str,
+                                   management_panel_url: str = "",
+                                   api_url: str = "",
+                                   cert_sha256: str = ""):
+    """
+    Отправляет администраторам сообщение о том, что новый сервер запущен.
+
+    :param server_id: Идентификатор сервера.
+    :param ip: IP-адрес сервера.
+    :param protocol: Протокол сервера (например, "VLESS" или "Outline").
+    :param management_panel_url: URL панели управления (для VLESS).
+    :param api_url: URL API сервера (для Outline).
+    :param cert_sha256: Значение сертификата SHA256 (для Outline).
+    :param additional_info: Дополнительная информация для сообщения.
+    """
+    protocol_lower = protocol.lower()
+    if protocol_lower == "vless":
+        report_text = (
+            f"🚀 *Новый сервер (VLESS) запущен!*\n\n"
+            f"*ID сервера:* {server_id}\n"
+            f"*IP:* {ip}\n"
+            f"*Панель управления:* {management_panel_url}\n"
+        )
+    else:
+        report_text = (
+            f"🚀 *Новый сервер (Outline) запущен!*\n\n"
+            f"*ID сервера:* {server_id}\n"
+            f"*IP:* {ip}\n"
+            f"*Данные сервера:* {{\"api_url\": \"{api_url}\", \"certSha256\": \"{cert_sha256}\"}}\n"
+        )
+
+    report_text += f"\nВремя: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+
+    for admin_id in ADMIN_IDS:
+        try:
+            await bot.send_message(admin_id, report_text, parse_mode="Markdown")
+        except Exception as ex:
+            logger.error(f"Не удалось отправить сообщение админу {admin_id}: {ex}")
+
+
