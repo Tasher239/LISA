@@ -65,7 +65,9 @@ async def handle_trial_key_choice(callback: CallbackQuery, state: FSMContext):
     print(key, server_id)
 
     user_id = callback.from_user.id
-    status = db_processor.update_database_with_key(user_id, key, 2, server_id, protocol_type, True)
+    status = db_processor.update_database_with_key(
+        user_id, key, 2, server_id, protocol_type, True
+    )
 
     if status:
         text = f"Ваш пробный ключ «{key.name}» готов к использованию. Срок действия - 2 дня."

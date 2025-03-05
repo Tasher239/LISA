@@ -70,14 +70,11 @@ def get_choice_vpn_type_keyboard(state: FSMContext = None):
         ]
     )
 
+
 def get_diff_protocol_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="🔙 Назад", callback_data="back_to_previous"
-                )
-            ]
+            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_previous")]
         ]
     )
 
@@ -90,7 +87,9 @@ def get_choice_vpn_type_keyboard_for_no_key() -> object:
                 InlineKeyboardButton(text="OUTLINE", callback_data="VPNtype_Outline"),
             ],
             [
-                InlineKeyboardButton(text="Узнать отличия протоколов", callback_data="protocol_diff"),
+                InlineKeyboardButton(
+                    text="Узнать отличия протоколов", callback_data="protocol_diff"
+                ),
             ],
             [
                 InlineKeyboardButton(
@@ -100,12 +99,24 @@ def get_choice_vpn_type_keyboard_for_no_key() -> object:
         ]
     )
 
+
 def get_confirm_broadcast_keyboard():
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Отправить", callback_data="broadcast_confirm")],
-        [InlineKeyboardButton(text="❌ Отменить", callback_data="broadcast_cancel")]
-    ])
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Отправить", callback_data="broadcast_confirm"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="❌ Отменить", callback_data="broadcast_cancel"
+                )
+            ],
+        ]
+    )
     return keyboard
+
 
 def get_device_vless_keyboard():
     return InlineKeyboardMarkup(
@@ -514,8 +525,15 @@ def get_admin_keyboard():
         text="🔙 В меню", callback_data="back_to_main_menu"
     )
     return InlineKeyboardMarkup(
-        inline_keyboard=[[get_key], [servers_info], [broadcast], [get_db], [back_to_main_menu]]
+        inline_keyboard=[
+            [get_key],
+            [servers_info],
+            [broadcast],
+            [get_db],
+            [back_to_main_menu],
+        ]
     )
+
 
 def get_back_admin_panel_keyboard():
     back_button = InlineKeyboardButton(

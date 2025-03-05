@@ -28,7 +28,12 @@ async def send_error_report(error: Exception):
         f"`{error}`\n"
         f"Время: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
-    log_file_paths = ["logger/bot.log", "logger/bot.log.1", "logger/bot.log.2", "logger/bot.log.3"]
+    log_file_paths = [
+        "logger/bot.log",
+        "logger/bot.log.1",
+        "logger/bot.log.2",
+        "logger/bot.log.3",
+    ]
     for admin_id in ADMIN_IDS:
         try:
             # Отправляем сообщение с текстом ошибки
@@ -37,7 +42,8 @@ async def send_error_report(error: Exception):
             for log_file_path in log_file_paths:
                 if os.path.exists(log_file_path):
                     log_file = FSInputFile(log_file_path)
-                    await bot.send_document(admin_id, document=log_file, caption=f"Лог-файл {log_file_path}")
+                    await bot.send_document(
+                        admin_id, document=log_file, caption=f"Лог-файл {log_file_path}"
+                    )
         except Exception as ex:
             logger.error(f"Не удалось отправить сообщение админу {admin_id}: {ex}")
-

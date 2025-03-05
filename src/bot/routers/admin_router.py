@@ -277,20 +277,26 @@ async def send_db(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer_document(db_file, caption="📂 Вот ваша база данных.")
 
 
-@router.callback_query(F.data == "admin_broadcast", StateFilter(AdminAccess.correct_password))
+@router.callback_query(
+    F.data == "admin_broadcast", StateFilter(AdminAccess.correct_password)
+)
 async def admin_broadcast_start(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         "Введите текст для рассылки всем пользователям:",
-        reply_markup=get_back_admin_panel_keyboard()
+        reply_markup=get_back_admin_panel_keyboard(),
     )
     await state.set_state(AdminAccess.broadcast_wait_text)
 
 
-@router.callback_query(F.data == "back_to_admin_panel", StateFilter(AdminAccess.broadcast_wait_text))
+@router.callback_query(
+    F.data == "back_to_admin_panel", StateFilter(AdminAccess.broadcast_wait_text)
+)
 async def cancel_broadcast_input(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AdminAccess.correct_password)
     try:
-        await callback.message.edit_text("Операция рассылки отменена.", reply_markup=get_admin_keyboard())
+        await callback.message.edit_text(
+            "Операция рассылки отменена.", reply_markup=get_admin_keyboard()
+        )
     except TelegramBadRequest as e:
         if "message is not modified" in str(e):
             pass
@@ -305,13 +311,15 @@ async def admin_broadcast_get_text(message: Message, state: FSMContext):
     await state.update_data(broadcast_text=broadcast_text)
     await message.answer(
         f"Вы уверены, что хотите отправить следующее сообщение всем пользователям?\n\n{broadcast_text}",
-        reply_markup=get_confirm_broadcast_keyboard()
+        reply_markup=get_confirm_broadcast_keyboard(),
     )
     await state.set_state(AdminAccess.broadcast_confirm)
 
 
-@router.callback_query(F.data.in_(["broadcast_confirm", "broadcast_cancel"]),
-                       StateFilter(AdminAccess.broadcast_confirm))
+@router.callback_query(
+    F.data.in_(["broadcast_confirm", "broadcast_cancel"]),
+    StateFilter(AdminAccess.broadcast_confirm),
+)
 async def admin_broadcast_confirm(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     broadcast_text = data.get("broadcast_text")
@@ -322,9 +330,13 @@ async def admin_broadcast_confirm(callback: CallbackQuery, state: FSMContext):
                 await bot.send_message(user_id, broadcast_text)
             except Exception as e:
                 logger.error(f"Ошибка отправки сообщения пользователю {user_id}: {e}")
-        await callback.message.edit_text("Рассылка завершена.", reply_markup=get_admin_keyboard())
+        await callback.message.edit_text(
+            "Рассылка завершена.", reply_markup=get_admin_keyboard()
+        )
     else:
-        await callback.message.edit_text("Рассылка отменена.", reply_markup=get_admin_keyboard())
+        await callback.message.edit_text(
+            "Рассылка отменена.", reply_markup=get_admin_keyboard()
+        )
     await state.set_state(AdminAccess.correct_password)
     await state.update_data(broadcast_text=None)
     await state.clear()

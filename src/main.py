@@ -71,6 +71,7 @@ async def scheduled_check_servers():
 async def scheduled_back_up_db():
     await db_processor.backup_bd()
 
+
 async def main() -> None:
     await vdsina_processor_init()  # инициализируем VDSina API
     main_init_db()  # инициализируем БД 1ый раз при запуске

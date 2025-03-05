@@ -154,7 +154,7 @@ async def successful_payment(message: Message, state: FSMContext):
             new_message,
             key,
             f"Ваш ключ «{key.name}» добавлен в менеджер ключей (в нем можно его переименовать)",
-            state
+            state,
         )
 
         # Обновление базы данных

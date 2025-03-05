@@ -3,7 +3,10 @@ from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram import F, Router
 
-from bot.keyboards.keyboards import get_choice_vpn_type_keyboard, get_diff_protocol_keyboard
+from bot.keyboards.keyboards import (
+    get_choice_vpn_type_keyboard,
+    get_diff_protocol_keyboard,
+)
 from bot.fsm.states import GetKey, ManageKeys, AdminAccess
 from bot.lexicon.lexicon import INFO
 
@@ -33,7 +36,7 @@ async def choice_vpn_type(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         "Выберите тип подключения:\n\n",
         reply_markup=get_choice_vpn_type_keyboard(current_state),
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
 
 
@@ -48,6 +51,7 @@ async def protocol_diff_handler(callback: CallbackQuery, state: FSMContext):
     )
     await callback.answer()
 
+
 @router.callback_query(lambda c: c.data == "back_to_previous")
 async def back_to_previous_handler(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
@@ -60,6 +64,6 @@ async def back_to_previous_handler(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         "Выберите тип подключения:\n\n",
         reply_markup=get_choice_vpn_type_keyboard(prev_state),
-        parse_mode="HTML"
+        parse_mode="HTML",
     )
     await callback.answer()

@@ -26,8 +26,11 @@ github_token = os.getenv("GITHUB_TOKEN")
 github_username = os.getenv("GITHUB_USERNAME")
 repo_owner = os.getenv("REPO_OWNER")
 repo_name = os.getenv("REPO_NAME")
-github_remote_url = f"https://{github_username}:{github_token}@github.com/{repo_owner}/{repo_name}.git"
+github_remote_url = (
+    f"https://{github_username}:{github_token}@github.com/{repo_owner}/{repo_name}.git"
+)
 git_repo_dir = os.path.abspath("DB_LISA")
+
 
 class DbProcessor:
     def __init__(self):
@@ -89,7 +92,13 @@ class DbProcessor:
                 return None
 
     def update_database_with_key(
-            self, user_id, key, period, server_id, protocol_type="outline", is_trial_key=False
+        self,
+        user_id,
+        key,
+        period,
+        server_id,
+        protocol_type="outline",
+        is_trial_key=False,
     ) -> bool:
         """
         Обновляет базу данных новым ключом.
@@ -141,7 +150,7 @@ class DbProcessor:
             )
             session.add(new_key)
         return True
-            # session.commit() <- возможно не нужно тк юзаем контекстный менеджер
+        # session.commit() <- возможно не нужно тк юзаем контекстный менеджер
 
     async def get_expired_keys_by_user_id(self, user_id) -> dict[str, tuple[str, int]]:
         """
@@ -245,19 +254,27 @@ class DbProcessor:
                 if not server:
                     logger.info(f"Сервера с протоколом {protocol_type} не найдено.")
 
-                    new_server, server_ip, server_password = await self.create_new_server(count_servers)
+                    new_server, server_ip, server_password = (
+                        await self.create_new_server(count_servers)
+                    )
 
                     if not new_server:
                         await send_error_report("Ошибка при создании нового сервера")
                         logger.error("Ошибка при создании нового сервера")
                         return None
 
-                    new_server_db = self.add_server(new_server, protocol_type, server_ip, server_password)
+                    new_server_db = self.add_server(
+                        new_server, protocol_type, server_ip, server_password
+                    )
                     processor = await get_processor(protocol_type.lower())
                     result = await processor.setup_server(new_server_db)
                     if not result:
-                        await send_error_report("Ошибка при настройке сервера {protocol_type}")
-                        logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
+                        await send_error_report(
+                            "Ошибка при настройке сервера {protocol_type}"
+                        )
+                        logger.error(
+                            f"Ошибка при настройке сервера типа {protocol_type}"
+                        )
                         return None
                     server = new_server_db
 
@@ -333,7 +350,9 @@ class DbProcessor:
             if password:
                 return password
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(send_error_report("Ошибка при получении пароля сервера"))
+        loop.run_until_complete(
+            send_error_report("Ошибка при получении пароля сервера")
+        )
         return None
 
     async def create_new_server(self, count_servers):
@@ -360,7 +379,9 @@ class DbProcessor:
         logger.info(f"Создан новый сервер с ID: {server_id}")
         is_ready = await self.wait_for_server_ready(server_id)
         if not is_ready:
-            await send_error_report("Сервер не стал активным, невозможно получить IP и пароль")
+            await send_error_report(
+                "Сервер не стал активным, невозможно получить IP и пароль"
+            )
             logger.error("Сервер не стал активным, невозможно получить IP и пароль")
             return None
         server_ip = self.get_server_ip(server_id)
@@ -368,7 +389,13 @@ class DbProcessor:
         logger.info(f"Сервер готов: IP={server_ip}, Пароль={server_password}")
         return new_server, server_ip, server_password
 
-    def add_server(self, server_data: dict, protocol_type: str, server_ip: str, server_password: str) -> Server:
+    def add_server(
+        self,
+        server_data: dict,
+        protocol_type: str,
+        server_ip: str,
+        server_password: str,
+    ) -> Server:
         """
          Добавляет информацию о сервере в базу данных.
         :param server_data: Словарь с данными сервера.
@@ -402,7 +429,9 @@ class DbProcessor:
                 return key.server_id
             else:
                 loop = asyncio.get_event_loop()
-                loop.run_until_complete(send_error_report("Ошибка при получении ID сервера"))
+                loop.run_until_complete(
+                    send_error_report("Ошибка при получении ID сервера")
+                )
                 logger.error(f"Ошибка при получении информации о ключе {key_id}")
                 return None
 
@@ -418,7 +447,9 @@ class DbProcessor:
                 logger.info(f"Найден сервер с id: {server_id}")
             else:
                 loop = asyncio.get_event_loop()
-                loop.run_until_complete(send_error_report("Ошибка при получении сервера по ID"))
+                loop.run_until_complete(
+                    send_error_report("Ошибка при получении сервера по ID")
+                )
                 logger.error(f"Сервер с id {server_id} не найден.")
                 raise ValueError("Нет сервера с переданным id")
             return server
@@ -454,28 +485,39 @@ class DbProcessor:
         :return:
         """
         from utils.get_processor import get_processor
+
         async with self._server_creation_lock:
             with self.session_scope() as session:
                 count_servers = session.query(Server).count()
                 server_types = ("outline", "vless")
                 for protocol_type in server_types:
                     servers = (
-                        session.query(Server).filter_by(protocol_type=protocol_type).all()
+                        session.query(Server)
+                        .filter_by(protocol_type=protocol_type)
+                        .all()
                     )
-                    all_servers_full = all(server.cnt_users >= 159 for server in servers)
+                    all_servers_full = all(
+                        server.cnt_users >= 159 for server in servers
+                    )
                     if all_servers_full:
                         logger.info(
                             f"Все сервера типа {protocol_type} имеют не менее 159 ключей"
                         )
-                        new_server, server_ip, server_password = await self.create_new_server(count_servers)
+                        new_server, server_ip, server_password = (
+                            await self.create_new_server(count_servers)
+                        )
                         logger.info(f"Подняли новый сервер типа {protocol_type}")
-                        new_server = self.add_server(new_server, protocol_type, server_ip, server_password)
+                        new_server = self.add_server(
+                            new_server, protocol_type, server_ip, server_password
+                        )
                         logger.info(f"Записали данные нового сервера в БД")
                         processor = await get_processor(protocol_type)
                         logger.info(f"Передаем сервер в setup_server: {new_server}")
                         result = await processor.setup_server(new_server)
                         if not result:
-                            logger.error(f"Ошибка при настройке сервера типа {protocol_type}")
+                            logger.error(
+                                f"Ошибка при настройке сервера типа {protocol_type}"
+                            )
                             return
                         logger.info(f"Настроили сервер типа {protocol_type}")
 
@@ -510,14 +552,17 @@ class DbProcessor:
             session.commit()
             # При необходимости можно сделать session.refresh(server)
             session.refresh(server)
-            logger.info(f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}")
+            logger.info(
+                f"Сервер {server_id} успешно обновлен, server.api_url={api_url}, server.cert_sha256={cert_sha256}"
+            )
 
     async def get_all_user_ids(self):
         with self.session_scope() as session:
             users = session.query(User).all()
             return [user.user_telegram_id for user in users]
 
-    async def backup_bd(self):
+    @staticmethod
+    async def backup_bd():
         db_path = os.path.abspath("database/vpn_users.db")
         if not os.path.exists(db_path):
             logger.error(f"Файл базы данных {db_path} не найден.")
@@ -555,7 +600,6 @@ class DbProcessor:
                 logger.error(f"Ошибка при резервном копировании: {e}")
                 await send_error_report(f"Ошибка при резервном копировании: {e}")
         else:
-            logger.info("База данных не изменилась, резервное копирование не требуется.")
-
-
-
+            logger.info(
+                "База данных не изменилась, резервное копирование не требуется."
+            )

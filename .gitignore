@@ -36,3 +36,7 @@ logger/bot.log
 # Ignore system files
 .DS_Store
 bim.py
+
+# DB Backup directory
+src/DB_LISA/
+

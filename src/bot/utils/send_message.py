@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def send_key_to_user(
-        message: Message, key: OutlineKey, text: str, state: FSMContext
+    message: Message, key: OutlineKey, text: str, state: FSMContext
 ) -> None:
     """Отправляет ключ пользователю."""
     logger.info(f"Key created: {key} for user {message.from_user.id}")

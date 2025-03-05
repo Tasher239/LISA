@@ -360,7 +360,7 @@ class VlessProcessor(BaseProcessor):
             return False
 
     async def create_vpn_key(
-            self, expire_time: int = 0, sni: str = "dl.google.com", port: int = 46408
+        self, expire_time: int = 0, sni: str = "dl.google.com", port: int = 46408
     ) -> tuple[VlessKey, int]:
         """
         Создает новый VPN-ключ VLESS на удаленном сервере.
@@ -392,7 +392,7 @@ class VlessProcessor(BaseProcessor):
         # id=1 — это ID inbound'а (если у вас больше inbound'ов, возможно, нужно другое число)
 
         key_name = generate_slug(2).replace("-", " ")
-        data_limit = 200 * 1024 ** 3  # лимит в байтах
+        data_limit = 200 * 1024**3  # лимит в байтах
         unique_id = str(uuid.uuid4())
         data = {
             "id": 1,
@@ -511,7 +511,7 @@ class VlessProcessor(BaseProcessor):
                             "alterId": 0,  # тут будет имя ключа
                             "email": key_id,  # должен быть уникальным, чтобы добавлять ключи
                             "limitIp": 1,
-                            "totalGB": 200 * 1024 ** 3,
+                            "totalGB": 200 * 1024**3,
                             "expiryTime": 0,
                             "enable": "true",
                             "tgId": "",
@@ -625,7 +625,7 @@ class VlessProcessor(BaseProcessor):
             used_bytes = 0
 
             # Ищем ключ в списке inbound'ов
-            for key_stat in response['obj'][0]["clientStats"]:
+            for key_stat in response["obj"][0]["clientStats"]:
                 # print(key_stat)
                 if key_stat.get("email") == key_id:
                     # print(json.dumps(key_stat, indent=4))
@@ -640,8 +640,12 @@ class VlessProcessor(BaseProcessor):
                         # print(json.dumps(client, indent=4))
                         name = client.get("comment", "")
                         email = client.get("email", "")
-                        access_url = self._get_link(client.get("id"), client.get("comment", ""))
-                        data_limit = (client.get("totalGB") if client.get("totalGB") else None)
+                        access_url = self._get_link(
+                            client.get("id"), client.get("comment", "")
+                        )
+                        data_limit = (
+                            client.get("totalGB") if client.get("totalGB") else None
+                        )
 
                         return VlessKey(
                             key_id=key_id,
@@ -649,7 +653,7 @@ class VlessProcessor(BaseProcessor):
                             email=email,
                             access_url=access_url,
                             used_bytes=used_bytes,
-                            data_limit=data_limit
+                            data_limit=data_limit,
                         )
 
             logger.warning(f"Ключ {key_id} не найден на сервере")
@@ -668,11 +672,11 @@ class VlessProcessor(BaseProcessor):
 
     @create_server_session_by_id
     async def update_data_limit(
-            self,
-            key_id: str,
-            new_limit_bytes: int,
-            server_id: int = None,
-            key_name: str = None,
+        self,
+        key_id: str,
+        new_limit_bytes: int,
+        server_id: int = None,
+        key_name: str = None,
     ) -> bool:
         """
         Обновляет лимит данных для указанного пользователя на сервере.
@@ -802,28 +806,28 @@ class VlessProcessor(BaseProcessor):
         setup_script = "curl -sSL https://raw.githubusercontent.com/torikki-tou/team418/main/setup.sh -o setup.sh && chmod +x setup.sh"
         # Данные для автоматического ввода в setup.sh (каждая строка — ответ на соответствующий вопрос)
         setup_answers = (
-                "\n".join(
-                    [
-                        "admin",  # Логин
-                        server.password,  # Пароль
-                        "2053",  # Порт 3X-UI
-                        server.ip,  # IP/домен
-                        vless_email,  # Email
-                        vless_bot_token,  # Telegram Bot Token
-                        "lisa_helper",  # Telegram admin profile
-                        "y",  # Автоматическое подтверждение перезаписи конфига
-                    ]
-                )
-                + "\n"
+            "\n".join(
+                [
+                    "admin",  # Логин
+                    server.password,  # Пароль
+                    "2053",  # Порт 3X-UI
+                    server.ip,  # IP/домен
+                    vless_email,  # Email
+                    vless_bot_token,  # Telegram Bot Token
+                    "lisa_helper",  # Telegram admin profile
+                    "y",  # Автоматическое подтверждение перезаписи конфига
+                ]
+            )
+            + "\n"
         )
         max_attempts = 5
         for attempt in range(max_attempts):
             try:
                 async with asyncssh.connect(
-                        host=server.ip,
-                        username="root",
-                        password=server.password,
-                        known_hosts=None,
+                    host=server.ip,
+                    username="root",
+                    password=server.password,
+                    known_hosts=None,
                 ) as conn:
                     logger.info(f"Попытка {attempt + 1}/{max_attempts}...")
                     logger.info(f"🔗 Подключение к серверу {server.ip} установлено!")
@@ -870,7 +874,9 @@ class VlessProcessor(BaseProcessor):
                     logger.info(result.stdout)
 
                     # Запуск setup.sh с автоматическим вводом ответов
-                    logger.info("⚙️ Запускаем setup.sh с автоматическим вводом данных...")
+                    logger.info(
+                        "⚙️ Запускаем setup.sh с автоматическим вводом данных..."
+                    )
                     result = await conn.run('bash -c "./setup.sh"', input=setup_answers)
                     if result.exit_status != 0:
                         raise Exception(
@@ -886,7 +892,9 @@ class VlessProcessor(BaseProcessor):
             except Exception as e:
                 loop = asyncio.get_event_loop()
                 loop.run_until_complete(send_error_report(e))
-                logger.info(f"❌ Ошибка при установке 3X-UI: {e}, попытка {attempt + 1}/{max_attempts}")
+                logger.info(
+                    f"❌ Ошибка при установке 3X-UI: {e}, попытка {attempt + 1}/{max_attempts}"
+                )
                 if attempt < max_attempts - 1:
                     logger.info("Повторная попытка через 10 секунд...")
                     await asyncio.sleep(10)
