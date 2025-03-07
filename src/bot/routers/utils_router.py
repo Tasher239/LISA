@@ -51,10 +51,11 @@ async def send_installation_instructions(callback: CallbackQuery, state: FSMCont
 )
 async def send_connection_choose(callback: CallbackQuery, state: FSMContext):
     await state.set_state(ManageKeys.get_instruction)
+    current_state = await state.get_state()
     await callback.message.edit_text(
         text="🔍 **Выберите интересующий вас тип подключения:**",
         parse_mode="Markdown",
-        reply_markup=get_choice_vpn_type_keyboard(),
+        reply_markup=get_choice_vpn_type_keyboard(current_state),
     )
     await callback.answer()
 

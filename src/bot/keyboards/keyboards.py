@@ -20,9 +20,6 @@ import socket
 #         return "127.0.0.1"  # fallback на localhost
 
 
-
-
-
 def get_main_menu_keyboard():
     # Создаем объекты инлайн-кнопок
     get_key = InlineKeyboardButton(
@@ -46,13 +43,10 @@ def get_main_menu_keyboard():
 def get_choice_vpn_type_keyboard(state: FSMContext = None):
     match state:
         case (
-            AdminAccess.admin_choosing_vpn_protocol_type
-            | AdminAccess.correct_password
-            | AdminAccess.admin_choosing_period_for_key
+        AdminAccess.admin_choosing_vpn_protocol_type
+        | AdminAccess.correct_password
+        | AdminAccess.admin_choosing_period_for_key
         ):
-            back_button = InlineKeyboardButton(
-                text="🔙 Назад", callback_data="back_to_admin_panel"
-            )
             return InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
@@ -63,7 +57,25 @@ def get_choice_vpn_type_keyboard(state: FSMContext = None):
                             text="OUTLINE", callback_data="VPNtype_Outline"
                         ),
                     ],
-                    [back_button],
+                    [InlineKeyboardButton(
+                        text="🔙 Назад", callback_data="back_to_admin_panel"
+                    )],
+                ]
+            )
+        case ManageKeys.get_instruction:
+            return InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(
+                            text="VLESS", callback_data="VPNtype_VLESS"
+                        ),
+                        InlineKeyboardButton(
+                            text="OUTLINE", callback_data="VPNtype_Outline"
+                        ),
+                    ],
+                    [InlineKeyboardButton(
+                        text="🔙 Назад", callback_data="back_to_main_menu"
+                    )],
                 ]
             )
         case ManageKeys.no_active_keys:
