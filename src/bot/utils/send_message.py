@@ -4,10 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from outline_vpn.outline_vpn import OutlineKey
 
-from src.bot.lexicon.lexicon import Notification
-from src.bot.utils.string_makers import get_your_key_string
+from bot.lexicon.lexicon import Notification
+from bot.utils.string_makers import get_your_key_string
 from initialization.bot_init import bot
-from src.bot.keyboards.keyboards import (
+from bot.keyboards.keyboards import (
     get_back_button_to_key_params,
     get_installation_button,
     get_key_name_extension_keyboard_with_names,

@@ -1,23 +1,24 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from urllib.parse import quote
 import uvicorn
 import socket
 from utils.get_processor import get_processor
 from initialization.db_processor_init import db_processor
-from urllib.parse import quote
+
 
 redirect_server = FastAPI()
 
 
-def get_server_ip():
-    """Определяет текущий внешний IP-адрес сервера."""
-    try:
-        # Подключаемся к внешнему серверу, но НЕ отправляем данные
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("8.8.8.8", 80))  # Google DNS
-            return s.getsockname()[0]
-    except Exception:
-        return "127.0.0.1"  # fallback на localhost
+# def get_server_ip():
+#     """Определяет текущий внешний IP-адрес сервера."""
+#     try:
+#         # Подключаемся к внешнему серверу, но НЕ отправляем данные
+#         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+#             s.connect(("8.8.8.8", 80))  # Google DNS
+#             return s.getsockname()[0]
+#     except Exception:
+#         return "127.0.0.1"  # fallback на localhost
 
 
 def generate_redirect_html(protocol: str, url: str) -> HTMLResponse:
@@ -117,6 +118,7 @@ async def open_connection(key_id: str):
 
 
 if __name__ == "__main__":
-    host_ip = get_server_ip()
+    # host_ip = get_server_ip()
+    host_ip = '0.0.0.0'
     print(f"Запуск сервера на {host_ip}:8000")
     uvicorn.run(redirect_server, host=host_ip, port=8000)

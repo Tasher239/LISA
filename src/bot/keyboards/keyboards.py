@@ -1,3 +1,5 @@
+import os
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.fsm.context import FSMContext
 
@@ -7,18 +9,18 @@ from bot.fsm.states import GetKey, SubscriptionExtension, AdminAccess, ManageKey
 import socket
 
 
-def get_server_ip():
-    """Определяет текущий внешний IP-адрес сервера."""
-    try:
-        # Подключаемся к внешнему серверу, но НЕ отправляем данные
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("8.8.8.8", 80))  # Google DNS
-            return s.getsockname()[0]
-    except Exception:
-        return "127.0.0.1"  # fallback на localhost
+# def get_server_ip():
+#     """Определяет текущий внешний IP-адрес сервера."""
+#     try:
+#         # Подключаемся к внешнему серверу, но НЕ отправляем данные
+#         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+#             s.connect(("8.8.8.8", 80))  # Google DNS
+#             return s.getsockname()[0]
+#     except Exception:
+#         return "127.0.0.1"  # fallback на localhost
 
 
-SERVER_IP = get_server_ip()
+
 
 
 def get_main_menu_keyboard():
@@ -390,7 +392,7 @@ async def get_key_action_keyboard(key_id):
     )
     launch_app_button = InlineKeyboardButton(
         text="🚀 Запустить в приложении",
-        url=f"http://{SERVER_IP}:8000/open/{key_id}",
+        url=f"http://{os.getenv('SERVER_IP')}:8000/open/{key_id}",
     )
 
     back_button = InlineKeyboardButton(

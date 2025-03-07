@@ -38,18 +38,18 @@ dp.include_router(choice_vpn_type_router.router)
 dp.include_router(admin_router.router)
 
 
-async def run_fastapi_server():
-    # Настраиваем uvicorn для работы в том же цикле событий
-    config = uvicorn.Config(
-        redirect_server,  # наш объект FastAPI()
-        host="192.168.160.1",
-        port=8000,
-        loop="asyncio",  # важно указать, что работаем на asyncio
-        log_level="info",
-    )
-    server = uvicorn.Server(config)
-    # Запускаем сервер (он будет «заблокирован» внутри своей задачи)
-    await server.serve()
+# async def run_fastapi_server():
+#     # Настраиваем uvicorn для работы в том же цикле событий
+#     config = uvicorn.Config(
+#         redirect_server,  # наш объект FastAPI()
+#         host="192.168.160.1",
+#         port=8000,
+#         loop="asyncio",  # важно указать, что работаем на asyncio
+#         log_level="info",
+#     )
+#     server = uvicorn.Server(config)
+#     # Запускаем сервер (он будет «заблокирован» внутри своей задачи)
+#     await server.serve()
 
 
 @aiocron.crontab("0 10,21 * * *")

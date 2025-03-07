@@ -14,8 +14,5 @@ RUN pip install -r requirements.txt
 # Создаем директорию для базы данных (если используете SQLite)
 RUN mkdir -p /app/database
 
-# Переменные окружения (если нужно)
-ENV PYTHONPATH=/app
-
-# Запускаем бота
-CMD ["python", "src/main.py"]
+# Добавляем /app в PYTHONPATH
+ENV PYTHONPATH=/app/src
