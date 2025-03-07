@@ -75,8 +75,8 @@ class VlessProcessor(BaseProcessor):
                 self.ip = server.ip
                 self.sub_port = 2096
                 self.port_panel = 2053
-                self.host = f"http://{self.ip}:{self.port_panel}"
-                self.data = {"username": "admin", "password": server.password}
+                self.host = f"https://{self.ip}:{self.port_panel}"
+                self.data = {"username": "lisa_admin", "password": server.password}
 
                 try:
                     self.ses = requests.Session()
@@ -113,8 +113,8 @@ class VlessProcessor(BaseProcessor):
         self.ip = server.ip
         self.sub_port = 2096
         self.port_panel = 2053
-        self.host = f"http://{self.ip}:{self.port_panel}"
-        self.data = {"username": "admin", "password": server.password}
+        self.host = f"https://{self.ip}:{self.port_panel}"
+        self.data = {"username": "lisa_admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
         self.con = self._connect()
@@ -811,7 +811,7 @@ class VlessProcessor(BaseProcessor):
         setup_answers = (
             "\n".join(
                 [
-                    "admin",  # Логин
+                    "lisa_admin",  # Логин
                     server.password,  # Пароль
                     "2053",  # Порт 3X-UI
                     server.ip,  # IP/домен
@@ -928,7 +928,7 @@ class VlessProcessor(BaseProcessor):
         self.ip = server.ip
         self.port_panel = 2053
         self.host = f"https://{self.ip}:{self.port_panel}"
-        self.data = {"username": "admin", "password": server.password}
+        self.data = {"username": "lisa_admin", "password": server.password}
         self.ses = requests.Session()
         self.ses.verify = False
 
